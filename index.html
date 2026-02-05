@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Controle de aplicação de Cipionato de Testosterona">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Controle Medicação">
+
+    <title>Controle de Medicação - Cipionato de Testosterona</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Ícones para iOS (opcional) -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .install-prompt {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .install-prompt.show {
+            display: flex;
+        }
+
+        .install-prompt button {
+            background: white;
+            color: #28a745;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        select.aplicado-sim {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        select.aplicado-nao {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+            font-weight: 600;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+
+        .close:hover {
+            opacity: 0.8;
+        }
+
+        .receita-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .receita-ativa {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .receita-esgotada {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .receitas-list {
+            margin-top: 20px;
+        }
+
+        .receita-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .receita-item h4 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .receita-item p {
+            font-size: 13px;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .receita-item .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .receita-item .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .controls, .modal, .install-prompt {
+                display: none !important;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Prompt de Instalação -->
+    <div id="installPrompt" class="install-prompt">
+        <span>📱 Instalar este app na tela inicial?</span>
+        <div>
+            <button onclick="instalarApp()">Instalar</button>
+            <button onclick="fecharPromptInstalacao()" style="background: transparent; color: white;">Agora não</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📋 Controle de Medicação</h1>
+            <p>Cipionato de Testosterona - Aplicação a cada 10 dias</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>ℹ️ Informações do Tratamento</h3>
+                <p><strong>Período:</strong> 07/02/2026 a 31/12/2026</p>
+                <p><strong>Intervalo:</strong> Aplicação a cada 10 dias corridos</p>
+                <p><strong>Medicamento:</strong> Cipionato de Testosterona (Medicamento Controlado - ANVISA)</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Controle de Receitas</h3>
+                <p><strong>Importante:</strong> Cada receita médica permite a compra de 1 caixa contendo 3 doses. Mantenha o cadastro de receitas atualizado.</p>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-info" onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
+                <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
+                <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar Todas como Aplicadas</button>
+                <button class="btn btn-danger" onclick="limparTodas()">✗ Limpar Todas</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <h4>Total de Aplicações</h4>
+                    <p id="totalAplicacoes">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Aplicadas</h4>
+                    <p id="totalAplicadas" style="color: #28a745;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Não Aplicadas</h4>
+                    <p id="totalNaoAplicadas" style="color: #dc3545;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Taxa de Adesão</h4>
+                    <p id="taxaAdesao">0%</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card" style="border-left-color: #17a2b8;">
+                    <h4>Receitas Cadastradas</h4>
+                    <p id="totalReceitas" style="color: #17a2b8;">0</p>
+                </div>
+                <div class="stat-card" style="border-left-color: #28a745;">
+                    <h4>Doses Disponíveis</h4>
+                    <p id="dosesDisponiveis" style="color: #28a745;">0</p>
+                </div>
+                <div class="stat-card" style="border-left-color: #ffc107;">
+                    <h4>Doses Utilizadas</h4>
+                    <p id="dosesUtilizadas" style="color: #ffc107;">0</p>
+                </div>
+                <div class="stat-card" style="border-left-color: #dc3545;">
+                    <h4>Receitas Necessárias</h4>
+                    <p id="receitasNecessarias" style="color: #dc3545;">0</p>
+                </div>
+            </div>
+
+            <div id="listaReceitas" class="receitas-list" style="display: none;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">📋 Receitas Cadastradas</h3>
+                <div id="receitasContainer"></div>
+            </div>
+
+            <div class="table-container">
+                <table id="tabelaMedicacao">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th style="width: 130px;">Data</th>
+                            <th style="width: 110px;">Dia da Semana</th>
+                            <th style="width: 150px;">Aplicação</th>
+                            <th>Receita Utilizada</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro de Receita -->
+    <div id="modalReceita" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="fecharModalReceita()">&times;</span>
+                <h2>📝 Cadastrar Nova Receita</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="codigoReceita">Código da Receita *</label>
+                    <input type="text" id="codigoReceita" placeholder="Ex: REC-2026-001234" required>
+                    <small>Informe o código completo da receita médica</small>
+                </div>
+                <div class="form-group">
+                    <label for="dataEmissao">Data de Emissão *</label>
+                    <input type="date" id="dataEmissao" required>
+                    <small>Data em que a receita foi emitida</small>
+                </div>
+                <div class="form-group">
+                    <label for="dataValidade">Data de Validade</label>
+                    <input type="date" id="dataValidade">
+                    <small>Data de validade da receita (opcional)</small>
+                </div>
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <input type="text" id="observacoes" placeholder="Informações adicionais (opcional)">
+                    <small>Anotações sobre a receita</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="fecharModalReceita()">Cancelar</button>
+                <button class="btn btn-success" onclick="salvarReceita()">Salvar Receita</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bibliotecas para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        // ===== PWA - Service Worker Registration =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+            });
+        }
+
+        // ===== PWA - Install Prompt =====
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').classList.add('show');
+        });
+
+        function instalarApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').classList.remove('show');
+                });
+            }
+        }
+
+        function fecharPromptInstalacao() {
+            document.getElementById('installPrompt').classList.remove('show');
+        }
+
+        // ===== Lógica do App =====
+        const intervalo = 10;
+        const dosesPorCaixa = 3;
+
+        function gerarDatasAplicacao() {
+            const datas = [];
+            let dataAtual = new Date(2026, 1, 7, 12, 0, 0);      // 07/02/2026 12:00
+            const dataLimite = new Date(2026, 11, 31, 12, 0, 0); // 31/12/2026 12:00
+
+            while (dataAtual <= dataLimite) {
+                datas.push(new Date(dataAtual));
+                dataAtual.setDate(dataAtual.getDate() + intervalo);
+            }
+            return datas;
+        }
+
+        function formatarData(data) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function obterDiaSemana(data) {
+            const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            return dias[data.getDay()];
+        }
+
+        function carregarDados() {
+            const dados = localStorage.getItem('medicacaoControle');
+            return dados ? JSON.parse(dados) : {};
+        }
+
+        function salvarDados(dados) {
+            localStorage.setItem('medicacaoControle', JSON.stringify(dados));
+        }
+
+        function carregarReceitas() {
+            const receitas = localStorage.getItem('receitasMedicas');
+            return receitas ? JSON.parse(receitas) : [];
+        }
+
+        function salvarReceitas(receitas) {
+            localStorage.setItem('receitasMedicas', JSON.stringify(receitas));
+        }
+
+        function atribuirReceita(data) {
+            const receitas = carregarReceitas();
+            const dados = carregarDados();
+
+            const dosesUtilizadasPorReceita = {};
+            receitas.forEach(r => {
+                dosesUtilizadasPorReceita[r.codigo] = 0;
+            });
+
+            Object.values(dados).forEach(registro => {
+                if (registro.aplicacao === 'Sim' && registro.receita) {
+                    dosesUtilizadasPorReceita[registro.receita] = 
+                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
+                }
+            });
+
+            for (let receita of receitas) {
+                const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
+                if (dosesUsadas < dosesPorCaixa) {
+                    return receita.codigo;
+                }
+            }
+            return null;
+        }
+
+        function atualizarEstatisticas() {
+            const dados = carregarDados();
+            const receitas = carregarReceitas();
+            const datas = gerarDatasAplicacao();
+
+            const total = datas.length;
+            const aplicadas = Object.values(dados).filter(v => v.aplicacao === 'Sim').length;
+            const naoAplicadas = Object.values(dados).filter(v => v.aplicacao === 'Não').length;
+            const taxa = total > 0 ? Math.round((aplicadas / total) * 100) : 0;
+
+            document.getElementById('totalAplicacoes').textContent = total;
+            document.getElementById('totalAplicadas').textContent = aplicadas;
+            document.getElementById('totalNaoAplicadas').textContent = naoAplicadas;
+            document.getElementById('taxaAdesao').textContent = taxa + '%';
+
+            const totalReceitas = receitas.length;
+            const dosesDisponiveis = totalReceitas * dosesPorCaixa;
+            const dosesUtilizadas = aplicadas;
+            const receitasNecessarias = Math.ceil(total / dosesPorCaixa);
+
+            document.getElementById('totalReceitas').textContent = totalReceitas;
+            document.getElementById('dosesDisponiveis').textContent = dosesDisponiveis;
+            document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
+            document.getElementById('receitasNecessarias').textContent = receitasNecessarias;
+
+            atualizarListaReceitas();
+        }
+
+        function atualizarListaReceitas() {
+            const receitas = carregarReceitas();
+            const dados = carregarDados();
+            const container = document.getElementById('receitasContainer');
+            const listaReceitas = document.getElementById('listaReceitas');
+
+            if (receitas.length === 0) {
+                listaReceitas.style.display = 'none';
+                return;
+            }
+
+            listaReceitas.style.display = 'block';
+
+            const dosesUtilizadasPorReceita = {};
+            receitas.forEach(r => {
+                dosesUtilizadasPorReceita[r.codigo] = 0;
+            });
+
+            Object.values(dados).forEach(registro => {
+                if (registro.aplicacao === 'Sim' && registro.receita) {
+                    dosesUtilizadasPorReceita[registro.receita] = 
+                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
+                }
+            });
+
+            container.innerHTML = receitas.map(receita => {
+                const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
+                const percentual = (dosesUsadas / dosesPorCaixa) * 100;
+                const status = dosesUsadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
+                const statusClass = dosesUsadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
+
+                return `
+                    <div class="receita-item">
+                        <h4>
+                            ${receita.codigo}
+                            <span class="receita-badge ${statusClass}">${status}</span>
+                        </h4>
+                        <p><strong>Emissão:</strong> ${receita.dataEmissao}</p>
+                        ${receita.dataValidade ? `<p><strong>Validade:</strong> ${receita.dataValidade}</p>` : ''}
+                        ${receita.observacoes ? `<p><strong>Obs:</strong> ${receita.observacoes}</p>` : ''}
+                        <p><strong>Doses:</strong> ${dosesUsadas} de ${dosesPorCaixa} utilizadas</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentual}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderizarTabela() {
+            const datas = gerarDatasAplicacao();
+            const dados = carregarDados();
+            const tbody = document.getElementById('corpoTabela');
+            tbody.innerHTML = '';
+
+            datas.forEach((data, index) => {
+                const dataStr = formatarData(data);
+                const tr = document.createElement('tr');
+
+                const registro = dados[dataStr] || { aplicacao: '', receita: null };
+                const classeSelect = registro.aplicacao === 'Sim' ? 'aplicado-sim' : 
+                                    registro.aplicacao === 'Não' ? 'aplicado-nao' : '';
+
+                const receitaInfo = registro.receita ? 
+                    `<small style="color: #667eea;">Receita: ${registro.receita}</small>` : 
+                    '<small style="color: #999;">Nenhuma receita atribuída</small>';
+
+                tr.innerHTML = `
+                    <td><strong>${index + 1}</strong></td>
+                    <td>${dataStr}</td>
+                    <td>${obterDiaSemana(data)}</td>
+                    <td>
+                        <select class="${classeSelect}" onchange="atualizarAplicacao('${dataStr}', this.value, this)">
+                            <option value="">-- Selecione --</option>
+                            <option value="Sim" ${registro.aplicacao === 'Sim' ? 'selected' : ''}>Sim</option>
+                            <option value="Não" ${registro.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
+                        </select>
+                    </td>
+                    <td>${receitaInfo}</td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            atualizarEstatisticas();
+        }
+
+        function atualizarAplicacao(data, valor, selectElement) {
+            const dados = carregarDados();
+
+            if (valor === '') {
+                delete dados[data];
+                selectElement.className = '';
+            } else {
+                const receitaAtribuida = valor === 'Sim' ? atribuirReceita(data) : null;
+
+                if (valor === 'Sim' && !receitaAtribuida) {
+                    alert('⚠️ Atenção: Não há receitas disponíveis com doses restantes. Cadastre uma nova receita.');
+                }
+
+                dados[data] = {
+                    aplicacao: valor,
+                    receita: receitaAtribuida
+                };
+                selectElement.className = valor === 'Sim' ? 'aplicado-sim' : 'aplicado-nao';
+            }
+
+            salvarDados(dados);
+            renderizarTabela();
+        }
+
+        function marcarTodasSim() {
+            if (!confirm('Deseja marcar todas as aplicações como realizadas?')) return;
+
+            const datas = gerarDatasAplicacao();
+            const dados = {};
+
+            let receitaSuficiente = true;
+            datas.forEach((data, index) => {
+                const dataStr = formatarData(data);
+                const receitaAtribuida = atribuirReceita(dataStr);
+
+                if (!receitaAtribuida && receitaSuficiente) {
+                    receitaSuficiente = false;
+                    alert(`⚠️ Atenção: Receitas insuficientes a partir da aplicação #${index + 1}. Cadastre mais receitas.`);
+                }
+
+                dados[dataStr] = {
+                    aplicacao: 'Sim',
+                    receita: receitaAtribuida
+                };
+            });
+
+            salvarDados(dados);
+            renderizarTabela();
+        }
+
+        function limparTodas() {
+            if (!confirm('Deseja limpar todos os registros de aplicação?')) return;
+
+            localStorage.removeItem('medicacaoControle');
+            renderizarTabela();
+        }
+
+        function abrirModalReceita() {
+            document.getElementById('modalReceita').style.display = 'block';
+            document.getElementById('codigoReceita').value = '';
+            document.getElementById('dataEmissao').value = '';
+            document.getElementById('dataValidade').value = '';
+            document.getElementById('observacoes').value = '';
+        }
+
+        function fecharModalReceita() {
+            document.getElementById('modalReceita').style.display = 'none';
+        }
+
+        function salvarReceita() {
+            const codigo = document.getElementById('codigoReceita').value.trim();
+            const dataEmissao = document.getElementById('dataEmissao').value;
+            const dataValidade = document.getElementById('dataValidade').value;
+            const observacoes = document.getElementById('observacoes').value.trim();
+
+            if (!codigo || !dataEmissao) {
+                alert('Por favor, preencha os campos obrigatórios (Código e Data de Emissão).');
+                return;
+            }
+
+            const receitas = carregarReceitas();
+
+            if (receitas.some(r => r.codigo === codigo)) {
+                alert('Já existe uma receita cadastrada com este código.');
+                return;
+            }
+
+            const novaReceita = {
+                codigo: codigo,
+                dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
+                dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
+                observacoes: observacoes || null,
+                dataCadastro: new Date().toISOString()
+            };
+
+            receitas.push(novaReceita);
+            salvarReceitas(receitas);
+
+            fecharModalReceita();
+            renderizarTabela();
+
+            alert('✅ Receita cadastrada com sucesso!');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalReceita');
+            if (event.target == modal) {
+                fecharModalReceita();
+            }
+        }
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Relatório de Controle de Medicação', 14, 20);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Cipionato de Testosterona', 14, 28);
+
+            doc.setFontSize(10);
+            doc.text(`Período: 07/02/2026 a 31/12/2026`, 14, 36);
+            doc.text(`Intervalo: Aplicação a cada 10 dias corridos`, 14, 42);
+            doc.text(`Data de Geração: ${formatarData(new Date())}`, 14, 48);
+
+            const dados = carregarDados();
+            const receitas = carregarReceitas();
+            const datas = gerarDatasAplicacao();
+            const aplicadas = Object.values(dados).filter(v => v.aplicacao === 'Sim').length;
+            const naoAplicadas = Object.values(dados).filter(v => v.aplicacao === 'Não').length;
+            const taxa = datas.length > 0 ? Math.round((aplicadas / datas.length) * 100) : 0;
+
+            doc.setFontSize(11);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Estatísticas de Aplicação:', 14, 58);
+
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Total de Aplicações Previstas: ${datas.length}`, 14, 65);
+            doc.text(`Aplicações Realizadas: ${aplicadas}`, 14, 71);
+            doc.text(`Aplicações Não Realizadas: ${naoAplicadas}`, 14, 77);
+            doc.text(`Taxa de Adesão: ${taxa}%`, 14, 83);
+
+            doc.setFontSize(11);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Controle de Receitas:', 14, 93);
+
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Receitas Cadastradas: ${receitas.length}`, 14, 100);
+            doc.text(`Doses Disponíveis: ${receitas.length * dosesPorCaixa}`, 14, 106);
+            doc.text(`Doses Utilizadas: ${aplicadas}`, 14, 112);
+            doc.text(`Receitas Necessárias: ${Math.ceil(datas.length / dosesPorCaixa)}`, 14, 118);
+
+            if (receitas.length > 0) {
+                const dosesUtilizadasPorReceita = {};
+                receitas.forEach(r => {
+                    dosesUtilizadasPorReceita[r.codigo] = 0;
+                });
+
+                Object.values(dados).forEach(registro => {
+                    if (registro.aplicacao === 'Sim' && registro.receita) {
+                        dosesUtilizadasPorReceita[registro.receita] = 
+                            (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
+                    }
+                });
+
+                const dadosReceitas = receitas.map(receita => {
+                    const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
+                    const status = dosesUsadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
+                    return [
+                        receita.codigo,
+                        receita.dataEmissao,
+                        `${dosesUsadas}/${dosesPorCaixa}`,
+                        status
+                    ];
+                });
+
+                doc.autoTable({
+                    startY: 128,
+                    head: [['Código da Receita', 'Emissão', 'Doses', 'Status']],
+                    body: dadosReceitas,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: [102, 126, 234],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3
+                    }
+                });
+            }
+
+            const dadosTabela = datas.map((data, index) => {
+                const dataStr = formatarData(data);
+                const registro = dados[dataStr] || { aplicacao: 'Não registrado', receita: null };
+                return [
+                    index + 1,
+                    dataStr,
+                    obterDiaSemana(data),
+                    registro.aplicacao || 'Não registrado',
+                    registro.receita || '-'
+                ];
+            });
+
+            doc.autoTable({
+                startY: receitas.length > 0 ? doc.lastAutoTable.finalY + 10 : 128,
+                head: [['#', 'Data', 'Dia da Semana', 'Aplicação', 'Receita']],
+                body: dadosTabela,
+                theme: 'striped',
+                headStyles: {
+                    fillColor: [102, 126, 234],
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2
+                },
+                columnStyles: {
+                    0: { cellWidth: 12 },
+                    1: { cellWidth: 25 },
+                    2: { cellWidth: 30 },
+                    3: { cellWidth: 25 },
+                    4: { cellWidth: 'auto' }
+                },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index === 3) {
+                        if (data.cell.raw === 'Sim') {
+                            data.cell.styles.textColor = [40, 167, 69];
+                            data.cell.styles.fontStyle = 'bold';
+                        } else if (data.cell.raw === 'Não') {
+                            data.cell.styles.textColor = [220, 53, 69];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                }
+            });
+
+            doc.save(`Controle_Medicacao_${formatarData(new Date()).replace(/\//g, '-')}.pdf`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarTabela();
+        });
+    </script>
+</body>
+</html>
