@@ -15,7 +15,7 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- Ícones para iOS (opcional) -->
+    <!-- Ícones para iOS -->
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <style>
@@ -185,6 +185,21 @@
         .btn-info:hover {
             background: #138496;
             transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
         }
 
         .table-container {
@@ -421,6 +436,7 @@
             border-radius: 8px;
             margin-bottom: 10px;
             border-left: 4px solid #667eea;
+            position: relative;
         }
 
         .receita-item h4 {
@@ -447,6 +463,14 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             height: 100%;
             transition: width 0.3s;
+        }
+
+        .receita-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
         }
 
         @media print {
@@ -496,6 +520,12 @@
 
             .content {
                 padding: 15px;
+            }
+
+            .receita-actions {
+                position: static;
+                margin-top: 10px;
+                justify-content: flex-start;
             }
         }
     </style>
@@ -598,14 +628,15 @@
         </div>
     </div>
 
-    <!-- Modal de Cadastro de Receita -->
+    <!-- Modal de Cadastro/Edição de Receita -->
     <div id="modalReceita" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <span class="close" onclick="fecharModalReceita()">&times;</span>
-                <h2>📝 Cadastrar Nova Receita</h2>
+                <h2 id="modalReceitaTitulo">📝 Cadastrar Nova Receita</h2>
             </div>
             <div class="modal-body">
+                <input type="hidden" id="receitaEditandoId">
                 <div class="form-group">
                     <label for="codigoReceita">Código da Receita *</label>
                     <input type="text" id="codigoReceita" placeholder="Ex: REC-2026-001234" required>
@@ -671,14 +702,15 @@
             document.getElementById('installPrompt').classList.remove('show');
         }
 
-        // ===== Lógica do App =====
+        // ===== Configuração =====
         const intervalo = 10;
         const dosesPorCaixa = 3;
 
+        // ===== Funções Auxiliares =====
         function gerarDatasAplicacao() {
             const datas = [];
-            let dataAtual = new Date(2026, 1, 7, 12, 0, 0);      // 07/02/2026 12:00
-            const dataLimite = new Date(2026, 11, 31, 12, 0, 0); // 31/12/2026 12:00
+            let dataAtual = new Date(2026, 1, 7, 12, 0, 0);
+            const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
 
             while (dataAtual <= dataLimite) {
                 datas.push(new Date(dataAtual));
@@ -742,6 +774,173 @@
             return null;
         }
 
+        // ===== Funções de Receita =====
+        function abrirModalReceita(receitaCodigo = null) {
+            const modal = document.getElementById('modalReceita');
+            const titulo = document.getElementById('modalReceitaTitulo');
+            const idInput = document.getElementById('receitaEditandoId');
+
+            if (receitaCodigo) {
+                // Modo edição
+                titulo.textContent = '✏️ Editar Receita';
+                idInput.value = receitaCodigo;
+
+                const receitas = carregarReceitas();
+                const receita = receitas.find(r => r.codigo === receitaCodigo);
+
+                if (receita) {
+                    document.getElementById('codigoReceita').value = receita.codigo;
+
+                    // Converter data BR para formato ISO (YYYY-MM-DD)
+                    const [dia, mes, ano] = receita.dataEmissao.split('/');
+                    document.getElementById('dataEmissao').value = `${ano}-${mes}-${dia}`;
+
+                    if (receita.dataValidade) {
+                        const [diaV, mesV, anoV] = receita.dataValidade.split('/');
+                        document.getElementById('dataValidade').value = `${anoV}-${mesV}-${diaV}`;
+                    } else {
+                        document.getElementById('dataValidade').value = '';
+                    }
+
+                    document.getElementById('observacoes').value = receita.observacoes || '';
+                }
+            } else {
+                // Modo cadastro
+                titulo.textContent = '📝 Cadastrar Nova Receita';
+                idInput.value = '';
+                document.getElementById('codigoReceita').value = '';
+                document.getElementById('dataEmissao').value = '';
+                document.getElementById('dataValidade').value = '';
+                document.getElementById('observacoes').value = '';
+            }
+
+            modal.style.display = 'block';
+        }
+
+        function fecharModalReceita() {
+            document.getElementById('modalReceita').style.display = 'none';
+        }
+
+        function salvarReceita() {
+            const codigo = document.getElementById('codigoReceita').value.trim();
+            const dataEmissao = document.getElementById('dataEmissao').value;
+            const dataValidade = document.getElementById('dataValidade').value;
+            const observacoes = document.getElementById('observacoes').value.trim();
+            const editandoId = document.getElementById('receitaEditandoId').value;
+
+            if (!codigo || !dataEmissao) {
+                alert('Por favor, preencha os campos obrigatórios (Código e Data de Emissão).');
+                return;
+            }
+
+            const receitas = carregarReceitas();
+
+            if (editandoId) {
+                // Modo edição
+                const index = receitas.findIndex(r => r.codigo === editandoId);
+
+                if (index !== -1) {
+                    // Verificar se mudou o código e se o novo já existe
+                    if (codigo !== editandoId && receitas.some(r => r.codigo === codigo)) {
+                        alert('Já existe uma receita cadastrada com este código.');
+                        return;
+                    }
+
+                    // Atualizar aplicações que usavam o código antigo
+                    if (codigo !== editandoId) {
+                        const dados = carregarDados();
+                        Object.keys(dados).forEach(data => {
+                            if (dados[data].receita === editandoId) {
+                                dados[data].receita = codigo;
+                            }
+                        });
+                        salvarDados(dados);
+                    }
+
+                    // Atualizar receita
+                    receitas[index] = {
+                        codigo: codigo,
+                        dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
+                        dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
+                        observacoes: observacoes || null,
+                        dataCadastro: receitas[index].dataCadastro
+                    };
+
+                    salvarReceitas(receitas);
+                    fecharModalReceita();
+                    renderizarTabela();
+                    alert('✅ Receita atualizada com sucesso!');
+                }
+            } else {
+                // Modo cadastro
+                if (receitas.some(r => r.codigo === codigo)) {
+                    alert('Já existe uma receita cadastrada com este código.');
+                    return;
+                }
+
+                const novaReceita = {
+                    codigo: codigo,
+                    dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
+                    dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
+                    observacoes: observacoes || null,
+                    dataCadastro: new Date().toISOString()
+                };
+
+                receitas.push(novaReceita);
+                salvarReceitas(receitas);
+
+                fecharModalReceita();
+                renderizarTabela();
+
+                alert('✅ Receita cadastrada com sucesso!');
+            }
+        }
+
+        function excluirReceita(codigoReceita) {
+            if (!confirm(`Tem certeza que deseja excluir a receita ${codigoReceita}?\n\nAs aplicações vinculadas a ela serão desvinculadas.`)) {
+                return;
+            }
+
+            const receitas = carregarReceitas();
+            const novasReceitas = receitas.filter(r => r.codigo !== codigoReceita);
+
+            // Desvincular aplicações
+            const dados = carregarDados();
+            Object.keys(dados).forEach(data => {
+                if (dados[data].receita === codigoReceita) {
+                    dados[data].receita = null;
+                }
+            });
+
+            salvarDados(dados);
+            salvarReceitas(novasReceitas);
+            renderizarTabela();
+
+            alert('✅ Receita excluída com sucesso!');
+        }
+
+        function podeEditarOuExcluir(receita, receitas) {
+            // Só pode editar/excluir a última receita cadastrada
+            const ultimaReceita = receitas[receitas.length - 1];
+            if (receita.codigo !== ultimaReceita.codigo) {
+                return false;
+            }
+
+            // Verificar se já tem doses utilizadas
+            const dados = carregarDados();
+            let dosesUsadas = 0;
+
+            Object.values(dados).forEach(registro => {
+                if (registro.aplicacao === 'Sim' && registro.receita === receita.codigo) {
+                    dosesUsadas++;
+                }
+            });
+
+            // Só pode editar/excluir se não tiver esgotado as 3 doses
+            return dosesUsadas < dosesPorCaixa;
+        }
+
+        // ===== Estatísticas e Renderização =====
         function atualizarEstatisticas() {
             const dados = carregarDados();
             const receitas = carregarReceitas();
@@ -801,8 +1000,22 @@
                 const status = dosesUsadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
                 const statusClass = dosesUsadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
 
+                const podeEditar = podeEditarOuExcluir(receita, receitas);
+
+                const botoesAcao = podeEditar ? `
+                    <div class="receita-actions">
+                        <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${receita.codigo}')" title="Editar receita">
+                            ✏️
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="excluirReceita('${receita.codigo}')" title="Excluir receita">
+                            🗑️
+                        </button>
+                    </div>
+                ` : '';
+
                 return `
                     <div class="receita-item">
+                        ${botoesAcao}
                         <h4>
                             ${receita.codigo}
                             <span class="receita-badge ${statusClass}">${status}</span>
@@ -912,53 +1125,6 @@
 
             localStorage.removeItem('medicacaoControle');
             renderizarTabela();
-        }
-
-        function abrirModalReceita() {
-            document.getElementById('modalReceita').style.display = 'block';
-            document.getElementById('codigoReceita').value = '';
-            document.getElementById('dataEmissao').value = '';
-            document.getElementById('dataValidade').value = '';
-            document.getElementById('observacoes').value = '';
-        }
-
-        function fecharModalReceita() {
-            document.getElementById('modalReceita').style.display = 'none';
-        }
-
-        function salvarReceita() {
-            const codigo = document.getElementById('codigoReceita').value.trim();
-            const dataEmissao = document.getElementById('dataEmissao').value;
-            const dataValidade = document.getElementById('dataValidade').value;
-            const observacoes = document.getElementById('observacoes').value.trim();
-
-            if (!codigo || !dataEmissao) {
-                alert('Por favor, preencha os campos obrigatórios (Código e Data de Emissão).');
-                return;
-            }
-
-            const receitas = carregarReceitas();
-
-            if (receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe uma receita cadastrada com este código.');
-                return;
-            }
-
-            const novaReceita = {
-                codigo: codigo,
-                dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
-                dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
-                observacoes: observacoes || null,
-                dataCadastro: new Date().toISOString()
-            };
-
-            receitas.push(novaReceita);
-            salvarReceitas(receitas);
-
-            fecharModalReceita();
-            renderizarTabela();
-
-            alert('✅ Receita cadastrada com sucesso!');
         }
 
         window.onclick = function(event) {
