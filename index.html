@@ -106,6 +106,8 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .loading-overlay.show {
@@ -119,6 +121,11 @@
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
         }
 
         @keyframes spin {
@@ -581,6 +588,7 @@
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
+        <div class="loading-text">Conectando ao Firebase...</div>
     </div>
 
     <!-- Prompt de Instalação -->
@@ -723,26 +731,25 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-  // Import the functions you need from the SDKs you need
-  	import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
-    authDomain: "controle-medicacao-99cb5.firebaseapp.com",
-    projectId: "controle-medicacao-99cb5",
-    storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
-    messagingSenderId: "268683516299",
-    appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
-  };
+        // ===== CONFIGURAÇÃO DO FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
+            authDomain: "controle-medicacao-99cb5.firebaseapp.com",
+            projectId: "controle-medicacao-99cb5",
+            storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
+            messagingSenderId: "268683516299",
+            appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
+        };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-    </script>
-	
-    
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
         // Habilitar persistência offline
         enableIndexedDbPersistence(db).catch((err) => {
             if (err.code == 'failed-precondition') {
@@ -798,7 +805,7 @@
             } else {
                 signInAnonymously(auth).catch((error) => {
                     console.error('Erro na autenticação:', error);
-                    alert('Erro ao conectar. Verifique sua conexão e recarregue a página.');
+                    alert('Erro ao conectar ao Firebase. Detalhes: ' + error.message);
                     mostrarLoading(false);
                 });
             }
@@ -1467,5 +1474,8 @@
                 }
             });
 
-            doc.save(`Controle_Medicacao_${formatarData(new Date()).replace(/\//g, '-')}.pdf
-
+            doc.save(`Controle_Medicacao_${formatarData(new Date()).replace(/\//g, '-')}.pdf`);
+        }
+    </script>
+</body>
+</html>
