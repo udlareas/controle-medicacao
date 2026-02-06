@@ -145,7 +145,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Tela de Login/Registro */
         .auth-screen {
             position: fixed;
             inset: 0;
@@ -685,7 +684,6 @@
     </style>
 </head>
 <body>
-    <!-- Tela de Autenticação -->
     <div id="authScreen" class="auth-screen show">
         <div class="auth-box">
             <h2>🔐 Controle de Medicação</h2>
@@ -696,7 +694,6 @@
                 <button class="auth-tab" onclick="trocarAba('registro')">Criar Conta</button>
             </div>
 
-            <!-- Formulário de Login -->
             <form id="formLogin" class="auth-form active" onsubmit="fazerLogin(event)">
                 <div class="form-group">
                     <label for="loginEmail">E-mail</label>
@@ -709,7 +706,6 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
             </form>
 
-            <!-- Formulário de Registro -->
             <form id="formRegistro" class="auth-form" onsubmit="fazerRegistro(event)">
                 <div class="form-group">
                     <label for="registroEmail">E-mail</label>
@@ -730,13 +726,11 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Conectando...</div>
     </div>
 
-    <!-- Prompt de Instalação -->
     <div id="installPrompt" class="install-prompt">
         <span>📱 Instalar este app na tela inicial?</span>
         <div>
@@ -834,14 +828,12 @@
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
-                        <!-- Preenchido via JavaScript -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Cadastro/Edição de Receita -->
     <div id="modalReceita" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -878,13 +870,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // ===== CONFIGURAÇÃO DO FIREBASE =====
         const firebaseConfig = {
             apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
             authDomain: "controle-medicacao-99cb5.firebaseapp.com",
@@ -894,34 +884,36 @@
             appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Habilitar persistência offline
         enableIndexedDbPersistence(db).catch((err) => {
             if (err.code == 'failed-precondition') {
-                console.warn('Persistência offline não disponível (múltiplas abas abertas)');
+                console.warn('Persistência offline não disponível');
             } else if (err.code == 'unimplemented') {
-                console.warn('Persistência offline não suportada neste navegador');
+                console.warn('Persistência offline não suportada');
             }
         });
 
-        // Variável global para armazenar o userId
         window.currentUserId = null;
         window.db = db;
         window.auth = auth;
 
-        // ===== FUNÇÕES DE AUTENTICAÇÃO =====
-        function mostrarLoading(show) {
-            document.getElementById('loadingOverlay').classList.toggle('show', show);
+        function mostrarLoading(show, texto = 'Conectando...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const textoEl = document.querySelector('.loading-text');
+
+            if (textoEl) textoEl.textContent = texto;
+            overlay.classList.toggle('show', show);
         }
 
         function atualizarStatusSync(status) {
             const statusEl = document.getElementById('syncStatus');
             const iconEl = document.getElementById('syncIcon');
             const textEl = document.getElementById('syncText');
+
+            if (!statusEl || !iconEl || !textEl) return;
 
             statusEl.className = 'sync-status ' + status;
 
@@ -959,11 +951,10 @@
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginSenha').value;
 
-            mostrarLoading(true);
+            mostrarLoading(true, 'Fazendo login...');
 
             try {
                 await signInWithEmailAndPassword(auth, email, senha);
-                // O onAuthStateChanged vai cuidar do resto
             } catch (error) {
                 mostrarLoading(false);
                 let mensagem = 'Erro ao fazer login: ';
@@ -998,12 +989,11 @@
                 return;
             }
 
-            mostrarLoading(true);
+            mostrarLoading(true, 'Criando conta...');
 
             try {
                 await createUserWithEmailAndPassword(auth, email, senha);
                 alert('✅ Conta criada com sucesso! Você já está logado.');
-                // O onAuthStateChanged vai cuidar do resto
             } catch (error) {
                 mostrarLoading(false);
                 let mensagem = 'Erro ao criar conta: ';
@@ -1036,26 +1026,44 @@
             }
         };
 
-        // Monitorar estado de autenticação
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                window.currentUserId = user.uid;
-                document.getElementById('userEmail').textContent = user.email;
-                document.getElementById('authScreen').classList.remove('show');
-                atualizarStatusSync('online');
-                inicializarApp();
-                mostrarLoading(false);
+                try {
+                    mostrarLoading(true, 'Carregando dados...');
+
+                    window.currentUserId = user.uid;
+
+                    const emailEl = document.getElementById('userEmail');
+                    if (emailEl) emailEl.textContent = user.email;
+
+                    document.getElementById('authScreen').classList.remove('show');
+                    atualizarStatusSync('online');
+
+                    await inicializarApp();
+
+                    mostrarLoading(false);
+                } catch (error) {
+                    console.error('Erro ao inicializar app:', error);
+                    mostrarLoading(false);
+
+                    let mensagem = 'Erro ao carregar dados: ';
+                    if (error.code === 'permission-denied') {
+                        mensagem += 'Permissão negada. Verifique as regras de segurança do Firestore.';
+                    } else {
+                        mensagem += error.message;
+                    }
+
+                    alert(mensagem + '\n\nTente recarregar a página.');
+                }
             } else {
                 document.getElementById('authScreen').classList.add('show');
                 mostrarLoading(false);
             }
         });
 
-        // Monitorar status de conexão
         window.addEventListener('online', () => atualizarStatusSync('online'));
         window.addEventListener('offline', () => atualizarStatusSync('offline'));
 
-        // ===== FUNÇÕES GLOBAIS DO FIRESTORE =====
         window.carregarReceitas = async function() {
             if (!window.currentUserId) return [];
 
@@ -1065,6 +1073,9 @@
                 return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             } catch (error) {
                 console.error('Erro ao carregar receitas:', error);
+                if (error.code === 'permission-denied') {
+                    throw new Error('Permissão negada ao acessar receitas.');
+                }
                 return [];
             }
         };
@@ -1108,6 +1119,9 @@
                 return snapshot.exists() ? snapshot.data() : {};
             } catch (error) {
                 console.error('Erro ao carregar aplicações:', error);
+                if (error.code === 'permission-denied') {
+                    throw new Error('Permissão negada ao acessar aplicações.');
+                }
                 return {};
             }
         };
@@ -1127,46 +1141,59 @@
             }
         };
 
-        // Sincronização em tempo real
         window.iniciarSincronizacao = function() {
             if (!window.currentUserId) return;
 
-            // Monitorar receitas
-            const receitasRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
-            onSnapshot(receitasRef, (snapshot) => {
-                console.log('Receitas atualizadas em tempo real');
-                renderizarTabela();
-            });
+            try {
+                const receitasRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
+                onSnapshot(receitasRef, 
+                    (snapshot) => {
+                        console.log('Receitas atualizadas');
+                        renderizarTabela().catch(err => console.error('Erro:', err));
+                    },
+                    (error) => {
+                        console.error('Erro no snapshot de receitas:', error);
+                    }
+                );
 
-            // Monitorar aplicações
-            const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
-            onSnapshot(aplicacoesRef, (snapshot) => {
-                console.log('Aplicações atualizadas em tempo real');
-                renderizarTabela();
-            });
+                const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
+                onSnapshot(aplicacoesRef, 
+                    (snapshot) => {
+                        console.log('Aplicações atualizadas');
+                        renderizarTabela().catch(err => console.error('Erro:', err));
+                    },
+                    (error) => {
+                        console.error('Erro no snapshot de aplicações:', error);
+                    }
+                );
+            } catch (error) {
+                console.error('Erro ao iniciar sincronização:', error);
+            }
         };
 
-        function inicializarApp() {
-            window.iniciarSincronizacao();
-            renderizarTabela();
+        async function inicializarApp() {
+            try {
+                window.iniciarSincronizacao();
+                await renderizarTabela();
+            } catch (error) {
+                console.error('Erro ao inicializar app:', error);
+                throw error;
+            }
         }
     </script>
 
-    <!-- Bibliotecas para PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <script>
-        // ===== PWA - Service Worker Registration =====
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(reg => console.log('Service Worker registrado'))
-                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+                    .catch(err => console.log('Erro:', err));
             });
         }
 
-        // ===== PWA - Install Prompt =====
         let deferredPrompt;
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -1189,11 +1216,9 @@
             document.getElementById('installPrompt').classList.remove('show');
         }
 
-        // ===== Configuração =====
         const intervalo = 10;
         const dosesPorCaixa = 3;
 
-        // ===== Funções Auxiliares =====
         function gerarDatasAplicacao() {
             const datas = [];
             let dataAtual = new Date(2026, 1, 7, 12, 0, 0);
@@ -1243,7 +1268,6 @@
             return null;
         }
 
-        // ===== Funções de Receita =====
         function abrirModalReceita(receitaCodigo = null) {
             const modal = document.getElementById('modalReceita');
             const titulo = document.getElementById('modalReceitaTitulo');
@@ -1296,7 +1320,7 @@
             const editandoId = document.getElementById('receitaEditandoId').value;
 
             if (!codigo || !dataEmissao) {
-                alert('Por favor, preencha os campos obrigatórios (Código e Data de Emissão).');
+                alert('Por favor, preencha os campos obrigatórios.');
                 return;
             }
 
@@ -1304,7 +1328,7 @@
 
             if (editandoId) {
                 if (codigo !== editandoId && receitas.some(r => r.codigo === codigo)) {
-                    alert('Já existe uma receita cadastrada com este código.');
+                    alert('Já existe uma receita com este código.');
                     return;
                 }
 
@@ -1316,7 +1340,6 @@
                         }
                     });
                     await salvarAplicacoesFirebase(aplicacoes);
-
                     await excluirReceitaFirebase(editandoId);
                 }
 
@@ -1330,10 +1353,10 @@
 
                 await salvarReceitaFirebase(receitaAtualizada);
                 fecharModalReceita();
-                alert('✅ Receita atualizada com sucesso!');
+                alert('✅ Receita atualizada!');
             } else {
                 if (receitas.some(r => r.codigo === codigo)) {
-                    alert('Já existe uma receita cadastrada com este código.');
+                    alert('Já existe uma receita com este código.');
                     return;
                 }
 
@@ -1347,14 +1370,12 @@
 
                 await salvarReceitaFirebase(novaReceita);
                 fecharModalReceita();
-                alert('✅ Receita cadastrada com sucesso!');
+                alert('✅ Receita cadastrada!');
             }
         }
 
         async function excluirReceita(codigoReceita) {
-            if (!confirm(`Tem certeza que deseja excluir a receita ${codigoReceita}?\n\nAs aplicações vinculadas a ela serão desvinculadas.`)) {
-                return;
-            }
+            if (!confirm(`Excluir receita ${codigoReceita}?`)) return;
 
             const aplicacoes = await carregarAplicacoes();
             Object.keys(aplicacoes).forEach(data => {
@@ -1365,15 +1386,12 @@
 
             await salvarAplicacoesFirebase(aplicacoes);
             await excluirReceitaFirebase(codigoReceita);
-
-            alert('✅ Receita excluída com sucesso!');
+            alert('✅ Receita excluída!');
         }
 
         async function podeEditarOuExcluir(receita, receitas) {
             const ultimaReceita = receitas[receitas.length - 1];
-            if (receita.codigo !== ultimaReceita.codigo) {
-                return false;
-            }
+            if (receita.codigo !== ultimaReceita.codigo) return false;
 
             const aplicacoes = await carregarAplicacoes();
             let dosesUsadas = 0;
@@ -1387,7 +1405,6 @@
             return dosesUsadas < dosesPorCaixa;
         }
 
-        // ===== Estatísticas e Renderização =====
         async function atualizarEstatisticas() {
             const aplicacoes = await carregarAplicacoes();
             const receitas = await carregarReceitas();
@@ -1452,22 +1469,15 @@
 
                 const botoesAcao = podeEditar ? `
                     <div class="receita-actions">
-                        <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${receita.codigo}')" title="Editar receita">
-                            ✏️
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="excluirReceita('${receita.codigo}')" title="Excluir receita">
-                            🗑️
-                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${receita.codigo}')">✏️</button>
+                        <button class="btn btn-danger btn-sm" onclick="excluirReceita('${receita.codigo}')">🗑️</button>
                     </div>
                 ` : '';
 
                 itensHTML.push(`
                     <div class="receita-item">
                         ${botoesAcao}
-                        <h4>
-                            ${receita.codigo}
-                            <span class="receita-badge ${statusClass}">${status}</span>
-                        </h4>
+                        <h4>${receita.codigo} <span class="receita-badge ${statusClass}">${status}</span></h4>
                         <p><strong>Emissão:</strong> ${receita.dataEmissao}</p>
                         ${receita.dataValidade ? `<p><strong>Validade:</strong> ${receita.dataValidade}</p>` : ''}
                         ${receita.observacoes ? `<p><strong>Obs:</strong> ${receita.observacoes}</p>` : ''}
@@ -1493,4 +1503,117 @@
                 const tr = document.createElement('tr');
 
                 const registro = aplicacoes[dataStr] || { aplicacao: '', receita: null };
+                const classeSelect = registro.aplicacao === 'Sim' ? 'aplicado-sim' : 
+                                    registro.aplicacao === 'Não' ? 'aplicado-nao' : '';
+
+                const receitaInfo = registro.receita ? 
+                    `<small style="color: #667eea;">Receita: ${registro.receita}</small>` : 
+                    '<small style="color: #999;">Nenhuma receita</small>';
+
+                tr.innerHTML = `
+                    <td><strong>${index + 1}</strong></td>
+                    <td>${dataStr}</td>
+                    <td>${obterDiaSemana(data)}</td>
+                    <td>
+                        <select class="${classeSelect}" onchange="atualizarAplicacao('${dataStr}', this.value, this)">
+                            <option value="">-- Selecione --</option>
+                            <option value="Sim" ${registro.aplicacao === 'Sim' ? 'selected' : ''}>Sim</option>
+                            <option value="Não" ${registro.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
+                        </select>
+                    </td>
+                    <td>${receitaInfo}</td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            await atualizarEstatisticas();
+        }
+
+        async function atualizarAplicacao(data, valor, selectElement) {
+            const aplicacoes = await carregarAplicacoes();
+
+            if (valor === '') {
+                delete aplicacoes[data];
+                selectElement.className = '';
+            } else {
+                const receitaAtribuida = valor === 'Sim' ? await atribuirReceita(data) : null;
+
+                if (valor === 'Sim' && !receitaAtribuida) {
+                    alert('⚠️ Não há receitas disponíveis. Cadastre uma nova.');
+                }
+
+                aplicacoes[data] = {
+                    aplicacao: valor,
+                    receita: receitaAtribuida
+                };
+                selectElement.className = valor === 'Sim' ? 'aplicado-sim' : 'aplicado-nao';
+            }
+
+            await salvarAplicacoesFirebase(aplicacoes);
+        }
+
+        async function marcarTodasSim() {
+            if (!confirm('Marcar todas como aplicadas?')) return;
+
+            const datas = gerarDatasAplicacao();
+            const aplicacoes = {};
+
+            let receitaSuficiente = true;
+            for (let i = 0; i < datas.length; i++) {
+                const dataStr = formatarData(datas[i]);
+                const receitaAtribuida = await atribuirReceita(dataStr);
+
+                if (!receitaAtribuida && receitaSuficiente) {
+                    receitaSuficiente = false;
+                    alert(`⚠️ Receitas insuficientes a partir da aplicação #${i + 1}.`);
+                }
+
+                aplicacoes[dataStr] = {
+                    aplicacao: 'Sim',
+                    receita: receitaAtribuida
+                };
+            }
+
+            await salvarAplicacoesFirebase(aplicacoes);
+        }
+
+        async function limparTodas() {
+            if (!confirm('Limpar todos os registros?')) return;
+            await salvarAplicacoesFirebase({});
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalReceita');
+            if (event.target == modal) {
+                fecharModalReceita();
+            }
+        }
+
+        async function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Relatório de Controle de Medicação', 14, 20);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Cipionato de Testosterona', 14, 28);
+
+            doc.setFontSize(10);
+            doc.text(`Período: 07/02/2026 a 31/12/2026`, 14, 36);
+            doc.text(`Intervalo: Aplicação a cada 10 dias`, 14, 42);
+            doc.text(`Data: ${formatarData(new Date())}`, 14, 48);
+
+            const aplicacoes = await carregarAplicacoes();
+            const receitas = await carregarReceitas();
+            const datas = gerarDatasAplicacao();
+            const aplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Sim').length;
+            const naoAplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Não').length;
+            const taxa = datas.length > 0 ? Math.round((aplicadas / datas.length) * 100) : 0;
+
+            doc.setFontSize(11);
+            doc.setTextColor(102, 126, 234
 
