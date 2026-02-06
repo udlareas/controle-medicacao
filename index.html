@@ -723,26 +723,26 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  // Import the functions you need from the SDKs you need
+  	import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-        // ===== CONFIGURAÇÃO DO FIREBASE =====
-        // SUBSTITUA pelos valores do seu projeto Firebase
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",
-            authDomain: "SEU_PROJECT_ID.firebaseapp.com",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "SEU_PROJECT_ID.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
+    authDomain: "controle-medicacao-99cb5.firebaseapp.com",
+    projectId: "controle-medicacao-99cb5",
+    storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
+    messagingSenderId: "268683516299",
+    appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
+  };
 
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+    </script>
+	
+    
         // Habilitar persistência offline
         enableIndexedDbPersistence(db).catch((err) => {
             if (err.code == 'failed-precondition') {
