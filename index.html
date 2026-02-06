@@ -873,22 +873,39 @@
             const recs = await carregarReceitas();
             const datas = gerarDatasAplicacao();
             const total = datas.length;
-            const aplicadas = Object.values(apl).filter(x=>x.aplicacao==='Sim').length;
-            const nao = Object.values(apl).filter(x=>x.aplicacao==='Não').length;
-            const taxa = total?Math.round(aplicadas/total*100):0;
+
+            const aplicadas = Object.values(apl).filter(x => 
+                x.aplicacao === 'Sim' && x.receita !== null && x.receita !== undefined
+            ).length;
+
+            const nao = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
+            const taxa = total ? Math.round(aplicadas / total * 100) : 0;
 
             document.getElementById('totalAplicacoes').textContent = total;
             document.getElementById('totalAplicadas').textContent = aplicadas;
             document.getElementById('totalNaoAplicadas').textContent = nao;
-            document.getElementById('taxaAdesao').textContent = taxa+'%';
+            document.getElementById('taxaAdesao').textContent = taxa + '%';
 
             const totalRec = recs.length;
-            const disp = totalRec*dosesPorCaixa;
-            const nec = Math.ceil(total/dosesPorCaixa);
+
+            const dosesUtilizadasPorReceita = {};
+            recs.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
+
+            Object.values(apl).forEach(registro => {
+                if (registro.aplicacao === 'Sim' && registro.receita) {
+                    dosesUtilizadasPorReceita[registro.receita] = 
+                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
+                }
+            });
+
+            const dosesUtilizadas = Object.values(dosesUtilizadasPorReceita).reduce((a, b) => a + b, 0);
+            const dosesTotais = totalRec * dosesPorCaixa;
+            const dosesDisponiveis = Math.max(0, dosesTotais - dosesUtilizadas);
+            const nec = Math.ceil(total / dosesPorCaixa);
 
             document.getElementById('totalReceitas').textContent = totalRec;
-            document.getElementById('dosesDisponiveis').textContent = disp;
-            document.getElementById('dosesUtilizadas').textContent = aplicadas;
+            document.getElementById('dosesDisponiveis').textContent = dosesDisponiveis;
+            document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
             document.getElementById('receitasNecessarias').textContent = nec;
 
             await window.atualizarListaReceitas();
@@ -974,8 +991,9 @@
                     <td>${obterDiaSemana(d)}</td>
                     <td>
                         <select class="${cls}" 
-                                onchange="atualizarAplicacao('${dataStr}', this.value, this)"
-                                onclick="verificarReceitaDisponivel(this, ${temReceitaDisponivel})">
+                                data-data="${dataStr}"
+                                data-tem-receita="${temReceitaDisponivel}"
+                                onchange="atualizarAplicacao('${dataStr}', this.value, this)">
                             <option value="">-- Selecione --</option>
                             <option value="Sim" ${reg.aplicacao === 'Sim' ? 'selected' : ''} ${simDisabled ? 'disabled' : ''}>
                                 Sim${simDisabled ? ' (sem receita)' : ''}
@@ -992,35 +1010,37 @@
             await atualizarEstatisticas();
         };
 
-        window.verificarReceitaDisponivel = function(selectElement, temReceita) {
-            if (!temReceita) {
-                const valorAtual = selectElement.value;
-                if (valorAtual === '' || valorAtual === 'Não') {
-                    setTimeout(() => {
-                        if (selectElement.value === 'Sim') {
-                            alert('Não há receitas com doses restantes.');
-                            selectElement.value = valorAtual;
-                        }
-                    }, 100);
-                }
-            }
-        };
-
         window.atualizarAplicacao = async function(dataStr, valor, el) {
             const apl = await carregarAplicacoes();
+            const temReceita = el.getAttribute('data-tem-receita') === 'true';
+
             if (!valor) {
                 delete apl[dataStr];
-                el.className='';
-            } else {
-                const rec = valor==='Sim'?await atribuirReceita(dataStr):null;
-                if (valor==='Sim' && !rec) {
+                el.className = '';
+            } else if (valor === 'Sim') {
+                if (!temReceita) {
                     alert('Não há receitas com doses restantes.');
-                    el.value = '';
+                    el.value = apl[dataStr]?.aplicacao || '';
+                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
                     return;
                 }
-                apl[dataStr]={aplicacao:valor,receita:rec};
-                el.className = valor==='Sim'?'aplicado-sim':'aplicado-nao';
+
+                const rec = await atribuirReceita(dataStr);
+
+                if (!rec) {
+                    alert('Não há receitas com doses restantes.');
+                    el.value = apl[dataStr]?.aplicacao || '';
+                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
+                    return;
+                }
+
+                apl[dataStr] = {aplicacao: 'Sim', receita: rec};
+                el.className = 'aplicado-sim';
+            } else {
+                apl[dataStr] = {aplicacao: 'Não', receita: null};
+                el.className = 'aplicado-nao';
             }
+
             await salvarAplicacoesFirebase(apl);
         };
 
@@ -1088,7 +1108,7 @@
             const apl = await carregarAplicacoes();
             const recs = await carregarReceitas();
             const datas = gerarDatasAplicacao();
-            const aplicadas = Object.values(apl).filter(v=>v.aplicacao==='Sim').length;
+            const aplicadas = Object.values(apl).filter(v=>v.aplicacao==='Sim' && v.receita).length;
             const nao = Object.values(apl).filter(v=>v.aplicacao==='Não').length;
             const taxa = datas.length?Math.round(aplicadas/datas.length*100):0;
 
