@@ -56,6 +56,19 @@
             opacity: 0.9;
         }
 
+        .user-info {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .sync-status {
             position: absolute;
             top: 15px;
@@ -130,6 +143,76 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Tela de Login/Registro */
+        .auth-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .auth-screen.show {
+            display: flex;
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .auth-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .auth-box p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
         }
 
         .content {
@@ -248,6 +331,19 @@
         .btn-sm {
             padding: 6px 12px;
             font-size: 12px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .table-container {
@@ -526,7 +622,7 @@
                 background: white;
                 padding: 0;
             }
-            .controls, .modal, .install-prompt, .sync-status {
+            .controls, .modal, .install-prompt, .sync-status, .user-info {
                 display: none !important;
             }
             .container {
@@ -547,9 +643,9 @@
                 font-size: 22px;
             }
 
-            .sync-status {
+            .user-info, .sync-status {
                 position: static;
-                margin-top: 10px;
+                margin: 10px auto 0;
                 justify-content: center;
             }
 
@@ -581,14 +677,63 @@
                 margin-top: 10px;
                 justify-content: flex-start;
             }
+
+            .auth-box {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Tela de Autenticação -->
+    <div id="authScreen" class="auth-screen show">
+        <div class="auth-box">
+            <h2>🔐 Controle de Medicação</h2>
+            <p>Faça login ou crie sua conta para sincronizar seus dados</p>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="trocarAba('login')">Login</button>
+                <button class="auth-tab" onclick="trocarAba('registro')">Criar Conta</button>
+            </div>
+
+            <!-- Formulário de Login -->
+            <form id="formLogin" class="auth-form active" onsubmit="fazerLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginSenha">Senha</label>
+                    <input type="password" id="loginSenha" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+            </form>
+
+            <!-- Formulário de Registro -->
+            <form id="formRegistro" class="auth-form" onsubmit="fazerRegistro(event)">
+                <div class="form-group">
+                    <label for="registroEmail">E-mail</label>
+                    <input type="email" id="registroEmail" required>
+                    <small>Use um e-mail válido para recuperação de senha</small>
+                </div>
+                <div class="form-group">
+                    <label for="registroSenha">Senha</label>
+                    <input type="password" id="registroSenha" minlength="6" required>
+                    <small>Mínimo 6 caracteres</small>
+                </div>
+                <div class="form-group">
+                    <label for="registroConfirmaSenha">Confirme a Senha</label>
+                    <input type="password" id="registroConfirmaSenha" minlength="6" required>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Criar Conta</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
-        <div class="loading-text">Conectando ao Firebase...</div>
+        <div class="loading-text">Conectando...</div>
     </div>
 
     <!-- Prompt de Instalação -->
@@ -602,6 +747,10 @@
 
     <div class="container">
         <div class="header">
+            <div id="userInfo" class="user-info">
+                <span id="userEmail">usuário@email.com</span>
+                <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+            </div>
             <div id="syncStatus" class="sync-status offline">
                 <span id="syncIcon">⚫</span>
                 <span id="syncText">Offline</span>
@@ -732,7 +881,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // ===== CONFIGURAÇÃO DO FIREBASE =====
@@ -764,7 +913,7 @@
         window.db = db;
         window.auth = auth;
 
-        // ===== AUTENTICAÇÃO =====
+        // ===== FUNÇÕES DE AUTENTICAÇÃO =====
         function mostrarLoading(show) {
             document.getElementById('loadingOverlay').classList.toggle('show', show);
         }
@@ -792,22 +941,113 @@
             }
         }
 
-        // Autenticar anonimamente
-        mostrarLoading(true);
+        window.trocarAba = function(aba) {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
 
+            if (aba === 'login') {
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                document.getElementById('formLogin').classList.add('active');
+            } else {
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                document.getElementById('formRegistro').classList.add('active');
+            }
+        };
+
+        window.fazerLogin = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+
+            mostrarLoading(true);
+
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
+                // O onAuthStateChanged vai cuidar do resto
+            } catch (error) {
+                mostrarLoading(false);
+                let mensagem = 'Erro ao fazer login: ';
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        mensagem += 'E-mail inválido.';
+                        break;
+                    case 'auth/user-not-found':
+                        mensagem += 'Usuário não encontrado.';
+                        break;
+                    case 'auth/wrong-password':
+                        mensagem += 'Senha incorreta.';
+                        break;
+                    case 'auth/invalid-credential':
+                        mensagem += 'Credenciais inválidas. Verifique e-mail e senha.';
+                        break;
+                    default:
+                        mensagem += error.message;
+                }
+                alert(mensagem);
+            }
+        };
+
+        window.fazerRegistro = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('registroEmail').value;
+            const senha = document.getElementById('registroSenha').value;
+            const confirmaSenha = document.getElementById('registroConfirmaSenha').value;
+
+            if (senha !== confirmaSenha) {
+                alert('As senhas não conferem.');
+                return;
+            }
+
+            mostrarLoading(true);
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, senha);
+                alert('✅ Conta criada com sucesso! Você já está logado.');
+                // O onAuthStateChanged vai cuidar do resto
+            } catch (error) {
+                mostrarLoading(false);
+                let mensagem = 'Erro ao criar conta: ';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        mensagem += 'Este e-mail já está em uso.';
+                        break;
+                    case 'auth/invalid-email':
+                        mensagem += 'E-mail inválido.';
+                        break;
+                    case 'auth/weak-password':
+                        mensagem += 'Senha muito fraca. Use pelo menos 6 caracteres.';
+                        break;
+                    default:
+                        mensagem += error.message;
+                }
+                alert(mensagem);
+            }
+        };
+
+        window.fazerLogout = async function() {
+            if (!confirm('Deseja sair da sua conta?')) return;
+
+            try {
+                await signOut(auth);
+                document.getElementById('authScreen').classList.add('show');
+                window.currentUserId = null;
+            } catch (error) {
+                alert('Erro ao sair: ' + error.message);
+            }
+        };
+
+        // Monitorar estado de autenticação
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.currentUserId = user.uid;
-                console.log('Usuário autenticado:', user.uid);
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('authScreen').classList.remove('show');
                 atualizarStatusSync('online');
                 inicializarApp();
                 mostrarLoading(false);
             } else {
-                signInAnonymously(auth).catch((error) => {
-                    console.error('Erro na autenticação:', error);
-                    alert('Erro ao conectar ao Firebase. Detalhes: ' + error.message);
-                    mostrarLoading(false);
-                });
+                document.getElementById('authScreen').classList.add('show');
+                mostrarLoading(false);
             }
         });
 
@@ -815,7 +1055,7 @@
         window.addEventListener('online', () => atualizarStatusSync('online'));
         window.addEventListener('offline', () => atualizarStatusSync('offline'));
 
-        // ===== FUNÇÕES GLOBAIS =====
+        // ===== FUNÇÕES GLOBAIS DO FIRESTORE =====
         window.carregarReceitas = async function() {
             if (!window.currentUserId) return [];
 
@@ -1253,229 +1493,4 @@
                 const tr = document.createElement('tr');
 
                 const registro = aplicacoes[dataStr] || { aplicacao: '', receita: null };
-                const classeSelect = registro.aplicacao === 'Sim' ? 'aplicado-sim' : 
-                                    registro.aplicacao === 'Não' ? 'aplicado-nao' : '';
 
-                const receitaInfo = registro.receita ? 
-                    `<small style="color: #667eea;">Receita: ${registro.receita}</small>` : 
-                    '<small style="color: #999;">Nenhuma receita atribuída</small>';
-
-                tr.innerHTML = `
-                    <td><strong>${index + 1}</strong></td>
-                    <td>${dataStr}</td>
-                    <td>${obterDiaSemana(data)}</td>
-                    <td>
-                        <select class="${classeSelect}" onchange="atualizarAplicacao('${dataStr}', this.value, this)">
-                            <option value="">-- Selecione --</option>
-                            <option value="Sim" ${registro.aplicacao === 'Sim' ? 'selected' : ''}>Sim</option>
-                            <option value="Não" ${registro.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
-                        </select>
-                    </td>
-                    <td>${receitaInfo}</td>
-                `;
-
-                tbody.appendChild(tr);
-            });
-
-            await atualizarEstatisticas();
-        }
-
-        async function atualizarAplicacao(data, valor, selectElement) {
-            const aplicacoes = await carregarAplicacoes();
-
-            if (valor === '') {
-                delete aplicacoes[data];
-                selectElement.className = '';
-            } else {
-                const receitaAtribuida = valor === 'Sim' ? await atribuirReceita(data) : null;
-
-                if (valor === 'Sim' && !receitaAtribuida) {
-                    alert('⚠️ Atenção: Não há receitas disponíveis com doses restantes. Cadastre uma nova receita.');
-                }
-
-                aplicacoes[data] = {
-                    aplicacao: valor,
-                    receita: receitaAtribuida
-                };
-                selectElement.className = valor === 'Sim' ? 'aplicado-sim' : 'aplicado-nao';
-            }
-
-            await salvarAplicacoesFirebase(aplicacoes);
-        }
-
-        async function marcarTodasSim() {
-            if (!confirm('Deseja marcar todas as aplicações como realizadas?')) return;
-
-            const datas = gerarDatasAplicacao();
-            const aplicacoes = {};
-
-            let receitaSuficiente = true;
-            for (let i = 0; i < datas.length; i++) {
-                const dataStr = formatarData(datas[i]);
-                const receitaAtribuida = await atribuirReceita(dataStr);
-
-                if (!receitaAtribuida && receitaSuficiente) {
-                    receitaSuficiente = false;
-                    alert(`⚠️ Atenção: Receitas insuficientes a partir da aplicação #${i + 1}. Cadastre mais receitas.`);
-                }
-
-                aplicacoes[dataStr] = {
-                    aplicacao: 'Sim',
-                    receita: receitaAtribuida
-                };
-            }
-
-            await salvarAplicacoesFirebase(aplicacoes);
-        }
-
-        async function limparTodas() {
-            if (!confirm('Deseja limpar todos os registros de aplicação?')) return;
-
-            await salvarAplicacoesFirebase({});
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalReceita');
-            if (event.target == modal) {
-                fecharModalReceita();
-            }
-        }
-
-        async function exportarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(18);
-            doc.setTextColor(102, 126, 234);
-            doc.text('Relatório de Controle de Medicação', 14, 20);
-
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text('Cipionato de Testosterona', 14, 28);
-
-            doc.setFontSize(10);
-            doc.text(`Período: 07/02/2026 a 31/12/2026`, 14, 36);
-            doc.text(`Intervalo: Aplicação a cada 10 dias corridos`, 14, 42);
-            doc.text(`Data de Geração: ${formatarData(new Date())}`, 14, 48);
-
-            const aplicacoes = await carregarAplicacoes();
-            const receitas = await carregarReceitas();
-            const datas = gerarDatasAplicacao();
-            const aplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Sim').length;
-            const naoAplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Não').length;
-            const taxa = datas.length > 0 ? Math.round((aplicadas / datas.length) * 100) : 0;
-
-            doc.setFontSize(11);
-            doc.setTextColor(102, 126, 234);
-            doc.text('Estatísticas de Aplicação:', 14, 58);
-
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Total de Aplicações Previstas: ${datas.length}`, 14, 65);
-            doc.text(`Aplicações Realizadas: ${aplicadas}`, 14, 71);
-            doc.text(`Aplicações Não Realizadas: ${naoAplicadas}`, 14, 77);
-            doc.text(`Taxa de Adesão: ${taxa}%`, 14, 83);
-
-            doc.setFontSize(11);
-            doc.setTextColor(102, 126, 234);
-            doc.text('Controle de Receitas:', 14, 93);
-
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Receitas Cadastradas: ${receitas.length}`, 14, 100);
-            doc.text(`Doses Disponíveis: ${receitas.length * dosesPorCaixa}`, 14, 106);
-            doc.text(`Doses Utilizadas: ${aplicadas}`, 14, 112);
-            doc.text(`Receitas Necessárias: ${Math.ceil(datas.length / dosesPorCaixa)}`, 14, 118);
-
-            if (receitas.length > 0) {
-                const dosesUtilizadasPorReceita = {};
-                receitas.forEach(r => {
-                    dosesUtilizadasPorReceita[r.codigo] = 0;
-                });
-
-                Object.values(aplicacoes).forEach(registro => {
-                    if (registro.aplicacao === 'Sim' && registro.receita) {
-                        dosesUtilizadasPorReceita[registro.receita] = 
-                            (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
-                    }
-                });
-
-                const dadosReceitas = receitas.map(receita => {
-                    const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
-                    const status = dosesUsadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
-                    return [
-                        receita.codigo,
-                        receita.dataEmissao,
-                        `${dosesUsadas}/${dosesPorCaixa}`,
-                        status
-                    ];
-                });
-
-                doc.autoTable({
-                    startY: 128,
-                    head: [['Código da Receita', 'Emissão', 'Doses', 'Status']],
-                    body: dadosReceitas,
-                    theme: 'striped',
-                    headStyles: {
-                        fillColor: [102, 126, 234],
-                        textColor: 255,
-                        fontStyle: 'bold'
-                    },
-                    styles: {
-                        fontSize: 9,
-                        cellPadding: 3
-                    }
-                });
-            }
-
-            const dadosTabela = datas.map((data, index) => {
-                const dataStr = formatarData(data);
-                const registro = aplicacoes[dataStr] || { aplicacao: 'Não registrado', receita: null };
-                return [
-                    index + 1,
-                    dataStr,
-                    obterDiaSemana(data),
-                    registro.aplicacao || 'Não registrado',
-                    registro.receita || '-'
-                ];
-            });
-
-            doc.autoTable({
-                startY: receitas.length > 0 ? doc.lastAutoTable.finalY + 10 : 128,
-                head: [['#', 'Data', 'Dia da Semana', 'Aplicação', 'Receita']],
-                body: dadosTabela,
-                theme: 'striped',
-                headStyles: {
-                    fillColor: [102, 126, 234],
-                    textColor: 255,
-                    fontStyle: 'bold'
-                },
-                styles: {
-                    fontSize: 8,
-                    cellPadding: 2
-                },
-                columnStyles: {
-                    0: { cellWidth: 12 },
-                    1: { cellWidth: 25 },
-                    2: { cellWidth: 30 },
-                    3: { cellWidth: 25 },
-                    4: { cellWidth: 'auto' }
-                },
-                didParseCell: function(data) {
-                    if (data.section === 'body' && data.column.index === 3) {
-                        if (data.cell.raw === 'Sim') {
-                            data.cell.styles.textColor = [40, 167, 69];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (data.cell.raw === 'Não') {
-                            data.cell.styles.textColor = [220, 53, 69];
-                            data.cell.styles.fontStyle = 'bold';
-                        }
-                    }
-                }
-            });
-
-            doc.save(`Controle_Medicacao_${formatarData(new Date()).replace(/\//g, '-')}.pdf`);
-        }
-    </script>
-</body>
-</html>
