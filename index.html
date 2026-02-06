@@ -12,10 +12,7 @@
 
     <title>Controle de Medicação - Cipionato de Testosterona</title>
 
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-
-    <!-- Ícones para iOS -->
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <style>
@@ -59,6 +56,23 @@
             opacity: 0.9;
         }
 
+        .sync-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sync-status.online { background: rgba(40, 167, 69, 0.3); }
+        .sync-status.offline { background: rgba(220, 53, 69, 0.3); }
+        .sync-status.syncing { background: rgba(255, 193, 7, 0.3); }
+
         .install-prompt {
             background: #28a745;
             color: white;
@@ -82,6 +96,33 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .content {
@@ -478,7 +519,7 @@
                 background: white;
                 padding: 0;
             }
-            .controls, .modal, .install-prompt {
+            .controls, .modal, .install-prompt, .sync-status {
                 display: none !important;
             }
             .container {
@@ -497,6 +538,12 @@
 
             .header h1 {
                 font-size: 22px;
+            }
+
+            .sync-status {
+                position: static;
+                margin-top: 10px;
+                justify-content: center;
             }
 
             .controls {
@@ -531,6 +578,11 @@
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Prompt de Instalação -->
     <div id="installPrompt" class="install-prompt">
         <span>📱 Instalar este app na tela inicial?</span>
@@ -542,6 +594,10 @@
 
     <div class="container">
         <div class="header">
+            <div id="syncStatus" class="sync-status offline">
+                <span id="syncIcon">⚫</span>
+                <span id="syncText">Offline</span>
+            </div>
             <h1>📋 Controle de Medicação</h1>
             <p>Cipionato de Testosterona - Aplicação a cada 10 dias</p>
         </div>
@@ -665,6 +721,190 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // ===== CONFIGURAÇÃO DO FIREBASE =====
+        // SUBSTITUA pelos valores do seu projeto Firebase
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJECT_ID.firebaseapp.com",
+            projectId: "SEU_PROJECT_ID",
+            storageBucket: "SEU_PROJECT_ID.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Habilitar persistência offline
+        enableIndexedDbPersistence(db).catch((err) => {
+            if (err.code == 'failed-precondition') {
+                console.warn('Persistência offline não disponível (múltiplas abas abertas)');
+            } else if (err.code == 'unimplemented') {
+                console.warn('Persistência offline não suportada neste navegador');
+            }
+        });
+
+        // Variável global para armazenar o userId
+        window.currentUserId = null;
+        window.db = db;
+        window.auth = auth;
+
+        // ===== AUTENTICAÇÃO =====
+        function mostrarLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('show', show);
+        }
+
+        function atualizarStatusSync(status) {
+            const statusEl = document.getElementById('syncStatus');
+            const iconEl = document.getElementById('syncIcon');
+            const textEl = document.getElementById('syncText');
+
+            statusEl.className = 'sync-status ' + status;
+
+            switch(status) {
+                case 'online':
+                    iconEl.textContent = '🟢';
+                    textEl.textContent = 'Online';
+                    break;
+                case 'offline':
+                    iconEl.textContent = '⚫';
+                    textEl.textContent = 'Offline';
+                    break;
+                case 'syncing':
+                    iconEl.textContent = '🔄';
+                    textEl.textContent = 'Sincronizando...';
+                    break;
+            }
+        }
+
+        // Autenticar anonimamente
+        mostrarLoading(true);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.currentUserId = user.uid;
+                console.log('Usuário autenticado:', user.uid);
+                atualizarStatusSync('online');
+                inicializarApp();
+                mostrarLoading(false);
+            } else {
+                signInAnonymously(auth).catch((error) => {
+                    console.error('Erro na autenticação:', error);
+                    alert('Erro ao conectar. Verifique sua conexão e recarregue a página.');
+                    mostrarLoading(false);
+                });
+            }
+        });
+
+        // Monitorar status de conexão
+        window.addEventListener('online', () => atualizarStatusSync('online'));
+        window.addEventListener('offline', () => atualizarStatusSync('offline'));
+
+        // ===== FUNÇÕES GLOBAIS =====
+        window.carregarReceitas = async function() {
+            if (!window.currentUserId) return [];
+
+            try {
+                const receitasRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
+                const snapshot = await getDocs(receitasRef);
+                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            } catch (error) {
+                console.error('Erro ao carregar receitas:', error);
+                return [];
+            }
+        };
+
+        window.salvarReceitaFirebase = async function(receita) {
+            if (!window.currentUserId) return;
+
+            try {
+                atualizarStatusSync('syncing');
+                const receitaRef = doc(db, 'usuarios', window.currentUserId, 'receitas', receita.codigo);
+                await setDoc(receitaRef, receita);
+                atualizarStatusSync('online');
+            } catch (error) {
+                console.error('Erro ao salvar receita:', error);
+                atualizarStatusSync('offline');
+                throw error;
+            }
+        };
+
+        window.excluirReceitaFirebase = async function(codigoReceita) {
+            if (!window.currentUserId) return;
+
+            try {
+                atualizarStatusSync('syncing');
+                const receitaRef = doc(db, 'usuarios', window.currentUserId, 'receitas', codigoReceita);
+                await deleteDoc(receitaRef);
+                atualizarStatusSync('online');
+            } catch (error) {
+                console.error('Erro ao excluir receita:', error);
+                atualizarStatusSync('offline');
+                throw error;
+            }
+        };
+
+        window.carregarAplicacoes = async function() {
+            if (!window.currentUserId) return {};
+
+            try {
+                const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
+                const snapshot = await getDoc(aplicacoesRef);
+                return snapshot.exists() ? snapshot.data() : {};
+            } catch (error) {
+                console.error('Erro ao carregar aplicações:', error);
+                return {};
+            }
+        };
+
+        window.salvarAplicacoesFirebase = async function(aplicacoes) {
+            if (!window.currentUserId) return;
+
+            try {
+                atualizarStatusSync('syncing');
+                const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
+                await setDoc(aplicacoesRef, aplicacoes);
+                atualizarStatusSync('online');
+            } catch (error) {
+                console.error('Erro ao salvar aplicações:', error);
+                atualizarStatusSync('offline');
+                throw error;
+            }
+        };
+
+        // Sincronização em tempo real
+        window.iniciarSincronizacao = function() {
+            if (!window.currentUserId) return;
+
+            // Monitorar receitas
+            const receitasRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
+            onSnapshot(receitasRef, (snapshot) => {
+                console.log('Receitas atualizadas em tempo real');
+                renderizarTabela();
+            });
+
+            // Monitorar aplicações
+            const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
+            onSnapshot(aplicacoesRef, (snapshot) => {
+                console.log('Aplicações atualizadas em tempo real');
+                renderizarTabela();
+            });
+        };
+
+        function inicializarApp() {
+            window.iniciarSincronizacao();
+            renderizarTabela();
+        }
+    </script>
+
     <!-- Bibliotecas para PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -731,34 +971,16 @@
             return dias[data.getDay()];
         }
 
-        function carregarDados() {
-            const dados = localStorage.getItem('medicacaoControle');
-            return dados ? JSON.parse(dados) : {};
-        }
-
-        function salvarDados(dados) {
-            localStorage.setItem('medicacaoControle', JSON.stringify(dados));
-        }
-
-        function carregarReceitas() {
-            const receitas = localStorage.getItem('receitasMedicas');
-            return receitas ? JSON.parse(receitas) : [];
-        }
-
-        function salvarReceitas(receitas) {
-            localStorage.setItem('receitasMedicas', JSON.stringify(receitas));
-        }
-
-        function atribuirReceita(data) {
-            const receitas = carregarReceitas();
-            const dados = carregarDados();
+        async function atribuirReceita(data) {
+            const receitas = await carregarReceitas();
+            const aplicacoes = await carregarAplicacoes();
 
             const dosesUtilizadasPorReceita = {};
             receitas.forEach(r => {
                 dosesUtilizadasPorReceita[r.codigo] = 0;
             });
 
-            Object.values(dados).forEach(registro => {
+            Object.values(aplicacoes).forEach(registro => {
                 if (registro.aplicacao === 'Sim' && registro.receita) {
                     dosesUtilizadasPorReceita[registro.receita] = 
                         (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
@@ -781,31 +1003,29 @@
             const idInput = document.getElementById('receitaEditandoId');
 
             if (receitaCodigo) {
-                // Modo edição
                 titulo.textContent = '✏️ Editar Receita';
                 idInput.value = receitaCodigo;
 
-                const receitas = carregarReceitas();
-                const receita = receitas.find(r => r.codigo === receitaCodigo);
+                carregarReceitas().then(receitas => {
+                    const receita = receitas.find(r => r.codigo === receitaCodigo);
 
-                if (receita) {
-                    document.getElementById('codigoReceita').value = receita.codigo;
+                    if (receita) {
+                        document.getElementById('codigoReceita').value = receita.codigo;
 
-                    // Converter data BR para formato ISO (YYYY-MM-DD)
-                    const [dia, mes, ano] = receita.dataEmissao.split('/');
-                    document.getElementById('dataEmissao').value = `${ano}-${mes}-${dia}`;
+                        const [dia, mes, ano] = receita.dataEmissao.split('/');
+                        document.getElementById('dataEmissao').value = `${ano}-${mes}-${dia}`;
 
-                    if (receita.dataValidade) {
-                        const [diaV, mesV, anoV] = receita.dataValidade.split('/');
-                        document.getElementById('dataValidade').value = `${anoV}-${mesV}-${diaV}`;
-                    } else {
-                        document.getElementById('dataValidade').value = '';
+                        if (receita.dataValidade) {
+                            const [diaV, mesV, anoV] = receita.dataValidade.split('/');
+                            document.getElementById('dataValidade').value = `${anoV}-${mesV}-${diaV}`;
+                        } else {
+                            document.getElementById('dataValidade').value = '';
+                        }
+
+                        document.getElementById('observacoes').value = receita.observacoes || '';
                     }
-
-                    document.getElementById('observacoes').value = receita.observacoes || '';
-                }
+                });
             } else {
-                // Modo cadastro
                 titulo.textContent = '📝 Cadastrar Nova Receita';
                 idInput.value = '';
                 document.getElementById('codigoReceita').value = '';
@@ -821,7 +1041,7 @@
             document.getElementById('modalReceita').style.display = 'none';
         }
 
-        function salvarReceita() {
+        async function salvarReceita() {
             const codigo = document.getElementById('codigoReceita').value.trim();
             const dataEmissao = document.getElementById('dataEmissao').value;
             const dataValidade = document.getElementById('dataValidade').value;
@@ -833,46 +1053,38 @@
                 return;
             }
 
-            const receitas = carregarReceitas();
+            const receitas = await carregarReceitas();
 
             if (editandoId) {
-                // Modo edição
-                const index = receitas.findIndex(r => r.codigo === editandoId);
-
-                if (index !== -1) {
-                    // Verificar se mudou o código e se o novo já existe
-                    if (codigo !== editandoId && receitas.some(r => r.codigo === codigo)) {
-                        alert('Já existe uma receita cadastrada com este código.');
-                        return;
-                    }
-
-                    // Atualizar aplicações que usavam o código antigo
-                    if (codigo !== editandoId) {
-                        const dados = carregarDados();
-                        Object.keys(dados).forEach(data => {
-                            if (dados[data].receita === editandoId) {
-                                dados[data].receita = codigo;
-                            }
-                        });
-                        salvarDados(dados);
-                    }
-
-                    // Atualizar receita
-                    receitas[index] = {
-                        codigo: codigo,
-                        dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
-                        dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
-                        observacoes: observacoes || null,
-                        dataCadastro: receitas[index].dataCadastro
-                    };
-
-                    salvarReceitas(receitas);
-                    fecharModalReceita();
-                    renderizarTabela();
-                    alert('✅ Receita atualizada com sucesso!');
+                if (codigo !== editandoId && receitas.some(r => r.codigo === codigo)) {
+                    alert('Já existe uma receita cadastrada com este código.');
+                    return;
                 }
+
+                if (codigo !== editandoId) {
+                    const aplicacoes = await carregarAplicacoes();
+                    Object.keys(aplicacoes).forEach(data => {
+                        if (aplicacoes[data].receita === editandoId) {
+                            aplicacoes[data].receita = codigo;
+                        }
+                    });
+                    await salvarAplicacoesFirebase(aplicacoes);
+
+                    await excluirReceitaFirebase(editandoId);
+                }
+
+                const receitaAtualizada = {
+                    codigo: codigo,
+                    dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
+                    dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
+                    observacoes: observacoes || null,
+                    dataCadastro: receitas.find(r => r.codigo === editandoId)?.dataCadastro || new Date().toISOString()
+                };
+
+                await salvarReceitaFirebase(receitaAtualizada);
+                fecharModalReceita();
+                alert('✅ Receita atualizada com sucesso!');
             } else {
-                // Modo cadastro
                 if (receitas.some(r => r.codigo === codigo)) {
                     alert('Já existe uma receita cadastrada com este código.');
                     return;
@@ -886,69 +1098,57 @@
                     dataCadastro: new Date().toISOString()
                 };
 
-                receitas.push(novaReceita);
-                salvarReceitas(receitas);
-
+                await salvarReceitaFirebase(novaReceita);
                 fecharModalReceita();
-                renderizarTabela();
-
                 alert('✅ Receita cadastrada com sucesso!');
             }
         }
 
-        function excluirReceita(codigoReceita) {
+        async function excluirReceita(codigoReceita) {
             if (!confirm(`Tem certeza que deseja excluir a receita ${codigoReceita}?\n\nAs aplicações vinculadas a ela serão desvinculadas.`)) {
                 return;
             }
 
-            const receitas = carregarReceitas();
-            const novasReceitas = receitas.filter(r => r.codigo !== codigoReceita);
-
-            // Desvincular aplicações
-            const dados = carregarDados();
-            Object.keys(dados).forEach(data => {
-                if (dados[data].receita === codigoReceita) {
-                    dados[data].receita = null;
+            const aplicacoes = await carregarAplicacoes();
+            Object.keys(aplicacoes).forEach(data => {
+                if (aplicacoes[data].receita === codigoReceita) {
+                    aplicacoes[data].receita = null;
                 }
             });
 
-            salvarDados(dados);
-            salvarReceitas(novasReceitas);
-            renderizarTabela();
+            await salvarAplicacoesFirebase(aplicacoes);
+            await excluirReceitaFirebase(codigoReceita);
 
             alert('✅ Receita excluída com sucesso!');
         }
 
-        function podeEditarOuExcluir(receita, receitas) {
-            // Só pode editar/excluir a última receita cadastrada
+        async function podeEditarOuExcluir(receita, receitas) {
             const ultimaReceita = receitas[receitas.length - 1];
             if (receita.codigo !== ultimaReceita.codigo) {
                 return false;
             }
 
-            // Verificar se já tem doses utilizadas
-            const dados = carregarDados();
+            const aplicacoes = await carregarAplicacoes();
             let dosesUsadas = 0;
 
-            Object.values(dados).forEach(registro => {
+            Object.values(aplicacoes).forEach(registro => {
                 if (registro.aplicacao === 'Sim' && registro.receita === receita.codigo) {
                     dosesUsadas++;
                 }
             });
 
-            // Só pode editar/excluir se não tiver esgotado as 3 doses
             return dosesUsadas < dosesPorCaixa;
         }
 
         // ===== Estatísticas e Renderização =====
-        function atualizarEstatisticas() {
-            const dados = carregarDados();
-            const receitas = carregarReceitas();
+        async function atualizarEstatisticas() {
+            const aplicacoes = await carregarAplicacoes();
+            const receitas = await carregarReceitas();
             const datas = gerarDatasAplicacao();
 
             const total = datas.length;
-            const aplicadas = Object.values(dados).filter(v => v.aplicacao === 'Sim').length;
-            const naoAplicadas = Object.values(dados).filter(v => v.aplicacao === 'Não').length;
+            const aplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Sim').length;
+            const naoAplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Não').length;
             const taxa = total > 0 ? Math.round((aplicadas / total) * 100) : 0;
 
             document.getElementById('totalAplicacoes').textContent = total;
@@ -966,12 +1166,12 @@
             document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
             document.getElementById('receitasNecessarias').textContent = receitasNecessarias;
 
-            atualizarListaReceitas();
+            await atualizarListaReceitas();
         }
 
-        function atualizarListaReceitas() {
-            const receitas = carregarReceitas();
-            const dados = carregarDados();
+        async function atualizarListaReceitas() {
+            const receitas = await carregarReceitas();
+            const aplicacoes = await carregarAplicacoes();
             const container = document.getElementById('receitasContainer');
             const listaReceitas = document.getElementById('listaReceitas');
 
@@ -987,20 +1187,21 @@
                 dosesUtilizadasPorReceita[r.codigo] = 0;
             });
 
-            Object.values(dados).forEach(registro => {
+            Object.values(aplicacoes).forEach(registro => {
                 if (registro.aplicacao === 'Sim' && registro.receita) {
                     dosesUtilizadasPorReceita[registro.receita] = 
                         (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
                 }
             });
 
-            container.innerHTML = receitas.map(receita => {
+            const itensHTML = [];
+            for (const receita of receitas) {
                 const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
                 const percentual = (dosesUsadas / dosesPorCaixa) * 100;
                 const status = dosesUsadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
                 const statusClass = dosesUsadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
 
-                const podeEditar = podeEditarOuExcluir(receita, receitas);
+                const podeEditar = await podeEditarOuExcluir(receita, receitas);
 
                 const botoesAcao = podeEditar ? `
                     <div class="receita-actions">
@@ -1013,7 +1214,7 @@
                     </div>
                 ` : '';
 
-                return `
+                itensHTML.push(`
                     <div class="receita-item">
                         ${botoesAcao}
                         <h4>
@@ -1028,13 +1229,15 @@
                             <div class="progress-fill" style="width: ${percentual}%"></div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                `);
+            }
+
+            container.innerHTML = itensHTML.join('');
         }
 
-        function renderizarTabela() {
+        async function renderizarTabela() {
             const datas = gerarDatasAplicacao();
-            const dados = carregarDados();
+            const aplicacoes = await carregarAplicacoes();
             const tbody = document.getElementById('corpoTabela');
             tbody.innerHTML = '';
 
@@ -1042,7 +1245,7 @@
                 const dataStr = formatarData(data);
                 const tr = document.createElement('tr');
 
-                const registro = dados[dataStr] || { aplicacao: '', receita: null };
+                const registro = aplicacoes[dataStr] || { aplicacao: '', receita: null };
                 const classeSelect = registro.aplicacao === 'Sim' ? 'aplicado-sim' : 
                                     registro.aplicacao === 'Não' ? 'aplicado-nao' : '';
 
@@ -1067,64 +1270,61 @@
                 tbody.appendChild(tr);
             });
 
-            atualizarEstatisticas();
+            await atualizarEstatisticas();
         }
 
-        function atualizarAplicacao(data, valor, selectElement) {
-            const dados = carregarDados();
+        async function atualizarAplicacao(data, valor, selectElement) {
+            const aplicacoes = await carregarAplicacoes();
 
             if (valor === '') {
-                delete dados[data];
+                delete aplicacoes[data];
                 selectElement.className = '';
             } else {
-                const receitaAtribuida = valor === 'Sim' ? atribuirReceita(data) : null;
+                const receitaAtribuida = valor === 'Sim' ? await atribuirReceita(data) : null;
 
                 if (valor === 'Sim' && !receitaAtribuida) {
                     alert('⚠️ Atenção: Não há receitas disponíveis com doses restantes. Cadastre uma nova receita.');
                 }
 
-                dados[data] = {
+                aplicacoes[data] = {
                     aplicacao: valor,
                     receita: receitaAtribuida
                 };
                 selectElement.className = valor === 'Sim' ? 'aplicado-sim' : 'aplicado-nao';
             }
 
-            salvarDados(dados);
-            renderizarTabela();
+            await salvarAplicacoesFirebase(aplicacoes);
         }
 
-        function marcarTodasSim() {
+        async function marcarTodasSim() {
             if (!confirm('Deseja marcar todas as aplicações como realizadas?')) return;
 
             const datas = gerarDatasAplicacao();
-            const dados = {};
+            const aplicacoes = {};
 
             let receitaSuficiente = true;
-            datas.forEach((data, index) => {
-                const dataStr = formatarData(data);
-                const receitaAtribuida = atribuirReceita(dataStr);
+            for (let i = 0; i < datas.length; i++) {
+                const dataStr = formatarData(datas[i]);
+                const receitaAtribuida = await atribuirReceita(dataStr);
 
                 if (!receitaAtribuida && receitaSuficiente) {
                     receitaSuficiente = false;
-                    alert(`⚠️ Atenção: Receitas insuficientes a partir da aplicação #${index + 1}. Cadastre mais receitas.`);
+                    alert(`⚠️ Atenção: Receitas insuficientes a partir da aplicação #${i + 1}. Cadastre mais receitas.`);
                 }
 
-                dados[dataStr] = {
+                aplicacoes[dataStr] = {
                     aplicacao: 'Sim',
                     receita: receitaAtribuida
                 };
-            });
+            }
 
-            salvarDados(dados);
-            renderizarTabela();
+            await salvarAplicacoesFirebase(aplicacoes);
         }
 
-        function limparTodas() {
+        async function limparTodas() {
             if (!confirm('Deseja limpar todos os registros de aplicação?')) return;
 
-            localStorage.removeItem('medicacaoControle');
-            renderizarTabela();
+            await salvarAplicacoesFirebase({});
         }
 
         window.onclick = function(event) {
@@ -1134,7 +1334,7 @@
             }
         }
 
-        function exportarPDF() {
+        async function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -1151,11 +1351,11 @@
             doc.text(`Intervalo: Aplicação a cada 10 dias corridos`, 14, 42);
             doc.text(`Data de Geração: ${formatarData(new Date())}`, 14, 48);
 
-            const dados = carregarDados();
-            const receitas = carregarReceitas();
+            const aplicacoes = await carregarAplicacoes();
+            const receitas = await carregarReceitas();
             const datas = gerarDatasAplicacao();
-            const aplicadas = Object.values(dados).filter(v => v.aplicacao === 'Sim').length;
-            const naoAplicadas = Object.values(dados).filter(v => v.aplicacao === 'Não').length;
+            const aplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Sim').length;
+            const naoAplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Não').length;
             const taxa = datas.length > 0 ? Math.round((aplicadas / datas.length) * 100) : 0;
 
             doc.setFontSize(11);
@@ -1186,7 +1386,7 @@
                     dosesUtilizadasPorReceita[r.codigo] = 0;
                 });
 
-                Object.values(dados).forEach(registro => {
+                Object.values(aplicacoes).forEach(registro => {
                     if (registro.aplicacao === 'Sim' && registro.receita) {
                         dosesUtilizadasPorReceita[registro.receita] = 
                             (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
@@ -1223,7 +1423,7 @@
 
             const dadosTabela = datas.map((data, index) => {
                 const dataStr = formatarData(data);
-                const registro = dados[dataStr] || { aplicacao: 'Não registrado', receita: null };
+                const registro = aplicacoes[dataStr] || { aplicacao: 'Não registrado', receita: null };
                 return [
                     index + 1,
                     dataStr,
@@ -1267,12 +1467,5 @@
                 }
             });
 
-            doc.save(`Controle_Medicacao_${formatarData(new Date()).replace(/\//g, '-')}.pdf`);
-        }
+            doc.save(`Controle_Medicacao_${formatarData(new Date()).replace(/\//g, '-')}.pdf
 
-        document.addEventListener('DOMContentLoaded', function() {
-            renderizarTabela();
-        });
-    </script>
-</body>
-</html>
