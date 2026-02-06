@@ -116,7 +116,6 @@
         .loading-text { color: white; font-size: 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Tela de autenticação */
         .auth-screen {
             position: fixed;
             inset: 0;
@@ -240,6 +239,8 @@
             border: 2px solid #dee2e6;
             border-radius: 6px;
             font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         select.aplicado-sim {
             background: #d4edda;
@@ -254,6 +255,16 @@
             font-weight: 600;
         }
 
+        select option:disabled {
+            color: #999;
+            font-style: italic;
+            background: #f5f5f5;
+        }
+
+        select:has(option[value="Sim"]:disabled) {
+            border-left: 3px solid #ffc107;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -266,6 +277,17 @@
             border-radius: 8px;
             text-align: center;
             border-left: 4px solid #667eea;
+        }
+        .stat-card h4 {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
         }
 
         .modal {
@@ -298,6 +320,7 @@
             padding: 20px 30px;
             border-radius: 15px 15px 0 0;
         }
+        .modal-header h2 { font-size: 22px; margin: 0; }
         .modal-body { padding: 30px; }
         .modal-footer { padding: 20px 30px; border-top: 1px solid #dee2e6; display: flex; gap: 10px; justify-content: flex-end; }
 
@@ -309,6 +332,10 @@
             border-radius: 8px;
             font-size: 14px;
         }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
         .form-group small { display: block; margin-top: 5px; color: #666; font-size: 12px; }
 
         .close {
@@ -317,7 +344,9 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            line-height: 20px;
         }
+        .close:hover { opacity: 0.8; }
 
         .receita-badge {
             display: inline-block;
@@ -339,12 +368,32 @@
             border-left: 4px solid #667eea;
             position: relative;
         }
+        .receita-item h4 { color: #667eea; font-size: 14px; margin-bottom: 8px; }
+        .receita-item p { font-size: 13px; color: #666; margin: 3px 0; }
+        .receita-item .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .receita-item .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
         .receita-actions {
             position: absolute;
             top: 15px;
             right: 15px;
             display: flex;
             gap: 5px;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .controls, .modal, .install-prompt, .sync-status, .user-info { display: none !important; }
+            .container { box-shadow: none; }
         }
 
         @media (max-width:768px) {
@@ -354,12 +403,15 @@
             .user-info, .sync-status { position: static; margin: 10px auto 0; justify-content: center; }
             .controls { flex-direction: column; }
             .btn { width: 100%; justify-content: center; }
+            th, td { padding: 10px 8px; font-size: 12px; }
             .modal-content { width: 95%; margin: 10% auto; }
+            .content { padding: 15px; }
+            .receita-actions { position: static; margin-top: 10px; justify-content: flex-start; }
+            .auth-box { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
-    <!-- Tela de login -->
     <div id="authScreen" class="auth-screen show">
         <div class="auth-box">
             <h2>🔐 Controle de Medicação</h2>
@@ -402,13 +454,11 @@
         </div>
     </div>
 
-    <!-- Overlay loading -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Conectando...</div>
     </div>
 
-    <!-- Prompt instalação PWA -->
     <div id="installPrompt" class="install-prompt">
         <span>📱 Instalar este app na tela inicial?</span>
         <div>
@@ -487,7 +537,6 @@
         </div>
     </div>
 
-    <!-- Modal de Receita -->
     <div id="modalReceita" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -521,7 +570,6 @@
         </div>
     </div>
 
-    <!-- SDK Firebase + lógica Firebase -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -546,13 +594,13 @@
         window.auth = auth;
         window.currentUserId = null;
 
-        // helpers de UI
         window.mostrarLoading = function(show, texto='Conectando...') {
             const overlay = document.getElementById('loadingOverlay');
             const txt = document.querySelector('.loading-text');
             if (txt) txt.textContent = texto;
             overlay.classList.toggle('show', show);
         };
+
         window.atualizarStatusSync = function(status) {
             const statusEl = document.getElementById('syncStatus');
             const iconEl = document.getElementById('syncIcon');
@@ -564,7 +612,6 @@
             else { iconEl.textContent='🔄'; textEl.textContent='Sincronizando...'; }
         };
 
-        // abas login/registro
         window.trocarAba = function(aba) {
             document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
@@ -577,7 +624,6 @@
             }
         };
 
-        // login / registro
         window.fazerLogin = async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -590,6 +636,7 @@
                 alert('Erro ao fazer login: '+err.message);
             }
         };
+
         window.fazerRegistro = async function(e) {
             e.preventDefault();
             const email = document.getElementById('registroEmail').value;
@@ -605,36 +652,40 @@
                 alert('Erro ao criar conta: '+err.message);
             }
         };
+
         window.fazerLogout = async function() {
             if (!confirm('Deseja sair da conta?')) return;
             await signOut(auth);
         };
 
-        // acesso Firestore
         window.carregarReceitas = async function() {
             if (!window.currentUserId) return [];
             const ref = collection(db,'usuarios',window.currentUserId,'receitas');
             const snap = await getDocs(ref);
             return snap.docs.map(d=>({id:d.id,...d.data()}));
         };
+
         window.salvarReceitaFirebase = async function(r) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
             await setDoc(doc(db,'usuarios',window.currentUserId,'receitas',r.codigo),r);
             atualizarStatusSync('online');
         };
+
         window.excluirReceitaFirebase = async function(cod) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
             await deleteDoc(doc(db,'usuarios',window.currentUserId,'receitas',cod));
             atualizarStatusSync('online');
         };
+
         window.carregarAplicacoes = async function() {
             if (!window.currentUserId) return {};
             const ref = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
             const snap = await getDoc(ref);
             return snap.exists()?snap.data():{};
         };
+
         window.salvarAplicacoesFirebase = async function(apl) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
@@ -678,11 +729,9 @@
         });
     </script>
 
-    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- Lógica do app (funções globais, inclusive renderizarTabela) -->
     <script>
         const intervalo = 10;
         const dosesPorCaixa = 3;
@@ -697,12 +746,14 @@
             }
             return datas;
         }
+
         function formatarData(d) {
             const dia = String(d.getDate()).padStart(2,'0');
             const mes = String(d.getMonth()+1).padStart(2,'0');
             const ano = d.getFullYear();
             return `${dia}/${mes}/${ano}`;
         }
+
         function obterDiaSemana(d) {
             const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
             return dias[d.getDay()];
@@ -721,8 +772,6 @@
             }
             return null;
         }
-
-        // Funções de UI já definidas no módulo: mostrarLoading, atualizarStatusSync, trocarAba, etc.
 
         window.abrirModalReceita = function(codigo=null) {
             const modal = document.getElementById('modalReceita');
@@ -753,6 +802,7 @@
             }
             modal.style.display='block';
         };
+
         window.fecharModalReceita = function() {
             document.getElementById('modalReceita').style.display='none';
         };
@@ -886,30 +936,74 @@
         window.renderizarTabela = async function() {
             const datas = gerarDatasAplicacao();
             const apl = await carregarAplicacoes();
+            const receitas = await carregarReceitas();
             const tbody = document.getElementById('corpoTabela');
-            tbody.innerHTML='';
-            datas.forEach((d,i)=>{
+            tbody.innerHTML = '';
+
+            const dosesUtilizadasPorReceita = {};
+            receitas.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
+
+            Object.values(apl).forEach(registro => {
+                if (registro.aplicacao === 'Sim' && registro.receita) {
+                    dosesUtilizadasPorReceita[registro.receita] = 
+                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
+                }
+            });
+
+            const temReceitaDisponivel = receitas.some(r => {
+                const usadas = dosesUtilizadasPorReceita[r.codigo] || 0;
+                return usadas < dosesPorCaixa;
+            });
+
+            datas.forEach((d, i) => {
                 const dataStr = formatarData(d);
-                const reg = apl[dataStr] || {aplicacao:'',receita:null};
-                const cls = reg.aplicacao==='Sim'?'aplicado-sim':reg.aplicacao==='Não'?'aplicado-nao':'';
-                const info = reg.receita?`<small style="color:#667eea;">Receita: ${reg.receita}</small>`:'<small style="color:#999;">Nenhuma receita</small>';
-                const tr=document.createElement('tr');
-                tr.innerHTML=`
-                    <td><strong>${i+1}</strong></td>
+                const reg = apl[dataStr] || {aplicacao: '', receita: null};
+                const cls = reg.aplicacao === 'Sim' ? 'aplicado-sim' : 
+                           reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
+
+                const info = reg.receita ? 
+                    `<small style="color:#667eea;">Receita: ${reg.receita}</small>` : 
+                    '<small style="color:#999;">Nenhuma receita</small>';
+
+                const tr = document.createElement('tr');
+                const simDisabled = !temReceitaDisponivel && reg.aplicacao !== 'Sim';
+
+                tr.innerHTML = `
+                    <td><strong>${i + 1}</strong></td>
                     <td>${dataStr}</td>
                     <td>${obterDiaSemana(d)}</td>
                     <td>
-                        <select class="${cls}" onchange="atualizarAplicacao('${dataStr}',this.value,this)">
+                        <select class="${cls}" 
+                                onchange="atualizarAplicacao('${dataStr}', this.value, this)"
+                                onclick="verificarReceitaDisponivel(this, ${temReceitaDisponivel})">
                             <option value="">-- Selecione --</option>
-                            <option value="Sim" ${reg.aplicacao==='Sim'?'selected':''}>Sim</option>
-                            <option value="Não" ${reg.aplicacao==='Não'?'selected':''}>Não</option>
+                            <option value="Sim" ${reg.aplicacao === 'Sim' ? 'selected' : ''} ${simDisabled ? 'disabled' : ''}>
+                                Sim${simDisabled ? ' (sem receita)' : ''}
+                            </option>
+                            <option value="Não" ${reg.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
                         </select>
                     </td>
                     <td>${info}</td>
                 `;
+
                 tbody.appendChild(tr);
             });
+
             await atualizarEstatisticas();
+        };
+
+        window.verificarReceitaDisponivel = function(selectElement, temReceita) {
+            if (!temReceita) {
+                const valorAtual = selectElement.value;
+                if (valorAtual === '' || valorAtual === 'Não') {
+                    setTimeout(() => {
+                        if (selectElement.value === 'Sim') {
+                            alert('Não há receitas com doses restantes.');
+                            selectElement.value = valorAtual;
+                        }
+                    }, 100);
+                }
+            }
         };
 
         window.atualizarAplicacao = async function(dataStr, valor, el) {
@@ -919,7 +1013,11 @@
                 el.className='';
             } else {
                 const rec = valor==='Sim'?await atribuirReceita(dataStr):null;
-                if (valor==='Sim' && !rec) alert('Não há receitas com doses restantes.');
+                if (valor==='Sim' && !rec) {
+                    alert('Não há receitas com doses restantes.');
+                    el.value = '';
+                    return;
+                }
                 apl[dataStr]={aplicacao:valor,receita:rec};
                 el.className = valor==='Sim'?'aplicado-sim':'aplicado-nao';
             }
@@ -948,7 +1046,6 @@
             await salvarAplicacoesFirebase({});
         };
 
-        // PWA service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load',()=>{
                 navigator.serviceWorker.register('service-worker.js').catch(()=>{});
@@ -961,6 +1058,7 @@
             deferredPrompt=e;
             document.getElementById('installPrompt').classList.add('show');
         });
+
         window.instalarApp = function() {
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
@@ -969,6 +1067,7 @@
                 document.getElementById('installPrompt').classList.remove('show');
             });
         };
+
         window.fecharPromptInstalacao = function() {
             document.getElementById('installPrompt').classList.remove('show');
         };
