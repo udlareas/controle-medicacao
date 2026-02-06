@@ -16,11 +16,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -46,20 +42,12 @@
             position: relative;
         }
 
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { font-size: 14px; opacity: 0.9; }
 
         .user-info {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 15px; left: 15px;
             background: rgba(255,255,255,0.2);
             padding: 8px 12px;
             border-radius: 20px;
@@ -71,8 +59,7 @@
 
         .sync-status {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 15px; right: 15px;
             background: rgba(255,255,255,0.2);
             padding: 8px 12px;
             border-radius: 20px;
@@ -96,11 +83,7 @@
             justify-content: space-between;
             gap: 15px;
         }
-
-        .install-prompt.show {
-            display: flex;
-        }
-
+        .install-prompt.show { display: flex; }
         .install-prompt button {
             background: white;
             color: #28a745;
@@ -122,29 +105,18 @@
             flex-direction: column;
             gap: 20px;
         }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
+        .loading-overlay.show { display: flex; }
         .spinner {
             border: 4px solid rgba(255,255,255,0.3);
             border-top: 4px solid white;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             animation: spin 1s linear infinite;
         }
+        .loading-text { color: white; font-size: 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .loading-text {
-            color: white;
-            font-size: 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        /* Tela de autenticação */
         .auth-screen {
             position: fixed;
             inset: 0;
@@ -155,11 +127,7 @@
             z-index: 10000;
             padding: 20px;
         }
-
-        .auth-screen.show {
-            display: flex;
-        }
-
+        .auth-screen.show { display: flex; }
         .auth-box {
             background: white;
             border-radius: 15px;
@@ -168,18 +136,8 @@
             max-width: 400px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
-
-        .auth-box h2 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-
-        .auth-box p {
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
+        .auth-box h2 { color: #667eea; margin-bottom: 10px; font-size: 24px; }
+        .auth-box p { color: #666; margin-bottom: 25px; font-size: 14px; }
 
         .auth-tabs {
             display: flex;
@@ -187,7 +145,6 @@
             margin-bottom: 25px;
             border-bottom: 2px solid #dee2e6;
         }
-
         .auth-tab {
             flex: 1;
             padding: 12px;
@@ -200,62 +157,33 @@
             color: #666;
             transition: all 0.3s;
         }
-
         .auth-tab.active {
             color: #667eea;
             border-bottom-color: #667eea;
         }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
 
-        .auth-form {
-            display: none;
-        }
+        .content { padding: 30px; }
 
-        .auth-form.active {
-            display: block;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .info-box {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
+        .info-box, .warning-box {
             padding: 15px;
             margin-bottom: 25px;
             border-radius: 5px;
         }
-
-        .info-box h3 {
-            color: #667eea;
-            margin-bottom: 8px;
-            font-size: 16px;
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
         }
-
-        .info-box p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
+        .info-box h3 { color: #667eea; margin-bottom: 8px; font-size: 16px; }
+        .info-box p { color: #666; font-size: 14px; margin-bottom: 5px; }
 
         .warning-box {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 5px;
         }
-
-        .warning-box h3 {
-            color: #856404;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-
-        .warning-box p {
-            color: #856404;
-            font-size: 14px;
-        }
+        .warning-box h3 { color: #856404; margin-bottom: 8px; font-size: 16px; }
+        .warning-box p { color: #856404; font-size: 14px; }
 
         .controls {
             display: flex;
@@ -276,61 +204,13 @@
             align-items: center;
             gap: 8px;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-        }
-
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background: #138496;
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background: #ffc107;
-            color: #333;
-        }
-
-        .btn-warning:hover {
-            background: #e0a800;
-            transform: translateY(-2px);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
 
         .btn-logout {
             background: rgba(255,255,255,0.2);
@@ -341,10 +221,6 @@
             border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .btn-logout:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
         .table-container {
             overflow-x: auto;
             border-radius: 8px;
@@ -352,37 +228,11 @@
             margin-bottom: 25px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 14px;
-        }
-
-        tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        thead { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        th { padding: 15px; text-align: left; font-weight: 600; font-size: 14px; }
+        td { padding: 12px 15px; border-bottom: 1px solid #dee2e6; font-size: 14px; }
+        tbody tr:hover { background: #f8f9fa; }
 
         select {
             width: 100%;
@@ -390,22 +240,13 @@
             border: 2px solid #dee2e6;
             border-radius: 6px;
             font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
         }
-
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
         select.aplicado-sim {
             background: #d4edda;
             border-color: #28a745;
             color: #155724;
             font-weight: 600;
         }
-
         select.aplicado-nao {
             background: #f8d7da;
             border-color: #dc3545;
@@ -419,7 +260,6 @@
             gap: 15px;
             margin-bottom: 25px;
         }
-
         .stat-card {
             background: #f8f9fa;
             padding: 20px;
@@ -428,114 +268,48 @@
             border-left: 4px solid #667eea;
         }
 
-        .stat-card h4 {
-            color: #666;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .stat-card p {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
         .modal {
             display: none;
             position: fixed;
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background-color: rgba(0,0,0,0.5);
             animation: fadeIn 0.3s;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-content {
             background-color: white;
             margin: 5% auto;
-            padding: 0;
             border-radius: 15px;
             width: 90%;
             max-width: 600px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             animation: slideDown 0.3s;
         }
-
         @keyframes slideDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(-50px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 20px 30px;
             border-radius: 15px 15px 0 0;
         }
+        .modal-body { padding: 30px; }
+        .modal-footer { padding: 20px 30px; border-top: 1px solid #dee2e6; display: flex; gap: 10px; justify-content: flex-end; }
 
-        .modal-header h2 {
-            font-size: 22px;
-            margin: 0;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
         .form-group input {
-            width: 100%;
-            padding: 12px;
+            width: 100%; padding: 12px;
             border: 2px solid #dee2e6;
             border-radius: 8px;
             font-size: 14px;
-            transition: all 0.3s;
         }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 12px;
-        }
-
-        .modal-footer {
-            padding: 20px 30px;
-            border-top: 1px solid #dee2e6;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
+        .form-group small { display: block; margin-top: 5px; color: #666; font-size: 12px; }
 
         .close {
             color: white;
@@ -543,11 +317,6 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            line-height: 20px;
-        }
-
-        .close:hover {
-            opacity: 0.8;
         }
 
         .receita-badge {
@@ -558,21 +327,10 @@
             font-weight: 600;
             margin-left: 5px;
         }
+        .receita-ativa { background: #d4edda; color: #155724; }
+        .receita-esgotada { background: #f8d7da; color: #721c24; }
 
-        .receita-ativa {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .receita-esgotada {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .receitas-list {
-            margin-top: 20px;
-        }
-
+        .receitas-list { margin-top: 20px; }
         .receita-item {
             background: #f8f9fa;
             padding: 15px;
@@ -581,33 +339,6 @@
             border-left: 4px solid #667eea;
             position: relative;
         }
-
-        .receita-item h4 {
-            color: #667eea;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .receita-item p {
-            font-size: 13px;
-            color: #666;
-            margin: 3px 0;
-        }
-
-        .receita-item .progress-bar {
-            background: #e9ecef;
-            height: 8px;
-            border-radius: 4px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .receita-item .progress-fill {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100%;
-            transition: width 0.3s;
-        }
-
         .receita-actions {
             position: absolute;
             top: 15px;
@@ -616,78 +347,23 @@
             gap: 5px;
         }
 
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            .controls, .modal, .install-prompt, .sync-status, .user-info {
-                display: none !important;
-            }
-            .container {
-                box-shadow: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 0;
-            }
-
-            .container {
-                border-radius: 0;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .user-info, .sync-status {
-                position: static;
-                margin: 10px auto 0;
-                justify-content: center;
-            }
-
-            .controls {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            th, td {
-                padding: 10px 8px;
-                font-size: 12px;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 10% auto;
-            }
-
-            .content {
-                padding: 15px;
-            }
-
-            .receita-actions {
-                position: static;
-                margin-top: 10px;
-                justify-content: flex-start;
-            }
-
-            .auth-box {
-                padding: 30px 20px;
-            }
+        @media (max-width:768px) {
+            body { padding: 0; }
+            .container { border-radius: 0; }
+            .header h1 { font-size: 22px; }
+            .user-info, .sync-status { position: static; margin: 10px auto 0; justify-content: center; }
+            .controls { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .modal-content { width: 95%; margin: 10% auto; }
         }
     </style>
 </head>
 <body>
+    <!-- Tela de login -->
     <div id="authScreen" class="auth-screen show">
         <div class="auth-box">
             <h2>🔐 Controle de Medicação</h2>
-            <p>Faça login ou crie sua conta para sincronizar seus dados</p>
+            <p>Faça login ou crie sua conta para sincronizar seus dados.</p>
 
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="trocarAba('login')">Login</button>
@@ -703,7 +379,7 @@
                     <label for="loginSenha">Senha</label>
                     <input type="password" id="loginSenha" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Entrar</button>
             </form>
 
             <form id="formRegistro" class="auth-form" onsubmit="fazerRegistro(event)">
@@ -718,31 +394,33 @@
                     <small>Mínimo 6 caracteres</small>
                 </div>
                 <div class="form-group">
-                    <label for="registroConfirmaSenha">Confirme a Senha</label>
+                    <label for="registroConfirmaSenha">Confirme a senha</label>
                     <input type="password" id="registroConfirmaSenha" minlength="6" required>
                 </div>
-                <button type="submit" class="btn btn-success" style="width: 100%;">Criar Conta</button>
+                <button type="submit" class="btn btn-success" style="width:100%;">Criar conta</button>
             </form>
         </div>
     </div>
 
+    <!-- Overlay loading -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Conectando...</div>
     </div>
 
+    <!-- Prompt instalação PWA -->
     <div id="installPrompt" class="install-prompt">
         <span>📱 Instalar este app na tela inicial?</span>
         <div>
             <button onclick="instalarApp()">Instalar</button>
-            <button onclick="fecharPromptInstalacao()" style="background: transparent; color: white;">Agora não</button>
+            <button onclick="fecharPromptInstalacao()" style="background:transparent;color:white;">Agora não</button>
         </div>
     </div>
 
     <div class="container">
         <div class="header">
-            <div id="userInfo" class="user-info">
-                <span id="userEmail">usuário@email.com</span>
+            <div class="user-info">
+                <span id="userEmail">–</span>
                 <button class="btn-logout" onclick="fazerLogout()">Sair</button>
             </div>
             <div id="syncStatus" class="sync-status offline">
@@ -758,82 +436,58 @@
                 <h3>ℹ️ Informações do Tratamento</h3>
                 <p><strong>Período:</strong> 07/02/2026 a 31/12/2026</p>
                 <p><strong>Intervalo:</strong> Aplicação a cada 10 dias corridos</p>
-                <p><strong>Medicamento:</strong> Cipionato de Testosterona (Medicamento Controlado - ANVISA)</p>
+                <p><strong>Medicamento:</strong> Cipionato de Testosterona (controlado)</p>
             </div>
 
             <div class="warning-box">
                 <h3>⚠️ Controle de Receitas</h3>
-                <p><strong>Importante:</strong> Cada receita médica permite a compra de 1 caixa contendo 3 doses. Mantenha o cadastro de receitas atualizado.</p>
+                <p>Cada receita permite 3 doses (1 caixa). Mantenha o cadastro atualizado.</p>
             </div>
 
             <div class="controls">
                 <button class="btn btn-info" onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
                 <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
-                <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar Todas como Aplicadas</button>
-                <button class="btn btn-danger" onclick="limparTodas()">✗ Limpar Todas</button>
+                <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
+                <button class="btn btn-danger" onclick="limparTodas()">✗ Limpar todas</button>
             </div>
 
             <div class="stats">
-                <div class="stat-card">
-                    <h4>Total de Aplicações</h4>
-                    <p id="totalAplicacoes">0</p>
-                </div>
-                <div class="stat-card">
-                    <h4>Aplicadas</h4>
-                    <p id="totalAplicadas" style="color: #28a745;">0</p>
-                </div>
-                <div class="stat-card">
-                    <h4>Não Aplicadas</h4>
-                    <p id="totalNaoAplicadas" style="color: #dc3545;">0</p>
-                </div>
-                <div class="stat-card">
-                    <h4>Taxa de Adesão</h4>
-                    <p id="taxaAdesao">0%</p>
-                </div>
+                <div class="stat-card"><h4>Total de Aplicações</h4><p id="totalAplicacoes">0</p></div>
+                <div class="stat-card"><h4>Aplicadas</h4><p id="totalAplicadas" style="color:#28a745;">0</p></div>
+                <div class="stat-card"><h4>Não Aplicadas</h4><p id="totalNaoAplicadas" style="color:#dc3545;">0</p></div>
+                <div class="stat-card"><h4>Taxa de Adesão</h4><p id="taxaAdesao">0%</p></div>
             </div>
 
             <div class="stats">
-                <div class="stat-card" style="border-left-color: #17a2b8;">
-                    <h4>Receitas Cadastradas</h4>
-                    <p id="totalReceitas" style="color: #17a2b8;">0</p>
-                </div>
-                <div class="stat-card" style="border-left-color: #28a745;">
-                    <h4>Doses Disponíveis</h4>
-                    <p id="dosesDisponiveis" style="color: #28a745;">0</p>
-                </div>
-                <div class="stat-card" style="border-left-color: #ffc107;">
-                    <h4>Doses Utilizadas</h4>
-                    <p id="dosesUtilizadas" style="color: #ffc107;">0</p>
-                </div>
-                <div class="stat-card" style="border-left-color: #dc3545;">
-                    <h4>Receitas Necessárias</h4>
-                    <p id="receitasNecessarias" style="color: #dc3545;">0</p>
-                </div>
+                <div class="stat-card" style="border-left-color:#17a2b8;"><h4>Receitas Cadastradas</h4><p id="totalReceitas" style="color:#17a2b8;">0</p></div>
+                <div class="stat-card" style="border-left-color:#28a745;"><h4>Doses Disponíveis</h4><p id="dosesDisponiveis" style="color:#28a745;">0</p></div>
+                <div class="stat-card" style="border-left-color:#ffc107;"><h4>Doses Utilizadas</h4><p id="dosesUtilizadas" style="color:#ffc107;">0</p></div>
+                <div class="stat-card" style="border-left-color:#dc3545;"><h4>Receitas Necessárias</h4><p id="receitasNecessarias" style="color:#dc3545;">0</p></div>
             </div>
 
-            <div id="listaReceitas" class="receitas-list" style="display: none;">
-                <h3 style="color: #667eea; margin-bottom: 15px;">📋 Receitas Cadastradas</h3>
+            <div id="listaReceitas" class="receitas-list" style="display:none;">
+                <h3 style="color:#667eea;margin-bottom:15px;">📋 Receitas Cadastradas</h3>
                 <div id="receitasContainer"></div>
             </div>
 
             <div class="table-container">
-                <table id="tabelaMedicacao">
+                <table>
                     <thead>
                         <tr>
-                            <th style="width: 60px;">#</th>
-                            <th style="width: 130px;">Data</th>
-                            <th style="width: 110px;">Dia da Semana</th>
-                            <th style="width: 150px;">Aplicação</th>
+                            <th style="width:60px;">#</th>
+                            <th style="width:130px;">Data</th>
+                            <th style="width:110px;">Dia</th>
+                            <th style="width:150px;">Aplicação</th>
                             <th>Receita Utilizada</th>
                         </tr>
                     </thead>
-                    <tbody id="corpoTabela">
-                    </tbody>
+                    <tbody id="corpoTabela"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- Modal de Receita -->
     <div id="modalReceita" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -844,32 +498,30 @@
                 <input type="hidden" id="receitaEditandoId">
                 <div class="form-group">
                     <label for="codigoReceita">Código da Receita *</label>
-                    <input type="text" id="codigoReceita" placeholder="Ex: REC-2026-001234" required>
-                    <small>Informe o código completo da receita médica</small>
+                    <input type="text" id="codigoReceita" required>
+                    <small>Código completo da receita</small>
                 </div>
                 <div class="form-group">
                     <label for="dataEmissao">Data de Emissão *</label>
                     <input type="date" id="dataEmissao" required>
-                    <small>Data em que a receita foi emitida</small>
                 </div>
                 <div class="form-group">
                     <label for="dataValidade">Data de Validade</label>
                     <input type="date" id="dataValidade">
-                    <small>Data de validade da receita (opcional)</small>
                 </div>
                 <div class="form-group">
                     <label for="observacoes">Observações</label>
-                    <input type="text" id="observacoes" placeholder="Informações adicionais (opcional)">
-                    <small>Anotações sobre a receita</small>
+                    <input type="text" id="observacoes">
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" onclick="fecharModalReceita()">Cancelar</button>
-                <button class="btn btn-success" onclick="salvarReceita()">Salvar Receita</button>
+                <button class="btn btn-success" onclick="salvarReceita()">Salvar</button>
             </div>
         </div>
     </div>
 
+    <!-- SDK Firebase + lógica Firebase -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -888,56 +540,35 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        enableIndexedDbPersistence(db).catch((err) => {
-            if (err.code == 'failed-precondition') {
-                console.warn('Persistência offline não disponível');
-            } else if (err.code == 'unimplemented') {
-                console.warn('Persistência offline não suportada');
-            }
-        });
+        enableIndexedDbPersistence(db).catch(() => {});
 
-        window.currentUserId = null;
         window.db = db;
         window.auth = auth;
+        window.currentUserId = null;
 
-        function mostrarLoading(show, texto = 'Conectando...') {
+        // helpers de UI
+        window.mostrarLoading = function(show, texto='Conectando...') {
             const overlay = document.getElementById('loadingOverlay');
-            const textoEl = document.querySelector('.loading-text');
-
-            if (textoEl) textoEl.textContent = texto;
+            const txt = document.querySelector('.loading-text');
+            if (txt) txt.textContent = texto;
             overlay.classList.toggle('show', show);
-        }
-
-        function atualizarStatusSync(status) {
+        };
+        window.atualizarStatusSync = function(status) {
             const statusEl = document.getElementById('syncStatus');
             const iconEl = document.getElementById('syncIcon');
             const textEl = document.getElementById('syncText');
-
             if (!statusEl || !iconEl || !textEl) return;
-
             statusEl.className = 'sync-status ' + status;
+            if (status === 'online') { iconEl.textContent='🟢'; textEl.textContent='Online'; }
+            else if (status === 'offline') { iconEl.textContent='⚫'; textEl.textContent='Offline'; }
+            else { iconEl.textContent='🔄'; textEl.textContent='Sincronizando...'; }
+        };
 
-            switch(status) {
-                case 'online':
-                    iconEl.textContent = '🟢';
-                    textEl.textContent = 'Online';
-                    break;
-                case 'offline':
-                    iconEl.textContent = '⚫';
-                    textEl.textContent = 'Offline';
-                    break;
-                case 'syncing':
-                    iconEl.textContent = '🔄';
-                    textEl.textContent = 'Sincronizando...';
-                    break;
-            }
-        }
-
+        // abas login/registro
         window.trocarAba = function(aba) {
-            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
-
-            if (aba === 'login') {
+            document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+            if (aba==='login') {
                 document.querySelectorAll('.auth-tab')[0].classList.add('active');
                 document.getElementById('formLogin').classList.add('active');
             } else {
@@ -946,674 +577,451 @@
             }
         };
 
-        window.fazerLogin = async function(event) {
-            event.preventDefault();
+        // login / registro
+        window.fazerLogin = async function(e) {
+            e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginSenha').value;
-
-            mostrarLoading(true, 'Fazendo login...');
-
+            mostrarLoading(true,'Fazendo login...');
             try {
-                await signInWithEmailAndPassword(auth, email, senha);
-            } catch (error) {
+                await signInWithEmailAndPassword(auth,email,senha);
+            } catch(err) {
                 mostrarLoading(false);
-                let mensagem = 'Erro ao fazer login: ';
-                switch (error.code) {
-                    case 'auth/invalid-email':
-                        mensagem += 'E-mail inválido.';
-                        break;
-                    case 'auth/user-not-found':
-                        mensagem += 'Usuário não encontrado.';
-                        break;
-                    case 'auth/wrong-password':
-                        mensagem += 'Senha incorreta.';
-                        break;
-                    case 'auth/invalid-credential':
-                        mensagem += 'Credenciais inválidas. Verifique e-mail e senha.';
-                        break;
-                    default:
-                        mensagem += error.message;
-                }
-                alert(mensagem);
+                alert('Erro ao fazer login: '+err.message);
             }
         };
-
-        window.fazerRegistro = async function(event) {
-            event.preventDefault();
+        window.fazerRegistro = async function(e) {
+            e.preventDefault();
             const email = document.getElementById('registroEmail').value;
             const senha = document.getElementById('registroSenha').value;
-            const confirmaSenha = document.getElementById('registroConfirmaSenha').value;
-
-            if (senha !== confirmaSenha) {
-                alert('As senhas não conferem.');
-                return;
-            }
-
-            mostrarLoading(true, 'Criando conta...');
-
+            const conf  = document.getElementById('registroConfirmaSenha').value;
+            if (senha!==conf) { alert('As senhas não conferem.'); return; }
+            mostrarLoading(true,'Criando conta...');
             try {
-                await createUserWithEmailAndPassword(auth, email, senha);
-                alert('✅ Conta criada com sucesso! Você já está logado.');
-            } catch (error) {
+                await createUserWithEmailAndPassword(auth,email,senha);
+                alert('Conta criada. Você já está logado.');
+            } catch(err) {
                 mostrarLoading(false);
-                let mensagem = 'Erro ao criar conta: ';
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        mensagem += 'Este e-mail já está em uso.';
-                        break;
-                    case 'auth/invalid-email':
-                        mensagem += 'E-mail inválido.';
-                        break;
-                    case 'auth/weak-password':
-                        mensagem += 'Senha muito fraca. Use pelo menos 6 caracteres.';
-                        break;
-                    default:
-                        mensagem += error.message;
-                }
-                alert(mensagem);
+                alert('Erro ao criar conta: '+err.message);
             }
         };
-
         window.fazerLogout = async function() {
-            if (!confirm('Deseja sair da sua conta?')) return;
-
-            try {
-                await signOut(auth);
-                document.getElementById('authScreen').classList.add('show');
-                window.currentUserId = null;
-            } catch (error) {
-                alert('Erro ao sair: ' + error.message);
-            }
+            if (!confirm('Deseja sair da conta?')) return;
+            await signOut(auth);
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    mostrarLoading(true, 'Carregando dados...');
-
-                    window.currentUserId = user.uid;
-
-                    const emailEl = document.getElementById('userEmail');
-                    if (emailEl) emailEl.textContent = user.email;
-
-                    document.getElementById('authScreen').classList.remove('show');
-                    atualizarStatusSync('online');
-
-                    await inicializarApp();
-
-                    mostrarLoading(false);
-                } catch (error) {
-                    console.error('Erro ao inicializar app:', error);
-                    mostrarLoading(false);
-
-                    let mensagem = 'Erro ao carregar dados: ';
-                    if (error.code === 'permission-denied') {
-                        mensagem += 'Permissão negada. Verifique as regras de segurança do Firestore.';
-                    } else {
-                        mensagem += error.message;
-                    }
-
-                    alert(mensagem + '\n\nTente recarregar a página.');
-                }
-            } else {
-                document.getElementById('authScreen').classList.add('show');
-                mostrarLoading(false);
-            }
-        });
-
-        window.addEventListener('online', () => atualizarStatusSync('online'));
-        window.addEventListener('offline', () => atualizarStatusSync('offline'));
-
+        // acesso Firestore
         window.carregarReceitas = async function() {
             if (!window.currentUserId) return [];
-
-            try {
-                const receitasRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
-                const snapshot = await getDocs(receitasRef);
-                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            } catch (error) {
-                console.error('Erro ao carregar receitas:', error);
-                if (error.code === 'permission-denied') {
-                    throw new Error('Permissão negada ao acessar receitas.');
-                }
-                return [];
-            }
+            const ref = collection(db,'usuarios',window.currentUserId,'receitas');
+            const snap = await getDocs(ref);
+            return snap.docs.map(d=>({id:d.id,...d.data()}));
         };
-
-        window.salvarReceitaFirebase = async function(receita) {
+        window.salvarReceitaFirebase = async function(r) {
             if (!window.currentUserId) return;
-
-            try {
-                atualizarStatusSync('syncing');
-                const receitaRef = doc(db, 'usuarios', window.currentUserId, 'receitas', receita.codigo);
-                await setDoc(receitaRef, receita);
-                atualizarStatusSync('online');
-            } catch (error) {
-                console.error('Erro ao salvar receita:', error);
-                atualizarStatusSync('offline');
-                throw error;
-            }
+            atualizarStatusSync('syncing');
+            await setDoc(doc(db,'usuarios',window.currentUserId,'receitas',r.codigo),r);
+            atualizarStatusSync('online');
         };
-
-        window.excluirReceitaFirebase = async function(codigoReceita) {
+        window.excluirReceitaFirebase = async function(cod) {
             if (!window.currentUserId) return;
-
-            try {
-                atualizarStatusSync('syncing');
-                const receitaRef = doc(db, 'usuarios', window.currentUserId, 'receitas', codigoReceita);
-                await deleteDoc(receitaRef);
-                atualizarStatusSync('online');
-            } catch (error) {
-                console.error('Erro ao excluir receita:', error);
-                atualizarStatusSync('offline');
-                throw error;
-            }
+            atualizarStatusSync('syncing');
+            await deleteDoc(doc(db,'usuarios',window.currentUserId,'receitas',cod));
+            atualizarStatusSync('online');
         };
-
         window.carregarAplicacoes = async function() {
             if (!window.currentUserId) return {};
-
-            try {
-                const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
-                const snapshot = await getDoc(aplicacoesRef);
-                return snapshot.exists() ? snapshot.data() : {};
-            } catch (error) {
-                console.error('Erro ao carregar aplicações:', error);
-                if (error.code === 'permission-denied') {
-                    throw new Error('Permissão negada ao acessar aplicações.');
-                }
-                return {};
-            }
+            const ref = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
+            const snap = await getDoc(ref);
+            return snap.exists()?snap.data():{};
         };
-
-        window.salvarAplicacoesFirebase = async function(aplicacoes) {
+        window.salvarAplicacoesFirebase = async function(apl) {
             if (!window.currentUserId) return;
-
-            try {
-                atualizarStatusSync('syncing');
-                const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
-                await setDoc(aplicacoesRef, aplicacoes);
-                atualizarStatusSync('online');
-            } catch (error) {
-                console.error('Erro ao salvar aplicações:', error);
-                atualizarStatusSync('offline');
-                throw error;
-            }
+            atualizarStatusSync('syncing');
+            await setDoc(doc(db,'usuarios',window.currentUserId,'dados','aplicacoes'),apl);
+            atualizarStatusSync('online');
         };
 
         window.iniciarSincronizacao = function() {
             if (!window.currentUserId) return;
-
-            try {
-                const receitasRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
-                onSnapshot(receitasRef, 
-                    (snapshot) => {
-                        console.log('Receitas atualizadas');
-                        renderizarTabela().catch(err => console.error('Erro:', err));
-                    },
-                    (error) => {
-                        console.error('Erro no snapshot de receitas:', error);
-                    }
-                );
-
-                const aplicacoesRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
-                onSnapshot(aplicacoesRef, 
-                    (snapshot) => {
-                        console.log('Aplicações atualizadas');
-                        renderizarTabela().catch(err => console.error('Erro:', err));
-                    },
-                    (error) => {
-                        console.error('Erro no snapshot de aplicações:', error);
-                    }
-                );
-            } catch (error) {
-                console.error('Erro ao iniciar sincronização:', error);
-            }
+            const recRef = collection(db,'usuarios',window.currentUserId,'receitas');
+            onSnapshot(recRef,()=>{ console.log('Receitas atualizadas'); window.renderizarTabela?.(); });
+            const aplRef = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
+            onSnapshot(aplRef,()=>{ console.log('Aplicações atualizadas'); window.renderizarTabela?.(); });
         };
 
         async function inicializarApp() {
-            try {
-                window.iniciarSincronizacao();
-                await renderizarTabela();
-            } catch (error) {
-                console.error('Erro ao inicializar app:', error);
-                throw error;
-            }
+            window.iniciarSincronizacao();
+            await window.renderizarTabela();
         }
+
+        onAuthStateChanged(auth, async (user)=>{
+            if (user) {
+                try {
+                    window.currentUserId = user.uid;
+                    document.getElementById('userEmail').textContent = user.email || '(sem e-mail)';
+                    document.getElementById('authScreen').classList.remove('show');
+                    mostrarLoading(true,'Carregando dados...');
+                    atualizarStatusSync('online');
+                    await inicializarApp();
+                } catch(err) {
+                    console.error(err);
+                    alert('Erro ao carregar dados: '+err.message);
+                } finally {
+                    mostrarLoading(false);
+                }
+            } else {
+                document.getElementById('authScreen').classList.add('show');
+                mostrarLoading(false);
+                atualizarStatusSync('offline');
+            }
+        });
     </script>
 
+    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
+    <!-- Lógica do app (funções globais, inclusive renderizarTabela) -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(reg => console.log('Service Worker registrado'))
-                    .catch(err => console.log('Erro:', err));
-            });
-        }
-
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installPrompt').classList.add('show');
-        });
-
-        function instalarApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    deferredPrompt = null;
-                    document.getElementById('installPrompt').classList.remove('show');
-                });
-            }
-        }
-
-        function fecharPromptInstalacao() {
-            document.getElementById('installPrompt').classList.remove('show');
-        }
-
         const intervalo = 10;
         const dosesPorCaixa = 3;
 
         function gerarDatasAplicacao() {
             const datas = [];
-            let dataAtual = new Date(2026, 1, 7, 12, 0, 0);
-            const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
-
-            while (dataAtual <= dataLimite) {
+            let dataAtual = new Date(2026,1,7,12,0,0);
+            const limite = new Date(2026,11,31,12,0,0);
+            while (dataAtual <= limite) {
                 datas.push(new Date(dataAtual));
                 dataAtual.setDate(dataAtual.getDate() + intervalo);
             }
             return datas;
         }
-
-        function formatarData(data) {
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0');
-            const ano = data.getFullYear();
+        function formatarData(d) {
+            const dia = String(d.getDate()).padStart(2,'0');
+            const mes = String(d.getMonth()+1).padStart(2,'0');
+            const ano = d.getFullYear();
             return `${dia}/${mes}/${ano}`;
         }
-
-        function obterDiaSemana(data) {
-            const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-            return dias[data.getDay()];
+        function obterDiaSemana(d) {
+            const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+            return dias[d.getDay()];
         }
 
-        async function atribuirReceita(data) {
+        async function atribuirReceita(dataStr) {
             const receitas = await carregarReceitas();
             const aplicacoes = await carregarAplicacoes();
-
-            const dosesUtilizadasPorReceita = {};
-            receitas.forEach(r => {
-                dosesUtilizadasPorReceita[r.codigo] = 0;
+            const uso = {};
+            receitas.forEach(r=>uso[r.codigo]=0);
+            Object.values(aplicacoes).forEach(reg=>{
+                if (reg.aplicacao==='Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita]||0)+1;
             });
-
-            Object.values(aplicacoes).forEach(registro => {
-                if (registro.aplicacao === 'Sim' && registro.receita) {
-                    dosesUtilizadasPorReceita[registro.receita] = 
-                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
-                }
-            });
-
-            for (let receita of receitas) {
-                const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
-                if (dosesUsadas < dosesPorCaixa) {
-                    return receita.codigo;
-                }
+            for (const r of receitas) {
+                if ((uso[r.codigo]||0) < dosesPorCaixa) return r.codigo;
             }
             return null;
         }
 
-        function abrirModalReceita(receitaCodigo = null) {
+        // Funções de UI já definidas no módulo: mostrarLoading, atualizarStatusSync, trocarAba, etc.
+
+        window.abrirModalReceita = function(codigo=null) {
             const modal = document.getElementById('modalReceita');
             const titulo = document.getElementById('modalReceitaTitulo');
             const idInput = document.getElementById('receitaEditandoId');
-
-            if (receitaCodigo) {
+            if (codigo) {
                 titulo.textContent = '✏️ Editar Receita';
-                idInput.value = receitaCodigo;
-
-                carregarReceitas().then(receitas => {
-                    const receita = receitas.find(r => r.codigo === receitaCodigo);
-
-                    if (receita) {
-                        document.getElementById('codigoReceita').value = receita.codigo;
-
-                        const [dia, mes, ano] = receita.dataEmissao.split('/');
-                        document.getElementById('dataEmissao').value = `${ano}-${mes}-${dia}`;
-
-                        if (receita.dataValidade) {
-                            const [diaV, mesV, anoV] = receita.dataValidade.split('/');
-                            document.getElementById('dataValidade').value = `${anoV}-${mesV}-${diaV}`;
-                        } else {
-                            document.getElementById('dataValidade').value = '';
-                        }
-
-                        document.getElementById('observacoes').value = receita.observacoes || '';
-                    }
+                idInput.value = codigo;
+                carregarReceitas().then(rs=>{
+                    const r = rs.find(x=>x.codigo===codigo);
+                    if (!r) return;
+                    document.getElementById('codigoReceita').value = r.codigo;
+                    const [d,m,a] = r.dataEmissao.split('/');
+                    document.getElementById('dataEmissao').value = `${a}-${m}-${d}`;
+                    if (r.dataValidade) {
+                        const [dv,mv,av] = r.dataValidade.split('/');
+                        document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
+                    } else document.getElementById('dataValidade').value='';
+                    document.getElementById('observacoes').value = r.observacoes || '';
                 });
             } else {
                 titulo.textContent = '📝 Cadastrar Nova Receita';
-                idInput.value = '';
-                document.getElementById('codigoReceita').value = '';
-                document.getElementById('dataEmissao').value = '';
-                document.getElementById('dataValidade').value = '';
-                document.getElementById('observacoes').value = '';
+                idInput.value='';
+                document.getElementById('codigoReceita').value='';
+                document.getElementById('dataEmissao').value='';
+                document.getElementById('dataValidade').value='';
+                document.getElementById('observacoes').value='';
             }
+            modal.style.display='block';
+        };
+        window.fecharModalReceita = function() {
+            document.getElementById('modalReceita').style.display='none';
+        };
 
-            modal.style.display = 'block';
-        }
-
-        function fecharModalReceita() {
-            document.getElementById('modalReceita').style.display = 'none';
-        }
-
-        async function salvarReceita() {
+        window.salvarReceita = async function() {
             const codigo = document.getElementById('codigoReceita').value.trim();
-            const dataEmissao = document.getElementById('dataEmissao').value;
-            const dataValidade = document.getElementById('dataValidade').value;
-            const observacoes = document.getElementById('observacoes').value.trim();
-            const editandoId = document.getElementById('receitaEditandoId').value;
+            const emissao = document.getElementById('dataEmissao').value;
+            const validade = document.getElementById('dataValidade').value;
+            const obs = document.getElementById('observacoes').value.trim();
+            const editId = document.getElementById('receitaEditandoId').value;
 
-            if (!codigo || !dataEmissao) {
-                alert('Por favor, preencha os campos obrigatórios.');
-                return;
-            }
+            if (!codigo || !emissao) { alert('Preencha código e data de emissão.'); return; }
 
             const receitas = await carregarReceitas();
-
-            if (editandoId) {
-                if (codigo !== editandoId && receitas.some(r => r.codigo === codigo)) {
-                    alert('Já existe uma receita com este código.');
-                    return;
-                }
-
-                if (codigo !== editandoId) {
-                    const aplicacoes = await carregarAplicacoes();
-                    Object.keys(aplicacoes).forEach(data => {
-                        if (aplicacoes[data].receita === editandoId) {
-                            aplicacoes[data].receita = codigo;
-                        }
-                    });
-                    await salvarAplicacoesFirebase(aplicacoes);
-                    await excluirReceitaFirebase(editandoId);
-                }
-
-                const receitaAtualizada = {
-                    codigo: codigo,
-                    dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
-                    dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
-                    observacoes: observacoes || null,
-                    dataCadastro: receitas.find(r => r.codigo === editandoId)?.dataCadastro || new Date().toISOString()
-                };
-
-                await salvarReceitaFirebase(receitaAtualizada);
-                fecharModalReceita();
-                alert('✅ Receita atualizada!');
-            } else {
-                if (receitas.some(r => r.codigo === codigo)) {
-                    alert('Já existe uma receita com este código.');
-                    return;
-                }
-
-                const novaReceita = {
-                    codigo: codigo,
-                    dataEmissao: formatarData(new Date(dataEmissao + 'T12:00:00')),
-                    dataValidade: dataValidade ? formatarData(new Date(dataValidade + 'T12:00:00')) : null,
-                    observacoes: observacoes || null,
-                    dataCadastro: new Date().toISOString()
-                };
-
-                await salvarReceitaFirebase(novaReceita);
-                fecharModalReceita();
-                alert('✅ Receita cadastrada!');
+            if (!editId && receitas.some(r=>r.codigo===codigo)) {
+                alert('Já existe receita com esse código.'); return;
             }
-        }
 
-        async function excluirReceita(codigoReceita) {
-            if (!confirm(`Excluir receita ${codigoReceita}?`)) return;
+            if (editId && codigo!==editId && receitas.some(r=>r.codigo===codigo)) {
+                alert('Já existe receita com esse novo código.'); return;
+            }
 
-            const aplicacoes = await carregarAplicacoes();
-            Object.keys(aplicacoes).forEach(data => {
-                if (aplicacoes[data].receita === codigoReceita) {
-                    aplicacoes[data].receita = null;
-                }
+            if (editId && codigo!==editId) {
+                const aplicacoes = await carregarAplicacoes();
+                Object.keys(aplicacoes).forEach(data=>{
+                    if (aplicacoes[data].receita===editId) aplicacoes[data].receita=codigo;
+                });
+                await salvarAplicacoesFirebase(aplicacoes);
+                await excluirReceitaFirebase(editId);
+            }
+
+            const rec = {
+                codigo,
+                dataEmissao: formatarData(new Date(emissao+'T12:00:00')),
+                dataValidade: validade?formatarData(new Date(validade+'T12:00:00')):null,
+                observacoes: obs||null,
+                dataCadastro: new Date().toISOString()
+            };
+            await salvarReceitaFirebase(rec);
+            fecharModalReceita();
+            alert(editId?'Receita atualizada.':'Receita cadastrada.');
+        };
+
+        window.excluirReceita = async function(codigo) {
+            if (!confirm(`Excluir receita ${codigo}?`)) return;
+            const apl = await carregarAplicacoes();
+            Object.keys(apl).forEach(d=>{
+                if (apl[d].receita===codigo) apl[d].receita=null;
             });
+            await salvarAplicacoesFirebase(apl);
+            await excluirReceitaFirebase(codigo);
+            alert('Receita excluída.');
+        };
 
-            await salvarAplicacoesFirebase(aplicacoes);
-            await excluirReceitaFirebase(codigoReceita);
-            alert('✅ Receita excluída!');
-        }
-
-        async function podeEditarOuExcluir(receita, receitas) {
-            const ultimaReceita = receitas[receitas.length - 1];
-            if (receita.codigo !== ultimaReceita.codigo) return false;
-
-            const aplicacoes = await carregarAplicacoes();
-            let dosesUsadas = 0;
-
-            Object.values(aplicacoes).forEach(registro => {
-                if (registro.aplicacao === 'Sim' && registro.receita === receita.codigo) {
-                    dosesUsadas++;
-                }
+        async function podeEditarOuExcluir(receita, todas) {
+            const ultima = todas[todas.length-1];
+            if (!ultima || ultima.codigo!==receita.codigo) return false;
+            const apl = await carregarAplicacoes();
+            let usadas = 0;
+            Object.values(apl).forEach(r=>{
+                if (r.aplicacao==='Sim' && r.receita===receita.codigo) usadas++;
             });
-
-            return dosesUsadas < dosesPorCaixa;
+            return usadas<dosesPorCaixa;
         }
 
-        async function atualizarEstatisticas() {
-            const aplicacoes = await carregarAplicacoes();
-            const receitas = await carregarReceitas();
+        window.atualizarEstatisticas = async function() {
+            const apl = await carregarAplicacoes();
+            const recs = await carregarReceitas();
             const datas = gerarDatasAplicacao();
-
             const total = datas.length;
-            const aplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Sim').length;
-            const naoAplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Não').length;
-            const taxa = total > 0 ? Math.round((aplicadas / total) * 100) : 0;
+            const aplicadas = Object.values(apl).filter(x=>x.aplicacao==='Sim').length;
+            const nao = Object.values(apl).filter(x=>x.aplicacao==='Não').length;
+            const taxa = total?Math.round(aplicadas/total*100):0;
 
             document.getElementById('totalAplicacoes').textContent = total;
             document.getElementById('totalAplicadas').textContent = aplicadas;
-            document.getElementById('totalNaoAplicadas').textContent = naoAplicadas;
-            document.getElementById('taxaAdesao').textContent = taxa + '%';
+            document.getElementById('totalNaoAplicadas').textContent = nao;
+            document.getElementById('taxaAdesao').textContent = taxa+'%';
 
-            const totalReceitas = receitas.length;
-            const dosesDisponiveis = totalReceitas * dosesPorCaixa;
-            const dosesUtilizadas = aplicadas;
-            const receitasNecessarias = Math.ceil(total / dosesPorCaixa);
+            const totalRec = recs.length;
+            const disp = totalRec*dosesPorCaixa;
+            const nec = Math.ceil(total/dosesPorCaixa);
 
-            document.getElementById('totalReceitas').textContent = totalReceitas;
-            document.getElementById('dosesDisponiveis').textContent = dosesDisponiveis;
-            document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
-            document.getElementById('receitasNecessarias').textContent = receitasNecessarias;
+            document.getElementById('totalReceitas').textContent = totalRec;
+            document.getElementById('dosesDisponiveis').textContent = disp;
+            document.getElementById('dosesUtilizadas').textContent = aplicadas;
+            document.getElementById('receitasNecessarias').textContent = nec;
 
-            await atualizarListaReceitas();
-        }
+            await window.atualizarListaReceitas();
+        };
 
-        async function atualizarListaReceitas() {
-            const receitas = await carregarReceitas();
-            const aplicacoes = await carregarAplicacoes();
+        window.atualizarListaReceitas = async function() {
+            const recs = await carregarReceitas();
+            const apl = await carregarAplicacoes();
             const container = document.getElementById('receitasContainer');
-            const listaReceitas = document.getElementById('listaReceitas');
+            const bloco = document.getElementById('listaReceitas');
+            if (!recs.length) { bloco.style.display='none'; return; }
+            bloco.style.display='block';
 
-            if (receitas.length === 0) {
-                listaReceitas.style.display = 'none';
-                return;
-            }
-
-            listaReceitas.style.display = 'block';
-
-            const dosesUtilizadasPorReceita = {};
-            receitas.forEach(r => {
-                dosesUtilizadasPorReceita[r.codigo] = 0;
+            const uso={};
+            recs.forEach(r=>uso[r.codigo]=0);
+            Object.values(apl).forEach(r=>{
+                if (r.aplicacao==='Sim' && r.receita) uso[r.receita]=(uso[r.receita]||0)+1;
             });
 
-            Object.values(aplicacoes).forEach(registro => {
-                if (registro.aplicacao === 'Sim' && registro.receita) {
-                    dosesUtilizadasPorReceita[registro.receita] = 
-                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
-                }
-            });
-
-            const itensHTML = [];
-            for (const receita of receitas) {
-                const dosesUsadas = dosesUtilizadasPorReceita[receita.codigo] || 0;
-                const percentual = (dosesUsadas / dosesPorCaixa) * 100;
-                const status = dosesUsadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
-                const statusClass = dosesUsadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
-
-                const podeEditar = await podeEditarOuExcluir(receita, receitas);
-
-                const botoesAcao = podeEditar ? `
-                    <div class="receita-actions">
-                        <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${receita.codigo}')">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="excluirReceita('${receita.codigo}')">🗑️</button>
-                    </div>
-                ` : '';
-
-                itensHTML.push(`
+            const html=[];
+            for (const r of recs) {
+                const usadas = uso[r.codigo]||0;
+                const perc = usadas/dosesPorCaixa*100;
+                const status = usadas>=dosesPorCaixa?'Esgotada':'Ativa';
+                const cls = usadas>=dosesPorCaixa?'receita-esgotada':'receita-ativa';
+                const pode = await podeEditarOuExcluir(r,recs);
+                html.push(`
                     <div class="receita-item">
-                        ${botoesAcao}
-                        <h4>${receita.codigo} <span class="receita-badge ${statusClass}">${status}</span></h4>
-                        <p><strong>Emissão:</strong> ${receita.dataEmissao}</p>
-                        ${receita.dataValidade ? `<p><strong>Validade:</strong> ${receita.dataValidade}</p>` : ''}
-                        ${receita.observacoes ? `<p><strong>Obs:</strong> ${receita.observacoes}</p>` : ''}
-                        <p><strong>Doses:</strong> ${dosesUsadas} de ${dosesPorCaixa} utilizadas</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${percentual}%"></div>
-                        </div>
+                        ${pode?`<div class="receita-actions">
+                            <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${r.codigo}')">✏️</button>
+                            <button class="btn btn-danger btn-sm" onclick="excluirReceita('${r.codigo}')">🗑️</button>
+                        </div>`:''}
+                        <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
+                        <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
+                        ${r.dataValidade?`<p><strong>Validade:</strong> ${r.dataValidade}</p>`:''}
+                        ${r.observacoes?`<p><strong>Obs:</strong> ${r.observacoes}</p>`:''}
+                        <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
                     </div>
                 `);
             }
+            container.innerHTML = html.join('');
+        };
 
-            container.innerHTML = itensHTML.join('');
-        }
-
-        async function renderizarTabela() {
+        window.renderizarTabela = async function() {
             const datas = gerarDatasAplicacao();
-            const aplicacoes = await carregarAplicacoes();
+            const apl = await carregarAplicacoes();
             const tbody = document.getElementById('corpoTabela');
-            tbody.innerHTML = '';
-
-            datas.forEach((data, index) => {
-                const dataStr = formatarData(data);
-                const tr = document.createElement('tr');
-
-                const registro = aplicacoes[dataStr] || { aplicacao: '', receita: null };
-                const classeSelect = registro.aplicacao === 'Sim' ? 'aplicado-sim' : 
-                                    registro.aplicacao === 'Não' ? 'aplicado-nao' : '';
-
-                const receitaInfo = registro.receita ? 
-                    `<small style="color: #667eea;">Receita: ${registro.receita}</small>` : 
-                    '<small style="color: #999;">Nenhuma receita</small>';
-
-                tr.innerHTML = `
-                    <td><strong>${index + 1}</strong></td>
+            tbody.innerHTML='';
+            datas.forEach((d,i)=>{
+                const dataStr = formatarData(d);
+                const reg = apl[dataStr] || {aplicacao:'',receita:null};
+                const cls = reg.aplicacao==='Sim'?'aplicado-sim':reg.aplicacao==='Não'?'aplicado-nao':'';
+                const info = reg.receita?`<small style="color:#667eea;">Receita: ${reg.receita}</small>`:'<small style="color:#999;">Nenhuma receita</small>';
+                const tr=document.createElement('tr');
+                tr.innerHTML=`
+                    <td><strong>${i+1}</strong></td>
                     <td>${dataStr}</td>
-                    <td>${obterDiaSemana(data)}</td>
+                    <td>${obterDiaSemana(d)}</td>
                     <td>
-                        <select class="${classeSelect}" onchange="atualizarAplicacao('${dataStr}', this.value, this)">
+                        <select class="${cls}" onchange="atualizarAplicacao('${dataStr}',this.value,this)">
                             <option value="">-- Selecione --</option>
-                            <option value="Sim" ${registro.aplicacao === 'Sim' ? 'selected' : ''}>Sim</option>
-                            <option value="Não" ${registro.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
+                            <option value="Sim" ${reg.aplicacao==='Sim'?'selected':''}>Sim</option>
+                            <option value="Não" ${reg.aplicacao==='Não'?'selected':''}>Não</option>
                         </select>
                     </td>
-                    <td>${receitaInfo}</td>
+                    <td>${info}</td>
                 `;
-
                 tbody.appendChild(tr);
             });
-
             await atualizarEstatisticas();
-        }
+        };
 
-        async function atualizarAplicacao(data, valor, selectElement) {
-            const aplicacoes = await carregarAplicacoes();
-
-            if (valor === '') {
-                delete aplicacoes[data];
-                selectElement.className = '';
+        window.atualizarAplicacao = async function(dataStr, valor, el) {
+            const apl = await carregarAplicacoes();
+            if (!valor) {
+                delete apl[dataStr];
+                el.className='';
             } else {
-                const receitaAtribuida = valor === 'Sim' ? await atribuirReceita(data) : null;
-
-                if (valor === 'Sim' && !receitaAtribuida) {
-                    alert('⚠️ Não há receitas disponíveis. Cadastre uma nova.');
-                }
-
-                aplicacoes[data] = {
-                    aplicacao: valor,
-                    receita: receitaAtribuida
-                };
-                selectElement.className = valor === 'Sim' ? 'aplicado-sim' : 'aplicado-nao';
+                const rec = valor==='Sim'?await atribuirReceita(dataStr):null;
+                if (valor==='Sim' && !rec) alert('Não há receitas com doses restantes.');
+                apl[dataStr]={aplicacao:valor,receita:rec};
+                el.className = valor==='Sim'?'aplicado-sim':'aplicado-nao';
             }
+            await salvarAplicacoesFirebase(apl);
+        };
 
-            await salvarAplicacoesFirebase(aplicacoes);
-        }
-
-        async function marcarTodasSim() {
-            if (!confirm('Marcar todas como aplicadas?')) return;
-
+        window.marcarTodasSim = async function() {
+            if (!confirm('Marcar todas as aplicações como realizadas?')) return;
             const datas = gerarDatasAplicacao();
-            const aplicacoes = {};
-
-            let receitaSuficiente = true;
-            for (let i = 0; i < datas.length; i++) {
+            const apl={};
+            let ok=true;
+            for (let i=0;i<datas.length;i++) {
                 const dataStr = formatarData(datas[i]);
-                const receitaAtribuida = await atribuirReceita(dataStr);
-
-                if (!receitaAtribuida && receitaSuficiente) {
-                    receitaSuficiente = false;
-                    alert(`⚠️ Receitas insuficientes a partir da aplicação #${i + 1}.`);
+                const rec = await atribuirReceita(dataStr);
+                if (!rec && ok) {
+                    ok=false;
+                    alert(`Receitas insuficientes a partir da aplicação #${i+1}.`);
                 }
-
-                aplicacoes[dataStr] = {
-                    aplicacao: 'Sim',
-                    receita: receitaAtribuida
-                };
+                apl[dataStr]={aplicacao:'Sim',receita:rec};
             }
+            await salvarAplicacoesFirebase(apl);
+        };
 
-            await salvarAplicacoesFirebase(aplicacoes);
-        }
-
-        async function limparTodas() {
-            if (!confirm('Limpar todos os registros?')) return;
+        window.limparTodas = async function() {
+            if (!confirm('Limpar todos os registros de aplicação?')) return;
             await salvarAplicacoesFirebase({});
+        };
+
+        // PWA service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load',()=>{
+                navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+            });
         }
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalReceita');
-            if (event.target == modal) {
-                fecharModalReceita();
-            }
-        }
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt',e=>{
+            e.preventDefault();
+            deferredPrompt=e;
+            document.getElementById('installPrompt').classList.add('show');
+        });
+        window.instalarApp = function() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.finally(()=>{
+                deferredPrompt=null;
+                document.getElementById('installPrompt').classList.remove('show');
+            });
+        };
+        window.fecharPromptInstalacao = function() {
+            document.getElementById('installPrompt').classList.remove('show');
+        };
 
-        async function exportarPDF() {
+        window.exportarPDF = async function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
             doc.setFontSize(18);
-            doc.setTextColor(102, 126, 234);
-            doc.text('Relatório de Controle de Medicação', 14, 20);
-
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text('Cipionato de Testosterona', 14, 28);
-
+            doc.setTextColor(102,126,234);
+            doc.text('Relatório de Controle de Medicação',14,20);
             doc.setFontSize(10);
-            doc.text(`Período: 07/02/2026 a 31/12/2026`, 14, 36);
-            doc.text(`Intervalo: Aplicação a cada 10 dias`, 14, 42);
-            doc.text(`Data: ${formatarData(new Date())}`, 14, 48);
+            doc.setTextColor(0,0,0);
+            doc.text('Cipionato de Testosterona',14,28);
+            doc.text('Período: 07/02/2026 a 31/12/2026',14,34);
+            doc.text('Intervalo: 10 dias corridos',14,40);
+            doc.text('Gerado em: '+formatarData(new Date()),14,46);
 
-            const aplicacoes = await carregarAplicacoes();
-            const receitas = await carregarReceitas();
+            const apl = await carregarAplicacoes();
+            const recs = await carregarReceitas();
             const datas = gerarDatasAplicacao();
-            const aplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Sim').length;
-            const naoAplicadas = Object.values(aplicacoes).filter(v => v.aplicacao === 'Não').length;
-            const taxa = datas.length > 0 ? Math.round((aplicadas / datas.length) * 100) : 0;
+            const aplicadas = Object.values(apl).filter(v=>v.aplicacao==='Sim').length;
+            const nao = Object.values(apl).filter(v=>v.aplicacao==='Não').length;
+            const taxa = datas.length?Math.round(aplicadas/datas.length*100):0;
 
             doc.setFontSize(11);
-            doc.setTextColor(102, 126, 234
+            doc.setTextColor(102,126,234);
+            doc.text('Estatísticas',14,56);
+            doc.setFontSize(10);
+            doc.setTextColor(0,0,0);
+            doc.text(`Previstas: ${datas.length}`,14,62);
+            doc.text(`Realizadas: ${aplicadas}`,14,68);
+            doc.text(`Não realizadas: ${nao}`,14,74);
+            doc.text(`Taxa de adesão: ${taxa}%`,14,80);
 
+            if (recs.length) {
+                const uso={};
+                recs.forEach(r=>uso[r.codigo]=0);
+                Object.values(apl).forEach(r=>{
+                    if (r.aplicacao==='Sim' && r.receita) uso[r.receita]=(uso[r.receita]||0)+1;
+                });
+                const linhas = recs.map(r=>{
+                    const usadas=uso[r.codigo]||0;
+                    const status=usadas>=dosesPorCaixa?'Esgotada':'Ativa';
+                    return [r.codigo,r.dataEmissao,`${usadas}/${dosesPorCaixa}`,status];
+                });
+                doc.autoTable({
+                    startY:88,
+                    head:[['Código','Emissão','Doses','Status']],
+                    body:linhas
+                });
+            }
+            doc.save('Controle_Medicacao.pdf');
+        };
+    </script>
+</body>
+</html>
