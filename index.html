@@ -13,7 +13,6 @@
     <title>Controle de Medicação - Cipionato de Testosterona</title>
 
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -579,166 +578,6 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
-            authDomain: "controle-medicacao-99cb5.firebaseapp.com",
-            projectId: "controle-medicacao-99cb5",
-            storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
-            messagingSenderId: "268683516299",
-            appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        enableIndexedDbPersistence(db).catch(() => {});
-
-        window.db = db;
-        window.auth = auth;
-        window.currentUserId = null;
-
-        window.mostrarLoading = function(show, texto='Conectando...') {
-            const overlay = document.getElementById('loadingOverlay');
-            const txt = document.querySelector('.loading-text');
-            if (txt) txt.textContent = texto;
-            overlay.classList.toggle('show', show);
-        };
-
-        window.atualizarStatusSync = function(status) {
-            const statusEl = document.getElementById('syncStatus');
-            const iconEl = document.getElementById('syncIcon');
-            const textEl = document.getElementById('syncText');
-            if (!statusEl || !iconEl || !textEl) return;
-            statusEl.className = 'sync-status ' + status;
-            if (status === 'online') { iconEl.textContent='🟢'; textEl.textContent='Online'; }
-            else if (status === 'offline') { iconEl.textContent='⚫'; textEl.textContent='Offline'; }
-            else { iconEl.textContent='🔄'; textEl.textContent='Sincronizando...'; }
-        };
-
-        window.trocarAba = function(aba) {
-            document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
-            if (aba==='login') {
-                document.querySelectorAll('.auth-tab')[0].classList.add('active');
-                document.getElementById('formLogin').classList.add('active');
-            } else {
-                document.querySelectorAll('.auth-tab')[1].classList.add('active');
-                document.getElementById('formRegistro').classList.add('active');
-            }
-        };
-
-        window.fazerLogin = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
-            mostrarLoading(true,'Fazendo login...');
-            try {
-                await signInWithEmailAndPassword(auth,email,senha);
-            } catch(err) {
-                mostrarLoading(false);
-                alert('Erro ao fazer login: '+err.message);
-            }
-        };
-
-        window.fazerRegistro = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('registroEmail').value;
-            const senha = document.getElementById('registroSenha').value;
-            const conf  = document.getElementById('registroConfirmaSenha').value;
-            if (senha!==conf) { alert('As senhas não conferem.'); return; }
-            mostrarLoading(true,'Criando conta...');
-            try {
-                await createUserWithEmailAndPassword(auth,email,senha);
-                alert('Conta criada. Você já está logado.');
-            } catch(err) {
-                mostrarLoading(false);
-                alert('Erro ao criar conta: '+err.message);
-            }
-        };
-
-        window.fazerLogout = async function() {
-            if (!confirm('Deseja sair da conta?')) return;
-            await signOut(auth);
-        };
-
-        window.carregarReceitas = async function() {
-            if (!window.currentUserId) return [];
-            const ref = collection(db,'usuarios',window.currentUserId,'receitas');
-            const snap = await getDocs(ref);
-            return snap.docs.map(d=>({id:d.id,...d.data()}));
-        };
-
-        window.salvarReceitaFirebase = async function(r) {
-            if (!window.currentUserId) return;
-            atualizarStatusSync('syncing');
-            await setDoc(doc(db,'usuarios',window.currentUserId,'receitas',r.codigo),r);
-            atualizarStatusSync('online');
-        };
-
-        window.excluirReceitaFirebase = async function(cod) {
-            if (!window.currentUserId) return;
-            atualizarStatusSync('syncing');
-            await deleteDoc(doc(db,'usuarios',window.currentUserId,'receitas',cod));
-            atualizarStatusSync('online');
-        };
-
-        window.carregarAplicacoes = async function() {
-            if (!window.currentUserId) return {};
-            const ref = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
-            const snap = await getDoc(ref);
-            return snap.exists()?snap.data():{};
-        };
-
-        window.salvarAplicacoesFirebase = async function(apl) {
-            if (!window.currentUserId) return;
-            atualizarStatusSync('syncing');
-            await setDoc(doc(db,'usuarios',window.currentUserId,'dados','aplicacoes'),apl);
-            atualizarStatusSync('online');
-        };
-
-        window.iniciarSincronizacao = function() {
-            if (!window.currentUserId) return;
-            const recRef = collection(db,'usuarios',window.currentUserId,'receitas');
-            onSnapshot(recRef,()=>{ console.log('Receitas atualizadas'); window.renderizarTabela?.(); });
-            const aplRef = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
-            onSnapshot(aplRef,()=>{ console.log('Aplicações atualizadas'); window.renderizarTabela?.(); });
-        };
-
-        async function inicializarApp() {
-            window.iniciarSincronizacao();
-            await window.gerarPlanoAplicacoes();
-            await window.renderizarTabela();
-        }
-
-        onAuthStateChanged(auth, async (user)=>{
-            if (user) {
-                try {
-                    window.currentUserId = user.uid;
-                    document.getElementById('userEmail').textContent = user.email || '(sem e-mail)';
-                    document.getElementById('authScreen').classList.remove('show');
-                    mostrarLoading(true,'Carregando dados...');
-                    atualizarStatusSync('online');
-                    await inicializarApp();
-                } catch(err) {
-                    console.error(err);
-                    alert('Erro ao carregar dados: '+err.message);
-                } finally {
-                    mostrarLoading(false);
-                }
-            } else {
-                document.getElementById('authScreen').classList.add('show');
-                mostrarLoading(false);
-                atualizarStatusSync('offline');
-            }
-        });
-    </script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
@@ -1222,5 +1061,132 @@
             doc.save('Controle_Medicacao.pdf');
         };
     </script>
-</body>
-</html>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
+            authDomain: "controle-medicacao-99cb5.firebaseapp.com",
+            projectId: "controle-medicacao-99cb5",
+            storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
+            messagingSenderId: "268683516299",
+            appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.auth = auth;
+        window.currentUserId = null;
+
+        window.mostrarLoading = function(show, texto='Conectando...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const txt = document.querySelector('.loading-text');
+            if (txt) txt.textContent = texto;
+            overlay.classList.toggle('show', show);
+        };
+
+        window.atualizarStatusSync = function(status) {
+            const statusEl = document.getElementById('syncStatus');
+            const iconEl = document.getElementById('syncIcon');
+            const textEl = document.getElementById('syncText');
+            if (!statusEl || !iconEl || !textEl) return;
+            statusEl.className = 'sync-status ' + status;
+            if (status === 'online') { iconEl.textContent='🟢'; textEl.textContent='Online'; }
+            else if (status === 'offline') { iconEl.textContent='⚫'; textEl.textContent='Offline'; }
+            else { iconEl.textContent='🔄'; textEl.textContent='Sincronizando...'; }
+        };
+
+        window.trocarAba = function(aba) {
+            document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+            if (aba==='login') {
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                document.getElementById('formLogin').classList.add('active');
+            } else {
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                document.getElementById('formRegistro').classList.add('active');
+            }
+        };
+
+        window.fazerLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            mostrarLoading(true,'Fazendo login...');
+            try {
+                await signInWithEmailAndPassword(auth,email,senha);
+            } catch(err) {
+                mostrarLoading(false);
+                alert('Erro ao fazer login: '+err.message);
+            }
+        };
+
+        window.fazerRegistro = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('registroEmail').value;
+            const senha = document.getElementById('registroSenha').value;
+            const conf  = document.getElementById('registroConfirmaSenha').value;
+            if (senha!==conf) { alert('As senhas não conferem.'); return; }
+            mostrarLoading(true,'Criando conta...');
+            try {
+                await createUserWithEmailAndPassword(auth,email,senha);
+                alert('Conta criada. Você já está logado.');
+            } catch(err) {
+                mostrarLoading(false);
+                alert('Erro ao criar conta: '+err.message);
+            }
+        };
+
+        window.fazerLogout = async function() {
+            if (!confirm('Deseja sair da conta?')) return;
+            await signOut(auth);
+        };
+
+        window.carregarReceitas = async function() {
+            if (!window.currentUserId) return [];
+            const ref = collection(db,'usuarios',window.currentUserId,'receitas');
+            const snap = await getDocs(ref);
+            return snap.docs.map(d=>({id:d.id,...d.data()}));
+        };
+
+        window.salvarReceitaFirebase = async function(r) {
+            if (!window.currentUserId) return;
+            atualizarStatusSync('syncing');
+            await setDoc(doc(db,'usuarios',window.currentUserId,'receitas',r.codigo),r);
+            atualizarStatusSync('online');
+        };
+
+        window.excluirReceitaFirebase = async function(cod) {
+            if (!window.currentUserId) return;
+            atualizarStatusSync('syncing');
+            await deleteDoc(doc(db,'usuarios',window.currentUserId,'receitas',cod));
+            atualizarStatusSync('online');
+        };
+
+        window.carregarAplicacoes = async function() {
+            if (!window.currentUserId) return {};
+            const ref = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
+            const snap = await getDoc(ref);
+            return snap.exists()?snap.data():{};
+        };
+
+        window.salvarAplicacoesFirebase = async function(apl) {
+            if (!window.currentUserId) return;
+            atualizarStatusSync('syncing');
+            await setDoc(doc(db,'usuarios',window.currentUserId,'dados','aplicacoes'),apl);
+            atualizarStatusSync('online');
+        };
+
+        window.iniciarSincronizacao = function() {
+            if (!window.currentUserId) return;
+            const recRef = collection(db,'usuarios',window.currentUserId,'receitas');
+            onSnapshot(recRef,()=>{ 
+                console.log('Receitas atualizadas'); 
+                if(typeof window.renderiz
+
