@@ -336,6 +336,10 @@
             outline: none;
             border-color: #667eea;
         }
+        .form-group input:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
         .form-group small { display: block; margin-top: 5px; color: #666; font-size: 12px; }
 
         .close {
@@ -485,13 +489,13 @@
             <div class="info-box">
                 <h3>ℹ️ Informações do Tratamento</h3>
                 <p><strong>Período:</strong> 07/02/2026 a 31/12/2026</p>
-                <p><strong>Intervalo:</strong> Aplicação a cada 10 dias corridos</p>
+                <p><strong>Intervalo:</strong> Variável conforme receita cadastrada</p>
                 <p><strong>Medicamento:</strong> Cipionato de Testosterona (controlado)</p>
             </div>
 
             <div class="warning-box">
                 <h3>⚠️ Controle de Receitas</h3>
-                <p>Cada receita permite 3 doses (1 caixa). Mantenha o cadastro atualizado.</p>
+                <p>Cada receita permite 3 doses (1 caixa). O interstício entre aplicações é definido ao cadastrar cada receita.</p>
             </div>
 
             <div class="controls">
@@ -557,6 +561,11 @@
                 <div class="form-group">
                     <label for="dataValidade">Data de Validade</label>
                     <input type="date" id="dataValidade">
+                </div>
+                <div class="form-group">
+                    <label for="intersticioAplicacao">Interstício entre Aplicações (dias) *</label>
+                    <input type="number" id="intersticioAplicacao" min="1" max="365" value="10" required>
+                    <small>Intervalo em dias entre cada uma das 3 aplicações desta receita</small>
                 </div>
                 <div class="form-group">
                     <label for="observacoes">Observações</label>
@@ -703,6 +712,7 @@
 
         async function inicializarApp() {
             window.iniciarSincronizacao();
+            await window.gerarPlanoAplicacoes();
             await window.renderizarTabela();
         }
 
@@ -733,19 +743,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <script>
-        const intervalo = 10;
         const dosesPorCaixa = 3;
-
-        function gerarDatasAplicacao() {
-            const datas = [];
-            let dataAtual = new Date(2026,1,7,12,0,0);
-            const limite = new Date(2026,11,31,12,0,0);
-            while (dataAtual <= limite) {
-                datas.push(new Date(dataAtual));
-                dataAtual.setDate(dataAtual.getDate() + intervalo);
-            }
-            return datas;
-        }
+        window.planoAplicacoes = [];
 
         function formatarData(d) {
             const dia = String(d.getDate()).padStart(2,'0');
@@ -757,6 +756,58 @@
         function obterDiaSemana(d) {
             const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
             return dias[d.getDay()];
+        }
+
+        window.gerarPlanoAplicacoes = async function() {
+            const receitas = await carregarReceitas();
+            receitas.sort((a,b) => new Date(a.dataCadastro) - new Date(b.dataCadastro));
+
+            const plano = [];
+            let dataAtual = new Date(2026,1,7,12,0,0);
+            const dataLimite = new Date(2026,11,31,12,0,0);
+
+            for (const receita of receitas) {
+                const intersticio = receita.intersticioAplicacao || 10;
+
+                for (let i=0; i<dosesPorCaixa; i++) {
+                    if (dataAtual <= dataLimite) {
+                        plano.push({
+                            data: new Date(dataAtual),
+                            receita: receita.codigo,
+                            intersticio: intersticio
+                        });
+
+                        if (i < dosesPorCaixa - 1) {
+                            dataAtual.setDate(dataAtual.getDate() + intersticio);
+                        }
+                    }
+                }
+
+                if (receitas.indexOf(receita) < receitas.length - 1) {
+                    const proximaReceita = receitas[receitas.indexOf(receita) + 1];
+                    const proximoIntersticio = proximaReceita.intersticioAplicacao || 10;
+                    dataAtual.setDate(dataAtual.getDate() + proximoIntersticio);
+                }
+            }
+
+            window.planoAplicacoes = plano;
+        };
+
+        function gerarDatasAplicacao() {
+            if (window.planoAplicacoes && window.planoAplicacoes.length > 0) {
+                return window.planoAplicacoes.map(p => p.data);
+            }
+
+            const datas = [];
+            let dataAtual = new Date(2026,1,7,12,0,0);
+            const limite = new Date(2026,11,31,12,0,0);
+            const intersticioDefault = 10;
+
+            while (dataAtual <= limite) {
+                datas.push(new Date(dataAtual));
+                dataAtual.setDate(dataAtual.getDate() + intersticioDefault);
+            }
+            return datas;
         }
 
         async function atribuirReceita(dataStr) {
@@ -777,6 +828,7 @@
             const modal = document.getElementById('modalReceita');
             const titulo = document.getElementById('modalReceitaTitulo');
             const idInput = document.getElementById('receitaEditandoId');
+
             if (codigo) {
                 titulo.textContent = '✏️ Editar Receita';
                 idInput.value = codigo;
@@ -791,6 +843,8 @@
                         document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
                     } else document.getElementById('dataValidade').value='';
                     document.getElementById('observacoes').value = r.observacoes || '';
+                    document.getElementById('intersticioAplicacao').value = r.intersticioAplicacao || 10;
+                    document.getElementById('intersticioAplicacao').disabled = true;
                 });
             } else {
                 titulo.textContent = '📝 Cadastrar Nova Receita';
@@ -799,6 +853,8 @@
                 document.getElementById('dataEmissao').value='';
                 document.getElementById('dataValidade').value='';
                 document.getElementById('observacoes').value='';
+                document.getElementById('intersticioAplicacao').value='10';
+                document.getElementById('intersticioAplicacao').disabled = false;
             }
             modal.style.display='block';
         };
@@ -812,17 +868,29 @@
             const emissao = document.getElementById('dataEmissao').value;
             const validade = document.getElementById('dataValidade').value;
             const obs = document.getElementById('observacoes').value.trim();
+            const intersticio = parseInt(document.getElementById('intersticioAplicacao').value);
             const editId = document.getElementById('receitaEditandoId').value;
 
-            if (!codigo || !emissao) { alert('Preencha código e data de emissão.'); return; }
+            if (!codigo || !emissao) { 
+                alert('Preencha código e data de emissão.'); 
+                return; 
+            }
+
+            if (!intersticio || intersticio < 1 || intersticio > 365) {
+                alert('Interstício deve estar entre 1 e 365 dias.');
+                return;
+            }
 
             const receitas = await carregarReceitas();
+
             if (!editId && receitas.some(r=>r.codigo===codigo)) {
-                alert('Já existe receita com esse código.'); return;
+                alert('Já existe receita com esse código.'); 
+                return;
             }
 
             if (editId && codigo!==editId && receitas.some(r=>r.codigo===codigo)) {
-                alert('Já existe receita com esse novo código.'); return;
+                alert('Já existe receita com esse novo código.'); 
+                return;
             }
 
             if (editId && codigo!==editId) {
@@ -834,16 +902,26 @@
                 await excluirReceitaFirebase(editId);
             }
 
+            const receitaExistente = receitas.find(r => r.codigo === (editId || codigo));
+            const intersticioFinal = editId ? (receitaExistente?.intersticioAplicacao || 10) : intersticio;
+
             const rec = {
                 codigo,
                 dataEmissao: formatarData(new Date(emissao+'T12:00:00')),
                 dataValidade: validade?formatarData(new Date(validade+'T12:00:00')):null,
                 observacoes: obs||null,
-                dataCadastro: new Date().toISOString()
+                intersticioAplicacao: intersticioFinal,
+                dataCadastro: receitaExistente?.dataCadastro || new Date().toISOString()
             };
+
             await salvarReceitaFirebase(rec);
             fecharModalReceita();
-            alert(editId?'Receita atualizada.':'Receita cadastrada.');
+
+            if (!editId) {
+                await gerarPlanoAplicacoes();
+            }
+
+            alert(editId?'Receita atualizada.':'Receita cadastrada. Datas recalculadas.');
         };
 
         window.excluirReceita = async function(codigo) {
@@ -854,6 +932,7 @@
             });
             await salvarAplicacoesFirebase(apl);
             await excluirReceitaFirebase(codigo);
+            await gerarPlanoAplicacoes();
             alert('Receita excluída.');
         };
 
@@ -940,6 +1019,7 @@
                         </div>`:''}
                         <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
                         <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
+                        <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
                         ${r.dataValidade?`<p><strong>Validade:</strong> ${r.dataValidade}</p>`:''}
                         ${r.observacoes?`<p><strong>Obs:</strong> ${r.observacoes}</p>`:''}
                         <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
@@ -1102,7 +1182,7 @@
             doc.setTextColor(0,0,0);
             doc.text('Cipionato de Testosterona',14,28);
             doc.text('Período: 07/02/2026 a 31/12/2026',14,34);
-            doc.text('Intervalo: 10 dias corridos',14,40);
+            doc.text('Intervalo: Variável conforme receita',14,40);
             doc.text('Gerado em: '+formatarData(new Date()),14,46);
 
             const apl = await carregarAplicacoes();
@@ -1131,11 +1211,11 @@
                 const linhas = recs.map(r=>{
                     const usadas=uso[r.codigo]||0;
                     const status=usadas>=dosesPorCaixa?'Esgotada':'Ativa';
-                    return [r.codigo,r.dataEmissao,`${usadas}/${dosesPorCaixa}`,status];
+                    return [r.codigo,r.dataEmissao,`${r.intersticioAplicacao||10} dias`,`${usadas}/${dosesPorCaixa}`,status];
                 });
                 doc.autoTable({
                     startY:88,
-                    head:[['Código','Emissão','Doses','Status']],
+                    head:[['Código','Emissão','Interstício','Doses','Status']],
                     body:linhas
                 });
             }
