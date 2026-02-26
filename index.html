@@ -13,6 +13,7 @@
     <title>Controle de Medicação - Cipionato de Testosterona</title>
 
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -68,7 +69,7 @@
             gap: 5px;
         }
 
-        .sync-status.online { background: rgba(40, 167, 69, 0.3); }
+        .sync-status.online  { background: rgba(40, 167, 69, 0.3); }
         .sync-status.offline { background: rgba(220, 53, 69, 0.3); }
         .sync-status.syncing { background: rgba(255, 193, 7, 0.3); }
 
@@ -135,7 +136,7 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
         .auth-box h2 { color: #667eea; margin-bottom: 10px; font-size: 24px; }
-        .auth-box p { color: #666; margin-bottom: 25px; font-size: 14px; }
+        .auth-box p  { color: #666; margin-bottom: 25px; font-size: 14px; }
 
         .auth-tabs {
             display: flex;
@@ -155,10 +156,7 @@
             color: #666;
             transition: all 0.3s;
         }
-        .auth-tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
+        .auth-tab.active { color: #667eea; border-bottom-color: #667eea; }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
 
@@ -174,14 +172,14 @@
             border-left: 4px solid #667eea;
         }
         .info-box h3 { color: #667eea; margin-bottom: 8px; font-size: 16px; }
-        .info-box p { color: #666; font-size: 14px; margin-bottom: 5px; }
+        .info-box p  { color: #666; font-size: 14px; margin-bottom: 5px; }
 
         .warning-box {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
         }
         .warning-box h3 { color: #856404; margin-bottom: 8px; font-size: 16px; }
-        .warning-box p { color: #856404; font-size: 14px; }
+        .warning-box p  { color: #856404; font-size: 14px; }
 
         .controls {
             display: flex;
@@ -205,8 +203,8 @@
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
         .btn-success { background: #28a745; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-info { background: #17a2b8; color: white; }
+        .btn-danger  { background: #dc3545; color: white; }
+        .btn-info    { background: #17a2b8; color: white; }
         .btn-warning { background: #ffc107; color: #333; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
 
@@ -253,15 +251,10 @@
             color: #721c24;
             font-weight: 600;
         }
-
         select option:disabled {
             color: #999;
             font-style: italic;
             background: #f5f5f5;
-        }
-
-        select:has(option[value="Sim"]:disabled) {
-            border-left: 3px solid #ffc107;
         }
 
         .stats {
@@ -310,7 +303,7 @@
         }
         @keyframes slideDown {
             from { transform: translateY(-50px); opacity: 0; }
-            to   { transform: translateY(0); opacity: 1; }
+            to   { transform: translateY(0);     opacity: 1; }
         }
 
         .modal-header {
@@ -320,21 +313,31 @@
             border-radius: 15px 15px 0 0;
         }
         .modal-header h2 { font-size: 22px; margin: 0; }
-        .modal-body { padding: 30px; }
-        .modal-footer { padding: 20px 30px; border-top: 1px solid #dee2e6; display: flex; gap: 10px; justify-content: flex-end; }
+        .modal-body   { padding: 30px; }
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
 
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
         .form-group input {
-            width: 100%; padding: 12px;
+            width: 100%;
+            padding: 12px;
             border: 2px solid #dee2e6;
             border-radius: 8px;
             font-size: 14px;
         }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+        .form-group input:focus  { outline: none; border-color: #667eea; }
         .form-group input:disabled {
             background-color: #e9ecef;
             cursor: not-allowed;
@@ -359,7 +362,7 @@
             font-weight: 600;
             margin-left: 5px;
         }
-        .receita-ativa { background: #d4edda; color: #155724; }
+        .receita-ativa    { background: #d4edda; color: #155724; }
         .receita-esgotada { background: #f8d7da; color: #721c24; }
 
         .receitas-list { margin-top: 20px; }
@@ -372,7 +375,7 @@
             position: relative;
         }
         .receita-item h4 { color: #667eea; font-size: 14px; margin-bottom: 8px; }
-        .receita-item p { font-size: 13px; color: #666; margin: 3px 0; }
+        .receita-item p  { font-size: 13px; color: #666; margin: 3px 0; }
         .receita-item .progress-bar {
             background: #e9ecef;
             height: 8px;
@@ -399,7 +402,7 @@
             .container { box-shadow: none; }
         }
 
-        @media (max-width:768px) {
+        @media (max-width: 768px) {
             body { padding: 0; }
             .container { border-radius: 0; }
             .header h1 { font-size: 22px; }
@@ -415,6 +418,8 @@
     </style>
 </head>
 <body>
+
+    <!-- ===== TELA DE AUTENTICAÇÃO ===== -->
     <div id="authScreen" class="auth-screen show">
         <div class="auth-box">
             <h2>🔐 Controle de Medicação</h2>
@@ -422,7 +427,7 @@
 
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="trocarAba('login')">Login</button>
-                <button class="auth-tab" onclick="trocarAba('registro')">Criar Conta</button>
+                <button class="auth-tab"        onclick="trocarAba('registro')">Criar Conta</button>
             </div>
 
             <form id="formLogin" class="auth-form active" onsubmit="fazerLogin(event)">
@@ -457,11 +462,13 @@
         </div>
     </div>
 
+    <!-- ===== LOADING ===== -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Conectando...</div>
     </div>
 
+    <!-- ===== PROMPT DE INSTALAÇÃO ===== -->
     <div id="installPrompt" class="install-prompt">
         <span>📱 Instalar este app na tela inicial?</span>
         <div>
@@ -470,6 +477,7 @@
         </div>
     </div>
 
+    <!-- ===== CONTAINER PRINCIPAL ===== -->
     <div class="container">
         <div class="header">
             <div class="user-info">
@@ -498,10 +506,10 @@
             </div>
 
             <div class="controls">
-                <button class="btn btn-info" onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
-                <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
-                <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
-                <button class="btn btn-danger" onclick="limparTodas()">✗ Limpar todas</button>
+                <button class="btn btn-info"    onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
+                <button class="btn btn-primary"  onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
+                <button class="btn btn-success"  onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
+                <button class="btn btn-danger"   onclick="limparTodas()">✗ Limpar todas</button>
             </div>
 
             <div class="stats">
@@ -512,9 +520,9 @@
             </div>
 
             <div class="stats">
-                <div class="stat-card" style="border-left-color:#17a2b8;"><h4>Receitas Cadastradas</h4><p id="totalReceitas" style="color:#17a2b8;">0</p></div>
-                <div class="stat-card" style="border-left-color:#28a745;"><h4>Doses Disponíveis</h4><p id="dosesDisponiveis" style="color:#28a745;">0</p></div>
-                <div class="stat-card" style="border-left-color:#ffc107;"><h4>Doses Utilizadas</h4><p id="dosesUtilizadas" style="color:#ffc107;">0</p></div>
+                <div class="stat-card" style="border-left-color:#17a2b8;"><h4>Receitas Cadastradas</h4><p id="totalReceitas"      style="color:#17a2b8;">0</p></div>
+                <div class="stat-card" style="border-left-color:#28a745;"><h4>Doses Disponíveis</h4>  <p id="dosesDisponiveis"   style="color:#28a745;">0</p></div>
+                <div class="stat-card" style="border-left-color:#ffc107;"><h4>Doses Utilizadas</h4>   <p id="dosesUtilizadas"    style="color:#ffc107;">0</p></div>
                 <div class="stat-card" style="border-left-color:#dc3545;"><h4>Receitas Necessárias</h4><p id="receitasNecessarias" style="color:#dc3545;">0</p></div>
             </div>
 
@@ -540,6 +548,7 @@
         </div>
     </div>
 
+    <!-- ===== MODAL DE RECEITA ===== -->
     <div id="modalReceita" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -572,540 +581,71 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" onclick="fecharModalReceita()">Cancelar</button>
-                <button class="btn btn-success" onclick="salvarReceita()">Salvar</button>
+                <button class="btn btn-danger"  onclick="fecharModalReceita()">Cancelar</button>
+                <button class="btn btn-success"  onclick="salvarReceita()">Salvar</button>
             </div>
         </div>
     </div>
 
+    <!-- ===== LIBS PDF ===== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <script>
-        const dosesPorCaixa = 3;
-        window.planoAplicacoes = [];
-
-        function formatarData(d) {
-            const dia = String(d.getDate()).padStart(2,'0');
-            const mes = String(d.getMonth()+1).padStart(2,'0');
-            const ano = d.getFullYear();
-            return `${dia}/${mes}/${ano}`;
-        }
-
-        function obterDiaSemana(d) {
-            const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-            return dias[d.getDay()];
-        }
-
-        window.gerarPlanoAplicacoes = async function() {
-            const receitas = await carregarReceitas();
-            receitas.sort((a,b) => new Date(a.dataCadastro) - new Date(b.dataCadastro));
-
-            const plano = [];
-            let dataAtual = new Date(2026,1,7,12,0,0);
-            const dataLimite = new Date(2026,11,31,12,0,0);
-
-            for (const receita of receitas) {
-                const intersticio = receita.intersticioAplicacao || 10;
-
-                for (let i=0; i<dosesPorCaixa; i++) {
-                    if (dataAtual <= dataLimite) {
-                        plano.push({
-                            data: new Date(dataAtual),
-                            receita: receita.codigo,
-                            intersticio: intersticio
-                        });
-
-                        if (i < dosesPorCaixa - 1) {
-                            dataAtual.setDate(dataAtual.getDate() + intersticio);
-                        }
-                    }
-                }
-
-                if (receitas.indexOf(receita) < receitas.length - 1) {
-                    const proximaReceita = receitas[receitas.indexOf(receita) + 1];
-                    const proximoIntersticio = proximaReceita.intersticioAplicacao || 10;
-                    dataAtual.setDate(dataAtual.getDate() + proximoIntersticio);
-                }
-            }
-
-            window.planoAplicacoes = plano;
-        };
-
-        function gerarDatasAplicacao() {
-            if (window.planoAplicacoes && window.planoAplicacoes.length > 0) {
-                return window.planoAplicacoes.map(p => p.data);
-            }
-
-            const datas = [];
-            let dataAtual = new Date(2026,1,7,12,0,0);
-            const limite = new Date(2026,11,31,12,0,0);
-            const intersticioDefault = 10;
-
-            while (dataAtual <= limite) {
-                datas.push(new Date(dataAtual));
-                dataAtual.setDate(dataAtual.getDate() + intersticioDefault);
-            }
-            return datas;
-        }
-
-        async function atribuirReceita(dataStr) {
-            const receitas = await carregarReceitas();
-            const aplicacoes = await carregarAplicacoes();
-            const uso = {};
-            receitas.forEach(r=>uso[r.codigo]=0);
-            Object.values(aplicacoes).forEach(reg=>{
-                if (reg.aplicacao==='Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita]||0)+1;
-            });
-            for (const r of receitas) {
-                if ((uso[r.codigo]||0) < dosesPorCaixa) return r.codigo;
-            }
-            return null;
-        }
-
-        window.abrirModalReceita = function(codigo=null) {
-            const modal = document.getElementById('modalReceita');
-            const titulo = document.getElementById('modalReceitaTitulo');
-            const idInput = document.getElementById('receitaEditandoId');
-
-            if (codigo) {
-                titulo.textContent = '✏️ Editar Receita';
-                idInput.value = codigo;
-                carregarReceitas().then(rs=>{
-                    const r = rs.find(x=>x.codigo===codigo);
-                    if (!r) return;
-                    document.getElementById('codigoReceita').value = r.codigo;
-                    const [d,m,a] = r.dataEmissao.split('/');
-                    document.getElementById('dataEmissao').value = `${a}-${m}-${d}`;
-                    if (r.dataValidade) {
-                        const [dv,mv,av] = r.dataValidade.split('/');
-                        document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
-                    } else document.getElementById('dataValidade').value='';
-                    document.getElementById('observacoes').value = r.observacoes || '';
-                    document.getElementById('intersticioAplicacao').value = r.intersticioAplicacao || 10;
-                    document.getElementById('intersticioAplicacao').disabled = true;
-                });
-            } else {
-                titulo.textContent = '📝 Cadastrar Nova Receita';
-                idInput.value='';
-                document.getElementById('codigoReceita').value='';
-                document.getElementById('dataEmissao').value='';
-                document.getElementById('dataValidade').value='';
-                document.getElementById('observacoes').value='';
-                document.getElementById('intersticioAplicacao').value='10';
-                document.getElementById('intersticioAplicacao').disabled = false;
-            }
-            modal.style.display='block';
-        };
-
-        window.fecharModalReceita = function() {
-            document.getElementById('modalReceita').style.display='none';
-        };
-
-        window.salvarReceita = async function() {
-            const codigo = document.getElementById('codigoReceita').value.trim();
-            const emissao = document.getElementById('dataEmissao').value;
-            const validade = document.getElementById('dataValidade').value;
-            const obs = document.getElementById('observacoes').value.trim();
-            const intersticio = parseInt(document.getElementById('intersticioAplicacao').value);
-            const editId = document.getElementById('receitaEditandoId').value;
-
-            if (!codigo || !emissao) { 
-                alert('Preencha código e data de emissão.'); 
-                return; 
-            }
-
-            if (!intersticio || intersticio < 1 || intersticio > 365) {
-                alert('Interstício deve estar entre 1 e 365 dias.');
-                return;
-            }
-
-            const receitas = await carregarReceitas();
-
-            if (!editId && receitas.some(r=>r.codigo===codigo)) {
-                alert('Já existe receita com esse código.'); 
-                return;
-            }
-
-            if (editId && codigo!==editId && receitas.some(r=>r.codigo===codigo)) {
-                alert('Já existe receita com esse novo código.'); 
-                return;
-            }
-
-            if (editId && codigo!==editId) {
-                const aplicacoes = await carregarAplicacoes();
-                Object.keys(aplicacoes).forEach(data=>{
-                    if (aplicacoes[data].receita===editId) aplicacoes[data].receita=codigo;
-                });
-                await salvarAplicacoesFirebase(aplicacoes);
-                await excluirReceitaFirebase(editId);
-            }
-
-            const receitaExistente = receitas.find(r => r.codigo === (editId || codigo));
-            const intersticioFinal = editId ? (receitaExistente?.intersticioAplicacao || 10) : intersticio;
-
-            const rec = {
-                codigo,
-                dataEmissao: formatarData(new Date(emissao+'T12:00:00')),
-                dataValidade: validade?formatarData(new Date(validade+'T12:00:00')):null,
-                observacoes: obs||null,
-                intersticioAplicacao: intersticioFinal,
-                dataCadastro: receitaExistente?.dataCadastro || new Date().toISOString()
-            };
-
-            await salvarReceitaFirebase(rec);
-            fecharModalReceita();
-
-            if (!editId) {
-                await gerarPlanoAplicacoes();
-            }
-
-            alert(editId?'Receita atualizada.':'Receita cadastrada. Datas recalculadas.');
-        };
-
-        window.excluirReceita = async function(codigo) {
-            if (!confirm(`Excluir receita ${codigo}?`)) return;
-            const apl = await carregarAplicacoes();
-            Object.keys(apl).forEach(d=>{
-                if (apl[d].receita===codigo) apl[d].receita=null;
-            });
-            await salvarAplicacoesFirebase(apl);
-            await excluirReceitaFirebase(codigo);
-            await gerarPlanoAplicacoes();
-            alert('Receita excluída.');
-        };
-
-        async function podeEditarOuExcluir(receita, todas) {
-            const ultima = todas[todas.length-1];
-            if (!ultima || ultima.codigo!==receita.codigo) return false;
-            const apl = await carregarAplicacoes();
-            let usadas = 0;
-            Object.values(apl).forEach(r=>{
-                if (r.aplicacao==='Sim' && r.receita===receita.codigo) usadas++;
-            });
-            return usadas<dosesPorCaixa;
-        }
-
-        window.atualizarEstatisticas = async function() {
-            const apl = await carregarAplicacoes();
-            const recs = await carregarReceitas();
-            const datas = gerarDatasAplicacao();
-            const total = datas.length;
-
-            const aplicadas = Object.values(apl).filter(x => 
-                x.aplicacao === 'Sim' && x.receita !== null && x.receita !== undefined
-            ).length;
-
-            const nao = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
-            const taxa = total ? Math.round(aplicadas / total * 100) : 0;
-
-            document.getElementById('totalAplicacoes').textContent = total;
-            document.getElementById('totalAplicadas').textContent = aplicadas;
-            document.getElementById('totalNaoAplicadas').textContent = nao;
-            document.getElementById('taxaAdesao').textContent = taxa + '%';
-
-            const totalRec = recs.length;
-
-            const dosesUtilizadasPorReceita = {};
-            recs.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
-
-            Object.values(apl).forEach(registro => {
-                if (registro.aplicacao === 'Sim' && registro.receita) {
-                    dosesUtilizadasPorReceita[registro.receita] = 
-                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
-                }
-            });
-
-            const dosesUtilizadas = Object.values(dosesUtilizadasPorReceita).reduce((a, b) => a + b, 0);
-            const dosesTotais = totalRec * dosesPorCaixa;
-            const dosesDisponiveis = Math.max(0, dosesTotais - dosesUtilizadas);
-            const nec = Math.ceil(total / dosesPorCaixa);
-
-            document.getElementById('totalReceitas').textContent = totalRec;
-            document.getElementById('dosesDisponiveis').textContent = dosesDisponiveis;
-            document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
-            document.getElementById('receitasNecessarias').textContent = nec;
-
-            await window.atualizarListaReceitas();
-        };
-
-        window.atualizarListaReceitas = async function() {
-            const recs = await carregarReceitas();
-            const apl = await carregarAplicacoes();
-            const container = document.getElementById('receitasContainer');
-            const bloco = document.getElementById('listaReceitas');
-            if (!recs.length) { bloco.style.display='none'; return; }
-            bloco.style.display='block';
-
-            const uso={};
-            recs.forEach(r=>uso[r.codigo]=0);
-            Object.values(apl).forEach(r=>{
-                if (r.aplicacao==='Sim' && r.receita) uso[r.receita]=(uso[r.receita]||0)+1;
-            });
-
-            const html=[];
-            for (const r of recs) {
-                const usadas = uso[r.codigo]||0;
-                const perc = usadas/dosesPorCaixa*100;
-                const status = usadas>=dosesPorCaixa?'Esgotada':'Ativa';
-                const cls = usadas>=dosesPorCaixa?'receita-esgotada':'receita-ativa';
-                const pode = await podeEditarOuExcluir(r,recs);
-                html.push(`
-                    <div class="receita-item">
-                        ${pode?`<div class="receita-actions">
-                            <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${r.codigo}')">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="excluirReceita('${r.codigo}')">🗑️</button>
-                        </div>`:''}
-                        <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
-                        <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
-                        <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
-                        ${r.dataValidade?`<p><strong>Validade:</strong> ${r.dataValidade}</p>`:''}
-                        ${r.observacoes?`<p><strong>Obs:</strong> ${r.observacoes}</p>`:''}
-                        <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
-                        <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
-                    </div>
-                `);
-            }
-            container.innerHTML = html.join('');
-        };
-
-        window.renderizarTabela = async function() {
-            const datas = gerarDatasAplicacao();
-            const apl = await carregarAplicacoes();
-            const receitas = await carregarReceitas();
-            const tbody = document.getElementById('corpoTabela');
-            tbody.innerHTML = '';
-
-            const dosesUtilizadasPorReceita = {};
-            receitas.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
-
-            Object.values(apl).forEach(registro => {
-                if (registro.aplicacao === 'Sim' && registro.receita) {
-                    dosesUtilizadasPorReceita[registro.receita] = 
-                        (dosesUtilizadasPorReceita[registro.receita] || 0) + 1;
-                }
-            });
-
-            const temReceitaDisponivel = receitas.some(r => {
-                const usadas = dosesUtilizadasPorReceita[r.codigo] || 0;
-                return usadas < dosesPorCaixa;
-            });
-
-            datas.forEach((d, i) => {
-                const dataStr = formatarData(d);
-                const reg = apl[dataStr] || {aplicacao: '', receita: null};
-                const cls = reg.aplicacao === 'Sim' ? 'aplicado-sim' : 
-                           reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
-
-                const info = reg.receita ? 
-                    `<small style="color:#667eea;">Receita: ${reg.receita}</small>` : 
-                    '<small style="color:#999;">Nenhuma receita</small>';
-
-                const tr = document.createElement('tr');
-                const simDisabled = !temReceitaDisponivel && reg.aplicacao !== 'Sim';
-
-                tr.innerHTML = `
-                    <td><strong>${i + 1}</strong></td>
-                    <td>${dataStr}</td>
-                    <td>${obterDiaSemana(d)}</td>
-                    <td>
-                        <select class="${cls}" 
-                                data-data="${dataStr}"
-                                data-tem-receita="${temReceitaDisponivel}"
-                                onchange="atualizarAplicacao('${dataStr}', this.value, this)">
-                            <option value="">-- Selecione --</option>
-                            <option value="Sim" ${reg.aplicacao === 'Sim' ? 'selected' : ''} ${simDisabled ? 'disabled' : ''}>
-                                Sim${simDisabled ? ' (sem receita)' : ''}
-                            </option>
-                            <option value="Não" ${reg.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
-                        </select>
-                    </td>
-                    <td>${info}</td>
-                `;
-
-                tbody.appendChild(tr);
-            });
-
-            await atualizarEstatisticas();
-        };
-
-        window.atualizarAplicacao = async function(dataStr, valor, el) {
-            const apl = await carregarAplicacoes();
-            const temReceita = el.getAttribute('data-tem-receita') === 'true';
-
-            if (!valor) {
-                delete apl[dataStr];
-                el.className = '';
-            } else if (valor === 'Sim') {
-                if (!temReceita) {
-                    alert('Não há receitas com doses restantes.');
-                    el.value = apl[dataStr]?.aplicacao || '';
-                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
-                    return;
-                }
-
-                const rec = await atribuirReceita(dataStr);
-
-                if (!rec) {
-                    alert('Não há receitas com doses restantes.');
-                    el.value = apl[dataStr]?.aplicacao || '';
-                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
-                    return;
-                }
-
-                apl[dataStr] = {aplicacao: 'Sim', receita: rec};
-                el.className = 'aplicado-sim';
-            } else {
-                apl[dataStr] = {aplicacao: 'Não', receita: null};
-                el.className = 'aplicado-nao';
-            }
-
-            await salvarAplicacoesFirebase(apl);
-        };
-
-        window.marcarTodasSim = async function() {
-            if (!confirm('Marcar todas as aplicações como realizadas?')) return;
-            const datas = gerarDatasAplicacao();
-            const apl={};
-            let ok=true;
-            for (let i=0;i<datas.length;i++) {
-                const dataStr = formatarData(datas[i]);
-                const rec = await atribuirReceita(dataStr);
-                if (!rec && ok) {
-                    ok=false;
-                    alert(`Receitas insuficientes a partir da aplicação #${i+1}.`);
-                }
-                apl[dataStr]={aplicacao:'Sim',receita:rec};
-            }
-            await salvarAplicacoesFirebase(apl);
-        };
-
-        window.limparTodas = async function() {
-            if (!confirm('Limpar todos os registros de aplicação?')) return;
-            await salvarAplicacoesFirebase({});
-        };
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load',()=>{
-                navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-            });
-        }
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt',e=>{
-            e.preventDefault();
-            deferredPrompt=e;
-            document.getElementById('installPrompt').classList.add('show');
-        });
-
-        window.instalarApp = function() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.finally(()=>{
-                deferredPrompt=null;
-                document.getElementById('installPrompt').classList.remove('show');
-            });
-        };
-
-        window.fecharPromptInstalacao = function() {
-            document.getElementById('installPrompt').classList.remove('show');
-        };
-
-        window.exportarPDF = async function() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.setTextColor(102,126,234);
-            doc.text('Relatório de Controle de Medicação',14,20);
-            doc.setFontSize(10);
-            doc.setTextColor(0,0,0);
-            doc.text('Cipionato de Testosterona',14,28);
-            doc.text('Período: 07/02/2026 a 31/12/2026',14,34);
-            doc.text('Intervalo: Variável conforme receita',14,40);
-            doc.text('Gerado em: '+formatarData(new Date()),14,46);
-
-            const apl = await carregarAplicacoes();
-            const recs = await carregarReceitas();
-            const datas = gerarDatasAplicacao();
-            const aplicadas = Object.values(apl).filter(v=>v.aplicacao==='Sim' && v.receita).length;
-            const nao = Object.values(apl).filter(v=>v.aplicacao==='Não').length;
-            const taxa = datas.length?Math.round(aplicadas/datas.length*100):0;
-
-            doc.setFontSize(11);
-            doc.setTextColor(102,126,234);
-            doc.text('Estatísticas',14,56);
-            doc.setFontSize(10);
-            doc.setTextColor(0,0,0);
-            doc.text(`Previstas: ${datas.length}`,14,62);
-            doc.text(`Realizadas: ${aplicadas}`,14,68);
-            doc.text(`Não realizadas: ${nao}`,14,74);
-            doc.text(`Taxa de adesão: ${taxa}%`,14,80);
-
-            if (recs.length) {
-                const uso={};
-                recs.forEach(r=>uso[r.codigo]=0);
-                Object.values(apl).forEach(r=>{
-                    if (r.aplicacao==='Sim' && r.receita) uso[r.receita]=(uso[r.receita]||0)+1;
-                });
-                const linhas = recs.map(r=>{
-                    const usadas=uso[r.codigo]||0;
-                    const status=usadas>=dosesPorCaixa?'Esgotada':'Ativa';
-                    return [r.codigo,r.dataEmissao,`${r.intersticioAplicacao||10} dias`,`${usadas}/${dosesPorCaixa}`,status];
-                });
-                doc.autoTable({
-                    startY:88,
-                    head:[['Código','Emissão','Interstício','Doses','Status']],
-                    body:linhas
-                });
-            }
-            doc.save('Controle_Medicacao.pdf');
-        };
-    </script>
-
+    <!-- ===== FIREBASE (module) ===== -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword,
+                 signInWithEmailAndPassword, signOut,
+                 onAuthStateChanged }                     from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { initializeFirestore, persistentLocalCache,
+                 collection, doc, setDoc, getDoc,
+                 getDocs, deleteDoc, onSnapshot }         from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
-            authDomain: "controle-medicacao-99cb5.firebaseapp.com",
-            projectId: "controle-medicacao-99cb5",
-            storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
+            apiKey:            "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
+            authDomain:        "controle-medicacao-99cb5.firebaseapp.com",
+            projectId:         "controle-medicacao-99cb5",
+            storageBucket:     "controle-medicacao-99cb5.firebasestorage.app",
             messagingSenderId: "268683516299",
-            appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
+            appId:             "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        window.db = db;
-        window.auth = auth;
+        // persistentLocalCache substitui enableIndexedDbPersistence (depreciado no Firebase 10)
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache()
+        });
+
+        window.db            = db;
+        window.auth          = auth;
         window.currentUserId = null;
 
-        window.mostrarLoading = function(show, texto='Conectando...') {
+        // ---------- UI helpers ----------
+        window.mostrarLoading = function(show, texto = 'Conectando...') {
             const overlay = document.getElementById('loadingOverlay');
-            const txt = document.querySelector('.loading-text');
+            const txt     = document.querySelector('.loading-text');
             if (txt) txt.textContent = texto;
             overlay.classList.toggle('show', show);
         };
 
         window.atualizarStatusSync = function(status) {
             const statusEl = document.getElementById('syncStatus');
-            const iconEl = document.getElementById('syncIcon');
-            const textEl = document.getElementById('syncText');
+            const iconEl   = document.getElementById('syncIcon');
+            const textEl   = document.getElementById('syncText');
             if (!statusEl || !iconEl || !textEl) return;
             statusEl.className = 'sync-status ' + status;
-            if (status === 'online') { iconEl.textContent='🟢'; textEl.textContent='Online'; }
-            else if (status === 'offline') { iconEl.textContent='⚫'; textEl.textContent='Offline'; }
-            else { iconEl.textContent='🔄'; textEl.textContent='Sincronizando...'; }
+            if      (status === 'online')  { iconEl.textContent = '🟢'; textEl.textContent = 'Online'; }
+            else if (status === 'offline') { iconEl.textContent = '⚫'; textEl.textContent = 'Offline'; }
+            else                           { iconEl.textContent = '🔄'; textEl.textContent = 'Sincronizando...'; }
         };
 
+        // ---------- Auth helpers ----------
         window.trocarAba = function(aba) {
-            document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
-            if (aba==='login') {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            if (aba === 'login') {
                 document.querySelectorAll('.auth-tab')[0].classList.add('active');
                 document.getElementById('formLogin').classList.add('active');
             } else {
@@ -1118,12 +658,12 @@
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginSenha').value;
-            mostrarLoading(true,'Fazendo login...');
+            mostrarLoading(true, 'Fazendo login...');
             try {
-                await signInWithEmailAndPassword(auth,email,senha);
+                await signInWithEmailAndPassword(auth, email, senha);
             } catch(err) {
                 mostrarLoading(false);
-                alert('Erro ao fazer login: '+err.message);
+                alert('Erro ao fazer login: ' + err.message);
             }
         };
 
@@ -1132,14 +672,14 @@
             const email = document.getElementById('registroEmail').value;
             const senha = document.getElementById('registroSenha').value;
             const conf  = document.getElementById('registroConfirmaSenha').value;
-            if (senha!==conf) { alert('As senhas não conferem.'); return; }
-            mostrarLoading(true,'Criando conta...');
+            if (senha !== conf) { alert('As senhas não conferem.'); return; }
+            mostrarLoading(true, 'Criando conta...');
             try {
-                await createUserWithEmailAndPassword(auth,email,senha);
+                await createUserWithEmailAndPassword(auth, email, senha);
                 alert('Conta criada. Você já está logado.');
             } catch(err) {
                 mostrarLoading(false);
-                alert('Erro ao criar conta: '+err.message);
+                alert('Erro ao criar conta: ' + err.message);
             }
         };
 
@@ -1148,45 +688,560 @@
             await signOut(auth);
         };
 
+        // ---------- Firestore: Receitas ----------
         window.carregarReceitas = async function() {
             if (!window.currentUserId) return [];
-            const ref = collection(db,'usuarios',window.currentUserId,'receitas');
+            const ref  = collection(db, 'usuarios', window.currentUserId, 'receitas');
             const snap = await getDocs(ref);
-            return snap.docs.map(d=>({id:d.id,...d.data()}));
+            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
         };
 
         window.salvarReceitaFirebase = async function(r) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
-            await setDoc(doc(db,'usuarios',window.currentUserId,'receitas',r.codigo),r);
+            await setDoc(doc(db, 'usuarios', window.currentUserId, 'receitas', r.codigo), r);
             atualizarStatusSync('online');
         };
 
         window.excluirReceitaFirebase = async function(cod) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
-            await deleteDoc(doc(db,'usuarios',window.currentUserId,'receitas',cod));
+            await deleteDoc(doc(db, 'usuarios', window.currentUserId, 'receitas', cod));
             atualizarStatusSync('online');
         };
 
+        // ---------- Firestore: Aplicações ----------
         window.carregarAplicacoes = async function() {
             if (!window.currentUserId) return {};
-            const ref = doc(db,'usuarios',window.currentUserId,'dados','aplicacoes');
+            const ref  = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
             const snap = await getDoc(ref);
-            return snap.exists()?snap.data():{};
+            return snap.exists() ? snap.data() : {};
         };
 
         window.salvarAplicacoesFirebase = async function(apl) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
-            await setDoc(doc(db,'usuarios',window.currentUserId,'dados','aplicacoes'),apl);
+            await setDoc(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'), apl);
             atualizarStatusSync('online');
         };
 
+        // ---------- Sincronização em tempo real ----------
+        // Flag para evitar renderizações duplicadas simultâneas
+        let _renderizando = false;
+        async function _renderizarSafe() {
+            if (_renderizando) return;
+            _renderizando = true;
+            try { await window.renderizarTabela?.(); }
+            finally { _renderizando = false; }
+        }
+
         window.iniciarSincronizacao = function() {
             if (!window.currentUserId) return;
-            const recRef = collection(db,'usuarios',window.currentUserId,'receitas');
-            onSnapshot(recRef,()=>{ 
-                console.log('Receitas atualizadas'); 
-                if(typeof window.renderiz
+            const recRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
+            onSnapshot(recRef, async () => {
+                await window.gerarPlanoAplicacoes?.();
+                await _renderizarSafe();
+            });
+            const aplRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
+            onSnapshot(aplRef, () => _renderizarSafe());
+        };
 
+        // ---------- Inicialização pós-login ----------
+        async function inicializarApp() {
+            await window.gerarPlanoAplicacoes();
+            window.iniciarSincronizacao();
+            await window.renderizarTabela();
+        }
+
+        // ---------- Observador de autenticação ----------
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentUserId = user.uid;
+                document.getElementById('userEmail').textContent = user.email || '(sem e-mail)';
+                document.getElementById('authScreen').classList.remove('show');
+                mostrarLoading(true, 'Carregando dados...');
+                atualizarStatusSync('online');
+                try {
+                    await inicializarApp();
+                } catch(err) {
+                    console.error('Erro ao carregar dados:', err);
+                    alert('Erro ao carregar dados: ' + err.message);
+                } finally {
+                    mostrarLoading(false);
+                }
+            } else {
+                window.currentUserId = null;
+                document.getElementById('userEmail').textContent = '–';
+                document.getElementById('authScreen').classList.add('show');
+                document.getElementById('corpoTabela').innerHTML = '';
+                atualizarStatusSync('offline');
+                mostrarLoading(false);
+            }
+        });
+    </script>
+
+    <!-- ===== LÓGICA DE NEGÓCIO (não-module) ===== -->
+    <script>
+        const dosesPorCaixa = 3;
+        window.planoAplicacoes = [];
+
+        function formatarData(d) {
+            const dia = String(d.getDate()).padStart(2, '0');
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const ano = d.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function obterDiaSemana(d) {
+            return ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d.getDay()];
+        }
+
+        // Gera o plano de datas com base nas receitas cadastradas (interstício variável)
+        window.gerarPlanoAplicacoes = async function() {
+            const receitas = await carregarReceitas();
+            receitas.sort((a, b) => new Date(a.dataCadastro) - new Date(b.dataCadastro));
+
+            const plano      = [];
+            let dataAtual    = new Date(2026, 1, 7, 12, 0, 0);
+            const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
+
+            for (let ri = 0; ri < receitas.length; ri++) {
+                const receita    = receitas[ri];
+                const intersticio = receita.intersticioAplicacao || 10;
+
+                for (let i = 0; i < dosesPorCaixa; i++) {
+                    if (dataAtual <= dataLimite) {
+                        plano.push({ data: new Date(dataAtual), receita: receita.codigo, intersticio });
+                        if (i < dosesPorCaixa - 1) {
+                            dataAtual.setDate(dataAtual.getDate() + intersticio);
+                        }
+                    }
+                }
+
+                // avança para a próxima receita usando o interstício da PRÓXIMA receita
+                if (ri < receitas.length - 1) {
+                    const proximoIntersticio = receitas[ri + 1].intersticioAplicacao || 10;
+                    dataAtual.setDate(dataAtual.getDate() + proximoIntersticio);
+                }
+            }
+
+            window.planoAplicacoes = plano;
+        };
+
+        // Fallback: se não houver receitas, gera com interstício fixo de 10 dias
+        function gerarDatasAplicacao() {
+            if (window.planoAplicacoes && window.planoAplicacoes.length > 0) {
+                return window.planoAplicacoes.map(p => p.data);
+            }
+            const datas      = [];
+            let dataAtual    = new Date(2026, 1, 7, 12, 0, 0);
+            const limite     = new Date(2026, 11, 31, 12, 0, 0);
+            while (dataAtual <= limite) {
+                datas.push(new Date(dataAtual));
+                dataAtual.setDate(dataAtual.getDate() + 10);
+            }
+            return datas;
+        }
+
+        async function atribuirReceita() {
+            const receitas   = await carregarReceitas();
+            const aplicacoes = await carregarAplicacoes();
+            const uso        = {};
+            receitas.forEach(r => uso[r.codigo] = 0);
+            Object.values(aplicacoes).forEach(reg => {
+                if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1;
+            });
+            for (const r of receitas) {
+                if ((uso[r.codigo] || 0) < dosesPorCaixa) return r.codigo;
+            }
+            return null;
+        }
+
+        // ---------- Modal de Receita ----------
+        window.abrirModalReceita = function(codigo = null) {
+            const modal   = document.getElementById('modalReceita');
+            const titulo  = document.getElementById('modalReceitaTitulo');
+            const idInput = document.getElementById('receitaEditandoId');
+
+            if (codigo) {
+                titulo.textContent = '✏️ Editar Receita';
+                idInput.value = codigo;
+                carregarReceitas().then(rs => {
+                    const r = rs.find(x => x.codigo === codigo);
+                    if (!r) return;
+                    document.getElementById('codigoReceita').value = r.codigo;
+                    const [d, m, a] = r.dataEmissao.split('/');
+                    document.getElementById('dataEmissao').value = `${a}-${m}-${d}`;
+                    if (r.dataValidade) {
+                        const [dv, mv, av] = r.dataValidade.split('/');
+                        document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
+                    } else {
+                        document.getElementById('dataValidade').value = '';
+                    }
+                    document.getElementById('observacoes').value           = r.observacoes || '';
+                    document.getElementById('intersticioAplicacao').value  = r.intersticioAplicacao || 10;
+                    document.getElementById('intersticioAplicacao').disabled = true; // imutável após cadastro
+                });
+            } else {
+                titulo.textContent = '📝 Cadastrar Nova Receita';
+                idInput.value = '';
+                document.getElementById('codigoReceita').value             = '';
+                document.getElementById('dataEmissao').value               = '';
+                document.getElementById('dataValidade').value              = '';
+                document.getElementById('observacoes').value               = '';
+                document.getElementById('intersticioAplicacao').value      = '10';
+                document.getElementById('intersticioAplicacao').disabled   = false;
+            }
+            modal.style.display = 'block';
+        };
+
+        window.fecharModalReceita = function() {
+            document.getElementById('modalReceita').style.display = 'none';
+        };
+
+        window.salvarReceita = async function() {
+            const codigo      = document.getElementById('codigoReceita').value.trim();
+            const emissao     = document.getElementById('dataEmissao').value;
+            const validade    = document.getElementById('dataValidade').value;
+            const obs         = document.getElementById('observacoes').value.trim();
+            const intersticio = parseInt(document.getElementById('intersticioAplicacao').value);
+            const editId      = document.getElementById('receitaEditandoId').value;
+
+            if (!codigo || !emissao) { alert('Preencha código e data de emissão.'); return; }
+            if (!intersticio || intersticio < 1 || intersticio > 365) {
+                alert('Interstício deve estar entre 1 e 365 dias.'); return;
+            }
+
+            const receitas = await carregarReceitas();
+
+            if (!editId && receitas.some(r => r.codigo === codigo)) {
+                alert('Já existe receita com esse código.'); return;
+            }
+            if (editId && codigo !== editId && receitas.some(r => r.codigo === codigo)) {
+                alert('Já existe receita com esse novo código.'); return;
+            }
+
+            // Se mudou o código, migra referências nas aplicações
+            if (editId && codigo !== editId) {
+                const aplicacoes = await carregarAplicacoes();
+                Object.keys(aplicacoes).forEach(data => {
+                    if (aplicacoes[data].receita === editId) aplicacoes[data].receita = codigo;
+                });
+                await salvarAplicacoesFirebase(aplicacoes);
+                await excluirReceitaFirebase(editId);
+            }
+
+            // Interstício é imutável após o cadastro
+            const receitaExistente  = receitas.find(r => r.codigo === (editId || codigo));
+            const intersticioFinal  = editId
+                ? (receitaExistente?.intersticioAplicacao || 10)
+                : intersticio;
+
+            const rec = {
+                codigo,
+                dataEmissao:          formatarData(new Date(emissao + 'T12:00:00')),
+                dataValidade:         validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
+                observacoes:          obs || null,
+                intersticioAplicacao: intersticioFinal,
+                dataCadastro:         receitaExistente?.dataCadastro || new Date().toISOString()
+            };
+
+            await salvarReceitaFirebase(rec);
+            fecharModalReceita();
+
+            if (!editId) await gerarPlanoAplicacoes();
+
+            alert(editId ? 'Receita atualizada.' : 'Receita cadastrada. Datas recalculadas.');
+        };
+
+        window.excluirReceita = async function(codigo) {
+            if (!confirm(`Excluir receita ${codigo}?`)) return;
+            const apl = await carregarAplicacoes();
+            Object.keys(apl).forEach(d => { if (apl[d].receita === codigo) apl[d].receita = null; });
+            await salvarAplicacoesFirebase(apl);
+            await excluirReceitaFirebase(codigo);
+            await gerarPlanoAplicacoes();
+            alert('Receita excluída.');
+        };
+
+        async function podeEditarOuExcluir(receita, todas) {
+            const ultima = todas[todas.length - 1];
+            if (!ultima || ultima.codigo !== receita.codigo) return false;
+            const apl = await carregarAplicacoes();
+            let usadas = 0;
+            Object.values(apl).forEach(r => {
+                if (r.aplicacao === 'Sim' && r.receita === receita.codigo) usadas++;
+            });
+            return usadas < dosesPorCaixa;
+        }
+
+        // ---------- Estatísticas ----------
+        window.atualizarEstatisticas = async function() {
+            const apl   = await carregarAplicacoes();
+            const recs  = await carregarReceitas();
+            const datas = gerarDatasAplicacao();
+            const total = datas.length;
+
+            const aplicadas = Object.values(apl).filter(x =>
+                x.aplicacao === 'Sim' && x.receita != null
+            ).length;
+            const nao  = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
+            const taxa = total ? Math.round(aplicadas / total * 100) : 0;
+
+            document.getElementById('totalAplicacoes').textContent  = total;
+            document.getElementById('totalAplicadas').textContent   = aplicadas;
+            document.getElementById('totalNaoAplicadas').textContent = nao;
+            document.getElementById('taxaAdesao').textContent       = taxa + '%';
+
+            const dosesUtilizadasPorReceita = {};
+            recs.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
+            Object.values(apl).forEach(reg => {
+                if (reg.aplicacao === 'Sim' && reg.receita)
+                    dosesUtilizadasPorReceita[reg.receita] = (dosesUtilizadasPorReceita[reg.receita] || 0) + 1;
+            });
+
+            const dosesUtilizadas  = Object.values(dosesUtilizadasPorReceita).reduce((a, b) => a + b, 0);
+            const dosesTotais      = recs.length * dosesPorCaixa;
+            const dosesDisponiveis = Math.max(0, dosesTotais - dosesUtilizadas);
+            const nec              = Math.ceil(total / dosesPorCaixa);
+
+            document.getElementById('totalReceitas').textContent      = recs.length;
+            document.getElementById('dosesDisponiveis').textContent   = dosesDisponiveis;
+            document.getElementById('dosesUtilizadas').textContent    = dosesUtilizadas;
+            document.getElementById('receitasNecessarias').textContent = nec;
+
+            await window.atualizarListaReceitas();
+        };
+
+        window.atualizarListaReceitas = async function() {
+            const recs      = await carregarReceitas();
+            const apl       = await carregarAplicacoes();
+            const container = document.getElementById('receitasContainer');
+            const bloco     = document.getElementById('listaReceitas');
+            if (!recs.length) { bloco.style.display = 'none'; return; }
+            bloco.style.display = 'block';
+
+            const uso = {};
+            recs.forEach(r => uso[r.codigo] = 0);
+            Object.values(apl).forEach(r => {
+                if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1;
+            });
+
+            const html = [];
+            for (const r of recs) {
+                const usadas = uso[r.codigo] || 0;
+                const perc   = usadas / dosesPorCaixa * 100;
+                const status = usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
+                const cls    = usadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
+                const pode   = await podeEditarOuExcluir(r, recs);
+                html.push(`
+                    <div class="receita-item">
+                        ${pode ? `<div class="receita-actions">
+                            <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${r.codigo}')">✏️</button>
+                            <button class="btn btn-danger  btn-sm" onclick="excluirReceita('${r.codigo}')">🗑️</button>
+                        </div>` : ''}
+                        <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
+                        <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
+                        <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
+                        ${r.dataValidade  ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
+                        ${r.observacoes   ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
+                        <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
+                    </div>
+                `);
+            }
+            container.innerHTML = html.join('');
+        };
+
+        // ---------- Tabela principal ----------
+        window.renderizarTabela = async function() {
+            const datas    = gerarDatasAplicacao();
+            const apl      = await carregarAplicacoes();
+            const receitas = await carregarReceitas();
+            const tbody    = document.getElementById('corpoTabela');
+            tbody.innerHTML = '';
+
+            const dosesUtilizadasPorReceita = {};
+            receitas.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
+            Object.values(apl).forEach(reg => {
+                if (reg.aplicacao === 'Sim' && reg.receita)
+                    dosesUtilizadasPorReceita[reg.receita] = (dosesUtilizadasPorReceita[reg.receita] || 0) + 1;
+            });
+
+            const temReceitaDisponivel = receitas.some(r =>
+                (dosesUtilizadasPorReceita[r.codigo] || 0) < dosesPorCaixa
+            );
+
+            datas.forEach((d, i) => {
+                const dataStr    = formatarData(d);
+                const reg        = apl[dataStr] || { aplicacao: '', receita: null };
+                const cls        = reg.aplicacao === 'Sim' ? 'aplicado-sim'
+                                 : reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
+                const info       = reg.receita
+                    ? `<small style="color:#667eea;">Receita: ${reg.receita}</small>`
+                    : '<small style="color:#999;">Nenhuma receita</small>';
+                const simDisabled = !temReceitaDisponivel && reg.aplicacao !== 'Sim';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${i + 1}</strong></td>
+                    <td>${dataStr}</td>
+                    <td>${obterDiaSemana(d)}</td>
+                    <td>
+                        <select class="${cls}"
+                                data-data="${dataStr}"
+                                data-tem-receita="${temReceitaDisponivel}"
+                                onchange="atualizarAplicacao('${dataStr}', this.value, this)">
+                            <option value="">-- Selecione --</option>
+                            <option value="Sim" ${reg.aplicacao === 'Sim' ? 'selected' : ''} ${simDisabled ? 'disabled' : ''}>
+                                Sim${simDisabled ? ' (sem receita)' : ''}
+                            </option>
+                            <option value="Não" ${reg.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
+                        </select>
+                    </td>
+                    <td>${info}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            await atualizarEstatisticas();
+        };
+
+        // ---------- Atualizar aplicação individual ----------
+        window.atualizarAplicacao = async function(dataStr, valor, el) {
+            const apl        = await carregarAplicacoes();
+            const temReceita = el.getAttribute('data-tem-receita') === 'true';
+
+            if (!valor) {
+                delete apl[dataStr];
+                el.className = '';
+            } else if (valor === 'Sim') {
+                if (!temReceita) {
+                    alert('Não há receitas com doses restantes.');
+                    el.value     = apl[dataStr]?.aplicacao || '';
+                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
+                    return;
+                }
+                const rec = await atribuirReceita();
+                if (!rec) {
+                    alert('Não há receitas com doses restantes.');
+                    el.value     = apl[dataStr]?.aplicacao || '';
+                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
+                    return;
+                }
+                apl[dataStr] = { aplicacao: 'Sim', receita: rec };
+                el.className = 'aplicado-sim';
+            } else {
+                apl[dataStr] = { aplicacao: 'Não', receita: null };
+                el.className = 'aplicado-nao';
+            }
+            await salvarAplicacoesFirebase(apl);
+        };
+
+        // ---------- Ações em lote ----------
+        window.marcarTodasSim = async function() {
+            if (!confirm('Marcar todas as aplicações como realizadas?')) return;
+            const datas = gerarDatasAplicacao();
+            const apl   = {};
+            let ok = true;
+            for (let i = 0; i < datas.length; i++) {
+                const dataStr = formatarData(datas[i]);
+                const rec     = await atribuirReceita();
+                if (!rec && ok) {
+                    ok = false;
+                    alert(`Receitas insuficientes a partir da aplicação #${i + 1}.`);
+                }
+                apl[dataStr] = { aplicacao: 'Sim', receita: rec };
+            }
+            await salvarAplicacoesFirebase(apl);
+        };
+
+        window.limparTodas = async function() {
+            if (!confirm('Limpar todos os registros de aplicação?')) return;
+            await salvarAplicacoesFirebase({});
+        };
+
+        // ---------- Service Worker ----------
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch(() => {});
+            });
+        }
+
+        // ---------- Prompt de instalação ----------
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').classList.add('show');
+        });
+
+        window.instalarApp = function() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.finally(() => {
+                deferredPrompt = null;
+                document.getElementById('installPrompt').classList.remove('show');
+            });
+        };
+
+        window.fecharPromptInstalacao = function() {
+            document.getElementById('installPrompt').classList.remove('show');
+        };
+
+        // ---------- Exportar PDF ----------
+        window.exportarPDF = async function() {
+            const { jsPDF } = window.jspdf;
+            const doc       = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Relatório de Controle de Medicação', 14, 20);
+
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Cipionato de Testosterona', 14, 28);
+            doc.text('Período: 07/02/2026 a 31/12/2026', 14, 34);
+            doc.text('Intervalo: Variável conforme receita', 14, 40);
+            doc.text('Gerado em: ' + formatarData(new Date()), 14, 46);
+
+            const apl      = await carregarAplicacoes();
+            const recs     = await carregarReceitas();
+            const datas    = gerarDatasAplicacao();
+            const aplicadas = Object.values(apl).filter(v => v.aplicacao === 'Sim' && v.receita).length;
+            const nao       = Object.values(apl).filter(v => v.aplicacao === 'Não').length;
+            const taxa      = datas.length ? Math.round(aplicadas / datas.length * 100) : 0;
+
+            doc.setFontSize(11);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Estatísticas', 14, 56);
+
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Previstas: ${datas.length}`,      14, 62);
+            doc.text(`Realizadas: ${aplicadas}`,         14, 68);
+            doc.text(`Não realizadas: ${nao}`,           14, 74);
+            doc.text(`Taxa de adesão: ${taxa}%`,         14, 80);
+
+            if (recs.length) {
+                const uso = {};
+                recs.forEach(r => uso[r.codigo] = 0);
+                Object.values(apl).forEach(r => {
+                    if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1;
+                });
+                const linhas = recs.map(r => {
+                    const usadas = uso[r.codigo] || 0;
+                    const status = usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
+                    return [r.codigo, r.dataEmissao, `${r.intersticioAplicacao || 10} dias`, `${usadas}/${dosesPorCaixa}`, status];
+                });
+                doc.autoTable({
+                    startY: 88,
+                    head:   [['Código', 'Emissão', 'Interstício', 'Doses', 'Status']],
+                    body:   linhas
+                });
+            }
+            doc.save('Controle_Medicacao.pdf');
+        };
+    </script>
+</body>
+</html>
