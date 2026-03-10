@@ -251,7 +251,7 @@
             color: #721c24;
             font-weight: 600;
         }
-        select option:disabled {
+        select.option:disabled {
             color: #999;
             font-style: italic;
             background: #f5f5f5;
@@ -502,14 +502,14 @@
 
             <div class="warning-box">
                 <h3>⚠️ Controle de Receitas</h3>
-                <p>Cada receita permite 3 doses (1 caixa). O interstício entre aplicações é definido ao cadastrar cada receita.</p>
+                <p>Cada receita permite 3 doses (1 caixa). O interstício entre aplicações e a data da 1ª aplicação são definidos ao cadastrar cada receita.</p>
             </div>
 
             <div class="controls">
-                <button class="btn btn-info"    onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
-                <button class="btn btn-primary"  onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
-                <button class="btn btn-success"  onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
-                <button class="btn btn-danger"   onclick="limparTodas()">✗ Limpar todas</button>
+                <button class="btn btn-info"   onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
+                <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
+                <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
+                <button class="btn btn-danger"  onclick="limparTodas()">✗ Limpar todas</button>
             </div>
 
             <div class="stats">
@@ -566,6 +566,12 @@
                     <label for="dataEmissao">Data de Emissão *</label>
                     <input type="date" id="dataEmissao" required>
                 </div>
+                <!-- NOVO CAMPO: DATA DA PRIMEIRA APLICAÇÃO -->
+                <div class="form-group">
+                    <label for="dataPrimeiraAplicacao">Data da 1ª Aplicação *</label>
+                    <input type="date" id="dataPrimeiraAplicacao" required>
+                    <small>Data planejada para a primeira aplicação desta receita</small>
+                </div>
                 <div class="form-group">
                     <label for="dataValidade">Data de Validade</label>
                     <input type="date" id="dataValidade">
@@ -582,7 +588,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger"  onclick="fecharModalReceita()">Cancelar</button>
-                <button class="btn btn-success"  onclick="salvarReceita()">Salvar</button>
+                <button class="btn btn-success" onclick="salvarReceita()">Salvar</button>
             </div>
         </div>
     </div>
@@ -613,7 +619,6 @@
         const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // persistentLocalCache substitui enableIndexedDbPersistence (depreciado no Firebase 10)
         const db = initializeFirestore(app, {
             localCache: persistentLocalCache()
         });
@@ -726,7 +731,6 @@
         };
 
         // ---------- Sincronização em tempo real ----------
-        // Flag para evitar renderizações duplicadas simultâneas
         let _renderizando = false;
         async function _renderizarSafe() {
             if (_renderizando) return;
@@ -746,14 +750,12 @@
             onSnapshot(aplRef, () => _renderizarSafe());
         };
 
-        // ---------- Inicialização pós-login ----------
         async function inicializarApp() {
             await window.gerarPlanoAplicacoes();
             window.iniciarSincronizacao();
             await window.renderizarTabela();
         }
 
-        // ---------- Observador de autenticação ----------
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 window.currentUserId = user.uid;
@@ -796,18 +798,34 @@
             return ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d.getDay()];
         }
 
-        // Gera o plano de datas com base nas receitas cadastradas (interstício variável)
+        // Gera o plano de datas com base nas receitas cadastradas (interstício variável e 1ª aplicação configurável)
         window.gerarPlanoAplicacoes = async function() {
             const receitas = await carregarReceitas();
-            receitas.sort((a, b) => new Date(a.dataCadastro) - new Date(b.dataCadastro));
+            receitas.sort((a, b) => new Date(a.dataCadastro || 0) - new Date(b.dataCadastro || 0));
 
             const plano      = [];
-            let dataAtual    = new Date(2026, 1, 7, 12, 0, 0);
             const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
 
             for (let ri = 0; ri < receitas.length; ri++) {
-                const receita    = receitas[ri];
+                const receita     = receitas[ri];
                 const intersticio = receita.intersticioAplicacao || 10;
+
+                // Data base da primeira aplicação da receita:
+                let dataAtual;
+                if (receita.dataPrimeiraAplicacao) {
+                    // formato dd/mm/aaaa
+                    const [d, m, a] = receita.dataPrimeiraAplicacao.split('/');
+                    dataAtual = new Date(parseInt(a), parseInt(m) - 1, parseInt(d), 12, 0, 0);
+                } else {
+                    // Fallback para receitas antigas: usa regra antiga
+                    // dataCadastro se existir, senão 07/02/2026
+                    if (receita.dataCadastro) {
+                        dataAtual = new Date(receita.dataCadastro);
+                        dataAtual.setHours(12,0,0,0);
+                    } else {
+                        dataAtual = new Date(2026, 1, 7, 12, 0, 0);
+                    }
+                }
 
                 for (let i = 0; i < dosesPorCaixa; i++) {
                     if (dataAtual <= dataLimite) {
@@ -817,18 +835,12 @@
                         }
                     }
                 }
-
-                // avança para a próxima receita usando o interstício da PRÓXIMA receita
-                if (ri < receitas.length - 1) {
-                    const proximoIntersticio = receitas[ri + 1].intersticioAplicacao || 10;
-                    dataAtual.setDate(dataAtual.getDate() + proximoIntersticio);
-                }
             }
 
             window.planoAplicacoes = plano;
         };
 
-        // Fallback: se não houver receitas, gera com interstício fixo de 10 dias
+        // Fallback: se não houver receitas, gera com interstício fixo de 10 dias a partir de 07/02/2026
         function gerarDatasAplicacao() {
             if (window.planoAplicacoes && window.planoAplicacoes.length > 0) {
                 return window.planoAplicacoes.map(p => p.data);
@@ -863,6 +875,9 @@
             const titulo  = document.getElementById('modalReceitaTitulo');
             const idInput = document.getElementById('receitaEditandoId');
 
+            const campoIntersticio       = document.getElementById('intersticioAplicacao');
+            const campoPrimeiraAplicacao = document.getElementById('dataPrimeiraAplicacao');
+
             if (codigo) {
                 titulo.textContent = '✏️ Editar Receita';
                 idInput.value = codigo;
@@ -870,27 +885,41 @@
                     const r = rs.find(x => x.codigo === codigo);
                     if (!r) return;
                     document.getElementById('codigoReceita').value = r.codigo;
+
                     const [d, m, a] = r.dataEmissao.split('/');
                     document.getElementById('dataEmissao').value = `${a}-${m}-${d}`;
+
+                    if (r.dataPrimeiraAplicacao) {
+                        const [dp, mp, ap] = r.dataPrimeiraAplicacao.split('/');
+                        campoPrimeiraAplicacao.value = `${ap}-${mp}-${dp}`;
+                    } else {
+                        campoPrimeiraAplicacao.value = '';
+                    }
+
                     if (r.dataValidade) {
                         const [dv, mv, av] = r.dataValidade.split('/');
                         document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
                     } else {
                         document.getElementById('dataValidade').value = '';
                     }
-                    document.getElementById('observacoes').value           = r.observacoes || '';
-                    document.getElementById('intersticioAplicacao').value  = r.intersticioAplicacao || 10;
-                    document.getElementById('intersticioAplicacao').disabled = true; // imutável após cadastro
+                    document.getElementById('observacoes').value        = r.observacoes || '';
+                    campoIntersticio.value                               = r.intersticioAplicacao || 10;
+
+                    // Interstício e data da 1ª aplicação são imutáveis após cadastro
+                    campoIntersticio.disabled       = true;
+                    campoPrimeiraAplicacao.disabled = true;
                 });
             } else {
                 titulo.textContent = '📝 Cadastrar Nova Receita';
                 idInput.value = '';
-                document.getElementById('codigoReceita').value             = '';
-                document.getElementById('dataEmissao').value               = '';
-                document.getElementById('dataValidade').value              = '';
-                document.getElementById('observacoes').value               = '';
-                document.getElementById('intersticioAplicacao').value      = '10';
-                document.getElementById('intersticioAplicacao').disabled   = false;
+                document.getElementById('codigoReceita').value       = '';
+                document.getElementById('dataEmissao').value         = '';
+                document.getElementById('dataValidade').value        = '';
+                document.getElementById('observacoes').value         = '';
+                campoIntersticio.value                               = '10';
+                campoIntersticio.disabled                            = false;
+                campoPrimeiraAplicacao.value                         = '';
+                campoPrimeiraAplicacao.disabled                      = false;
             }
             modal.style.display = 'block';
         };
@@ -902,23 +931,30 @@
         window.salvarReceita = async function() {
             const codigo      = document.getElementById('codigoReceita').value.trim();
             const emissao     = document.getElementById('dataEmissao').value;
+            const primeira    = document.getElementById('dataPrimeiraAplicacao').value;
             const validade    = document.getElementById('dataValidade').value;
             const obs         = document.getElementById('observacoes').value.trim();
             const intersticio = parseInt(document.getElementById('intersticioAplicacao').value);
             const editId      = document.getElementById('receitaEditandoId').value;
 
-            if (!codigo || !emissao) { alert('Preencha código e data de emissão.'); return; }
+            if (!codigo || !emissao || (!primeira && !editId)) {
+                alert('Preencha código, data de emissão e data da primeira aplicação.');
+                return;
+            }
             if (!intersticio || intersticio < 1 || intersticio > 365) {
-                alert('Interstício deve estar entre 1 e 365 dias.'); return;
+                alert('Interstício deve estar entre 1 e 365 dias.');
+                return;
             }
 
             const receitas = await carregarReceitas();
 
             if (!editId && receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe receita com esse código.'); return;
+                alert('Já existe receita com esse código.');
+                return;
             }
             if (editId && codigo !== editId && receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe receita com esse novo código.'); return;
+                alert('Já existe receita com esse novo código.');
+                return;
             }
 
             // Se mudou o código, migra referências nas aplicações
@@ -931,11 +967,21 @@
                 await excluirReceitaFirebase(editId);
             }
 
-            // Interstício é imutável após o cadastro
-            const receitaExistente  = receitas.find(r => r.codigo === (editId || codigo));
-            const intersticioFinal  = editId
+            const receitaExistente = receitas.find(r => r.codigo === (editId || codigo));
+
+            // Interstício e dataPrimeiraAplicacao imutáveis após cadastro
+            const intersticioFinal = editId
                 ? (receitaExistente?.intersticioAplicacao || 10)
                 : intersticio;
+
+            let dataPrimeiraAplicacaoFinal;
+            if (editId) {
+                dataPrimeiraAplicacaoFinal = receitaExistente?.dataPrimeiraAplicacao || null;
+            } else {
+                // nova receita: exige data da 1ª aplicação
+                const basePrimeira = primeira || emissao;
+                dataPrimeiraAplicacaoFinal = formatarData(new Date(basePrimeira + 'T12:00:00'));
+            }
 
             const rec = {
                 codigo,
@@ -943,7 +989,8 @@
                 dataValidade:         validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
                 observacoes:          obs || null,
                 intersticioAplicacao: intersticioFinal,
-                dataCadastro:         receitaExistente?.dataCadastro || new Date().toISOString()
+                dataCadastro:         receitaExistente?.dataCadastro || new Date().toISOString(),
+                dataPrimeiraAplicacao: dataPrimeiraAplicacaoFinal
             };
 
             await salvarReceitaFirebase(rec);
@@ -988,10 +1035,10 @@
             const nao  = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
             const taxa = total ? Math.round(aplicadas / total * 100) : 0;
 
-            document.getElementById('totalAplicacoes').textContent  = total;
-            document.getElementById('totalAplicadas').textContent   = aplicadas;
+            document.getElementById('totalAplicacoes').textContent   = total;
+            document.getElementById('totalAplicadas').textContent    = aplicadas;
             document.getElementById('totalNaoAplicadas').textContent = nao;
-            document.getElementById('taxaAdesao').textContent       = taxa + '%';
+            document.getElementById('taxaAdesao').textContent        = taxa + '%';
 
             const dosesUtilizadasPorReceita = {};
             recs.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
@@ -1005,9 +1052,9 @@
             const dosesDisponiveis = Math.max(0, dosesTotais - dosesUtilizadas);
             const nec              = Math.ceil(total / dosesPorCaixa);
 
-            document.getElementById('totalReceitas').textContent      = recs.length;
-            document.getElementById('dosesDisponiveis').textContent   = dosesDisponiveis;
-            document.getElementById('dosesUtilizadas').textContent    = dosesUtilizadas;
+            document.getElementById('totalReceitas').textContent       = recs.length;
+            document.getElementById('dosesDisponiveis').textContent    = dosesDisponiveis;
+            document.getElementById('dosesUtilizadas').textContent     = dosesUtilizadas;
             document.getElementById('receitasNecessarias').textContent = nec;
 
             await window.atualizarListaReceitas();
@@ -1042,6 +1089,7 @@
                         </div>` : ''}
                         <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
                         <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
+                        <p><strong>1ª Aplicação:</strong> ${r.dataPrimeiraAplicacao || '-'}</p>
                         <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
                         ${r.dataValidade  ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
                         ${r.observacoes   ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
@@ -1218,10 +1266,10 @@
 
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
-            doc.text(`Previstas: ${datas.length}`,      14, 62);
-            doc.text(`Realizadas: ${aplicadas}`,         14, 68);
-            doc.text(`Não realizadas: ${nao}`,           14, 74);
-            doc.text(`Taxa de adesão: ${taxa}%`,         14, 80);
+            doc.text(`Previstas: ${datas.length}`, 14, 62);
+            doc.text(`Realizadas: ${aplicadas}`, 14, 68);
+            doc.text(`Não realizadas: ${nao}`,   14, 74);
+            doc.text(`Taxa de adesão: ${taxa}%`, 14, 80);
 
             if (recs.length) {
                 const uso = {};
@@ -1232,7 +1280,13 @@
                 const linhas = recs.map(r => {
                     const usadas = uso[r.codigo] || 0;
                     const status = usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
-                    return [r.codigo, r.dataEmissao, `${r.intersticioAplicacao || 10} dias`, `${usadas}/${dosesPorCaixa}`, status];
+                    return [
+                        r.codigo,
+                        r.dataEmissao,
+                        `${r.intersticioAplicacao || 10} dias`,
+                        `${usadas}/${dosesPorCaixa}`,
+                        status
+                    ];
                 });
                 doc.autoTable({
                     startY: 88,
