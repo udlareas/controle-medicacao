@@ -502,7 +502,7 @@
 
             <div class="warning-box">
                 <h3>⚠️ Controle de Receitas</h3>
-                <p>Cada receita permite 3 doses (1 caixa). O interstício entre aplicações e a data da 1ª aplicação são definidos ao cadastrar cada receita.</p>
+                <p>Cada receita permite 3 doses (1 caixa). O interstício e a data da 1ª aplicação são definidos ao cadastrar cada receita.</p>
             </div>
 
             <div class="controls">
@@ -566,11 +566,11 @@
                     <label for="dataEmissao">Data de Emissão *</label>
                     <input type="date" id="dataEmissao" required>
                 </div>
-                <!-- Data da 1ª aplicação: dinâmica por receita -->
+                <!-- NOVO: data da 1ª aplicação -->
                 <div class="form-group">
                     <label for="dataPrimeiraAplicacao">Data da 1ª Aplicação *</label>
                     <input type="date" id="dataPrimeiraAplicacao" required>
-                    <small>Data planejada para a primeira aplicação desta receita (pode ser diferente da emissão)</small>
+                    <small>Data planejada para a primeira aplicação desta receita</small>
                 </div>
                 <div class="form-group">
                     <label for="dataValidade">Data de Validade</label>
@@ -798,57 +798,79 @@
             return ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d.getDay()];
         }
 
-        // -------- Plano de aplicações por receita --------
+        // ========== Geração do plano: usa dataPrimeiraAplicacao de cada receita ==========
         window.gerarPlanoAplicacoes = async function() {
             const receitas = await carregarReceitas();
+
+            // se não tiver nenhuma receita, mantém o comportamento antigo (fixo 07/02/2026 a cada 10 dias)
+            if (!receitas.length) {
+                const planoFallback = [];
+                let dataAtual    = new Date(2026, 1, 7, 12, 0, 0);
+                const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
+                while (dataAtual <= dataLimite) {
+                    planoFallback.push({ data: new Date(dataAtual), receita: null, intersticio: 10 });
+                    dataAtual.setDate(dataAtual.getDate() + 10);
+                }
+                window.planoAplicacoes = planoFallback;
+                return;
+            }
+
+            receitas.sort((a, b) => {
+                const da = a.dataPrimeiraAplicacao
+                    ? dataFromDDMMYYYY(a.dataPrimeiraAplicacao)
+                    : new Date(a.dataCadastro || 0);
+                const dbb = b.dataPrimeiraAplicacao
+                    ? dataFromDDMMYYYY(b.dataPrimeiraAplicacao)
+                    : new Date(b.dataCadastro || 0);
+                return da - dbb;
+            });
+
+            const plano      = [];
             const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
-            const plano = [];
 
             for (const receita of receitas) {
                 const intersticio = receita.intersticioAplicacao || 10;
 
-                // Base da 1ª aplicação:
-                let dataBase;
+                // data de início da sequência dessa receita:
+                let dataAtual;
                 if (receita.dataPrimeiraAplicacao) {
-                    const [d, m, a] = receita.dataPrimeiraAplicacao.split('/');
-                    dataBase = new Date(parseInt(a), parseInt(m) - 1, parseInt(d), 12, 0, 0);
+                    dataAtual = dataFromDDMMYYYY(receita.dataPrimeiraAplicacao);
+                    dataAtual.setHours(12,0,0,0);
                 } else if (receita.dataEmissao) {
-                    // fallback: para receitas antigas, usa data de emissão
-                    const [d, m, a] = receita.dataEmissao.split('/');
-                    dataBase = new Date(parseInt(a), parseInt(m) - 1, parseInt(d), 12, 0, 0);
+                    // legado: usa emissão como base, se não tiver primeiraAplicacao
+                    dataAtual = dataFromDDMMYYYY(receita.dataEmissao);
+                    dataAtual.setHours(12,0,0,0);
                 } else if (receita.dataCadastro) {
-                    dataBase = new Date(receita.dataCadastro);
-                    dataBase.setHours(12,0,0,0);
+                    dataAtual = new Date(receita.dataCadastro);
+                    dataAtual.setHours(12,0,0,0);
                 } else {
-                    // fallback extremo: mesma data fixa antiga
-                    dataBase = new Date(2026, 1, 7, 12, 0, 0);
+                    // fallback bem defensivo
+                    dataAtual = new Date(2026, 1, 7, 12, 0, 0);
                 }
 
                 for (let i = 0; i < dosesPorCaixa; i++) {
-                    const dataAplic = new Date(dataBase.getTime());
-                    dataAplic.setDate(dataAplic.getDate() + i * intersticio);
-                    if (dataAplic <= dataLimite) {
-                        plano.push({
-                            data: dataAplic,
-                            receita: receita.codigo,
-                            intersticio
-                        });
+                    if (dataAtual <= dataLimite) {
+                        plano.push({ data: new Date(dataAtual), receita: receita.codigo, intersticio });
+                        if (i < dosesPorCaixa - 1) {
+                            dataAtual.setDate(dataAtual.getDate() + intersticio);
+                        }
                     }
                 }
             }
 
-            // Ordena TODAS as aplicações por data, independente da ordem das receitas
-            plano.sort((a, b) => a.data - b.data);
-
             window.planoAplicacoes = plano;
         };
 
-        // Datas para a tabela principal
+        function dataFromDDMMYYYY(str) {
+            const [d, m, a] = str.split('/');
+            return new Date(parseInt(a), parseInt(m) - 1, parseInt(d));
+        }
+
         function gerarDatasAplicacao() {
             if (window.planoAplicacoes && window.planoAplicacoes.length > 0) {
                 return window.planoAplicacoes.map(p => p.data);
             }
-            // fallback absoluto se não houver receitas:
+            // fallback extremo (não deve ser usado se gerarPlanoAplicacoes rodar corretamente)
             const datas      = [];
             let dataAtual    = new Date(2026, 1, 7, 12, 0, 0);
             const limite     = new Date(2026, 11, 31, 12, 0, 0);
@@ -888,6 +910,7 @@
                 carregarReceitas().then(rs => {
                     const r = rs.find(x => x.codigo === codigo);
                     if (!r) return;
+
                     document.getElementById('codigoReceita').value = r.codigo;
 
                     const [d, m, a] = r.dataEmissao.split('/');
@@ -906,11 +929,11 @@
                     } else {
                         document.getElementById('dataValidade').value = '';
                     }
-                    document.getElementById('observacoes').value        = r.observacoes || '';
-                    campoIntersticio.value                               = r.intersticioAplicacao || 10;
 
-                    // Para manter compatibilidade com sua regra atual:
-                    // interstício e data 1ª aplicação imutáveis após cadastro
+                    document.getElementById('observacoes').value = r.observacoes || '';
+                    campoIntersticio.value                        = r.intersticioAplicacao || 10;
+
+                    // Após criada, você não quer recalcular todo o plano mexendo na 1ª aplicação
                     campoIntersticio.disabled       = true;
                     campoPrimeiraAplicacao.disabled = true;
                 });
@@ -974,18 +997,16 @@
 
             const receitaExistente = receitas.find(r => r.codigo === (editId || codigo));
 
-            // Interstício imutável após cadastro
+            // Interstício e primeira aplicação imutáveis após cadastro
             const intersticioFinal = editId
                 ? (receitaExistente?.intersticioAplicacao || 10)
                 : intersticio;
 
-            // Data da 1ª aplicação: definida no cadastro, mantida depois
             let dataPrimeiraAplicacaoFinal;
             if (editId) {
                 dataPrimeiraAplicacaoFinal = receitaExistente?.dataPrimeiraAplicacao || null;
             } else {
-                const basePrimeira = primeira || emissao;
-                dataPrimeiraAplicacaoFinal = formatarData(new Date(basePrimeira + 'T12:00:00'));
+                dataPrimeiraAplicacaoFinal = formatarData(new Date((primeira || emissao) + 'T12:00:00'));
             }
 
             const rec = {
@@ -1001,9 +1022,8 @@
             await salvarReceitaFirebase(rec);
             fecharModalReceita();
 
-            // Sempre recalcula o plano de aplicações a partir das receitas
+            // Recalcula plano para refletir a nova data da primeira aplicação
             await gerarPlanoAplicacoes();
-
             alert(editId ? 'Receita atualizada.' : 'Receita cadastrada. Datas recalculadas.');
         };
 
@@ -1273,9 +1293,9 @@
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
             doc.text(`Previstas: ${datas.length}`, 14, 62);
-            doc.text(`Realizadas: ${aplicadas}`,   14, 68);
-            doc.text(`Não realizadas: ${nao}`,     14, 74);
-            doc.text(`Taxa de adesão: ${taxa}%`,   14, 80);
+            doc.text(`Realizadas: ${aplicadas}`, 14, 68);
+            doc.text(`Não realizadas: ${nao}`,   14, 74);
+            doc.text(`Taxa de adesão: ${taxa}%`, 14, 80);
 
             if (recs.length) {
                 const uso = {};
