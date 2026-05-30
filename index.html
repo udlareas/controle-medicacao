@@ -282,6 +282,7 @@
             color: #333;
         }
 
+        /* ===== CORREÇÃO DO MODAL ===== */
         .modal {
             display: none;
             position: fixed;
@@ -289,12 +290,14 @@
             inset: 0;
             background-color: rgba(0,0,0,0.5);
             animation: fadeIn 0.3s;
+            overflow-y: auto;
+            padding: 20px 0;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
+            margin: 0 auto;
             border-radius: 15px;
             width: 90%;
             max-width: 600px;
@@ -305,6 +308,7 @@
             from { transform: translateY(-50px); opacity: 0; }
             to   { transform: translateY(0);     opacity: 1; }
         }
+        /* ===== FIM DA CORREÇÃO ===== */
 
         .modal-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -410,7 +414,7 @@
             .controls { flex-direction: column; }
             .btn { width: 100%; justify-content: center; }
             th, td { padding: 10px 8px; font-size: 12px; }
-            .modal-content { width: 95%; margin: 10% auto; }
+            .modal-content { width: 95%; margin: 0 auto; }
             .content { padding: 15px; }
             .receita-actions { position: static; margin-top: 10px; justify-content: flex-start; }
             .auth-box { padding: 30px 20px; }
@@ -809,7 +813,6 @@
             const plano      = [];
 
             if (!receitas.length) {
-                // fallback se não houver receitas: sequência fixa
                 let dataAtual = new Date(2026, 1, 7, 12, 0, 0);
                 while (dataAtual <= dataLimite) {
                     plano.push({ data: new Date(dataAtual), receita: null, intersticio: 10 });
@@ -964,7 +967,6 @@
                 return;
             }
 
-            // Se mudou o código, migra referências nas aplicações
             if (editId && codigo !== editId) {
                 const aplicacoes = await carregarAplicacoes();
                 Object.keys(aplicacoes).forEach(data => {
@@ -989,11 +991,11 @@
 
             const rec = {
                 codigo,
-                dataEmissao:          formatarData(new Date(emissao + 'T12:00:00')),
-                dataValidade:         validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
-                observacoes:          obs || null,
-                intersticioAplicacao: intersticioFinal,
-                dataCadastro:         receitaExistente?.dataCadastro || new Date().toISOString(),
+                dataEmissao:           formatarData(new Date(emissao + 'T12:00:00')),
+                dataValidade:          validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
+                observacoes:           obs || null,
+                intersticioAplicacao:  intersticioFinal,
+                dataCadastro:          receitaExistente?.dataCadastro || new Date().toISOString(),
                 dataPrimeiraAplicacao: dataPrimeiraAplicacaoFinal
             };
 
@@ -1094,8 +1096,8 @@
                         <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
                         <p><strong>1ª Aplicação:</strong> ${r.dataPrimeiraAplicacao || '-'}</p>
                         <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
-                        ${r.dataValidade  ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
-                        ${r.observacoes   ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
+                        ${r.dataValidade ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
+                        ${r.observacoes  ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
                         <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
                         <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
                     </div>
@@ -1124,11 +1126,11 @@
             );
 
             datas.forEach((d, i) => {
-                const dataStr    = formatarData(d);
-                const reg        = apl[dataStr] || { aplicacao: '', receita: null };
-                const cls        = reg.aplicacao === 'Sim' ? 'aplicado-sim'
-                                 : reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
-                const info       = reg.receita
+                const dataStr     = formatarData(d);
+                const reg         = apl[dataStr] || { aplicacao: '', receita: null };
+                const cls         = reg.aplicacao === 'Sim' ? 'aplicado-sim'
+                                  : reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
+                const info        = reg.receita
                     ? `<small style="color:#667eea;">Receita: ${reg.receita}</small>`
                     : '<small style="color:#999;">Nenhuma receita</small>';
                 const simDisabled = !temReceitaDisponivel && reg.aplicacao !== 'Sim';
@@ -1200,7 +1202,6 @@
             for (let i = 0; i < datas.length; i++) {
                 const dataStr = formatarData(datas[i]);
 
-                // NÃO mexe em registros já existentes
                 if (apl[dataStr]?.aplicacao === 'Sim') continue;
 
                 const rec = await atribuirReceita();
@@ -1265,9 +1266,9 @@
             doc.text('Intervalo: Variável conforme receita', 14, 40);
             doc.text('Gerado em: ' + formatarData(new Date()), 14, 46);
 
-            const apl      = await carregarAplicacoes();
-            const recs     = await carregarReceitas();
-            const datas    = gerarDatasAplicacao();
+                        const apl       = await carregarAplicacoes();
+            const recs      = await carregarReceitas();
+            const datas     = gerarDatasAplicacao();
             const aplicadas = Object.values(apl).filter(v => v.aplicacao === 'Sim' && v.receita).length;
             const nao       = Object.values(apl).filter(v => v.aplicacao === 'Não').length;
             const taxa      = datas.length ? Math.round(aplicadas / datas.length * 100) : 0;
@@ -1306,6 +1307,27 @@
                     body:   linhas
                 });
             }
+
+            const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 96;
+
+            doc.autoTable({
+                startY: finalY,
+                head:   [['#', 'Data', 'Dia', 'Aplicação', 'Receita']],
+                body:   datas.map((d, i) => {
+                    const dataStr = formatarData(d);
+                    const reg     = apl[dataStr] || {};
+                    return [
+                        i + 1,
+                        dataStr,
+                        obterDiaSemana(d),
+                        reg.aplicacao || '–',
+                        reg.receita   || '–'
+                    ];
+                }),
+                styles:     { fontSize: 9 },
+                headStyles: { fillColor: [102, 126, 234] }
+            });
+
             doc.save('Controle_Medicacao.pdf');
         };
     </script>
