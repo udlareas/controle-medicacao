@@ -9,22 +9,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Controle Medicação">
-
     <title>Controle de Medicação - Cipionato de Testosterona</title>
-
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -33,7 +29,6 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -41,10 +36,8 @@
             text-align: center;
             position: relative;
         }
-
         .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p { font-size: 14px; opacity: 0.9; }
-
+        .header p  { font-size: 14px; opacity: 0.9; }
         .user-info {
             position: absolute;
             top: 15px; left: 15px;
@@ -56,7 +49,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .sync-status {
             position: absolute;
             top: 15px; right: 15px;
@@ -68,11 +60,9 @@
             align-items: center;
             gap: 5px;
         }
-
-        .sync-status.online  { background: rgba(40, 167, 69, 0.3); }
-        .sync-status.offline { background: rgba(220, 53, 69, 0.3); }
-        .sync-status.syncing { background: rgba(255, 193, 7, 0.3); }
-
+        .sync-status.online  { background: rgba(40,167,69,0.3); }
+        .sync-status.offline { background: rgba(220,53,69,0.3); }
+        .sync-status.syncing { background: rgba(255,193,7,0.3); }
         .install-prompt {
             background: #28a745;
             color: white;
@@ -93,7 +83,6 @@
             font-weight: bold;
             cursor: pointer;
         }
-
         .loading-overlay {
             position: fixed;
             inset: 0;
@@ -115,7 +104,6 @@
         }
         .loading-text { color: white; font-size: 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .auth-screen {
             position: fixed;
             inset: 0;
@@ -137,7 +125,6 @@
         }
         .auth-box h2 { color: #667eea; margin-bottom: 10px; font-size: 24px; }
         .auth-box p  { color: #666; margin-bottom: 25px; font-size: 14px; }
-
         .auth-tabs {
             display: flex;
             gap: 10px;
@@ -159,9 +146,7 @@
         .auth-tab.active { color: #667eea; border-bottom-color: #667eea; }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
-
         .content { padding: 30px; }
-
         .info-box, .warning-box {
             padding: 15px;
             margin-bottom: 25px;
@@ -173,21 +158,18 @@
         }
         .info-box h3 { color: #667eea; margin-bottom: 8px; font-size: 16px; }
         .info-box p  { color: #666; font-size: 14px; margin-bottom: 5px; }
-
         .warning-box {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
         }
         .warning-box h3 { color: #856404; margin-bottom: 8px; font-size: 16px; }
         .warning-box p  { color: #856404; font-size: 14px; }
-
         .controls {
             display: flex;
             gap: 15px;
             margin-bottom: 25px;
             flex-wrap: wrap;
         }
-
         .btn {
             padding: 12px 24px;
             border: none;
@@ -207,7 +189,6 @@
         .btn-info    { background: #17a2b8; color: white; }
         .btn-warning { background: #ffc107; color: #333; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
-
         .btn-logout {
             background: rgba(255,255,255,0.2);
             color: white;
@@ -216,20 +197,17 @@
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.3);
         }
-
         .table-container {
             overflow-x: auto;
             border-radius: 8px;
             border: 1px solid #dee2e6;
             margin-bottom: 25px;
         }
-
         table { width: 100%; border-collapse: collapse; background: white; }
         thead { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         th { padding: 15px; text-align: left; font-weight: 600; font-size: 14px; }
         td { padding: 12px 15px; border-bottom: 1px solid #dee2e6; font-size: 14px; }
         tbody tr:hover { background: #f8f9fa; }
-
         select {
             width: 100%;
             padding: 8px 12px;
@@ -256,7 +234,6 @@
             font-style: italic;
             background: #f5f5f5;
         }
-
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -281,8 +258,6 @@
             font-weight: bold;
             color: #333;
         }
-
-        /* ===== CORREÇÃO DO MODAL ===== */
         .modal {
             display: none;
             position: fixed;
@@ -294,7 +269,6 @@
             padding: 20px 0;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .modal-content {
             background-color: white;
             margin: 0 auto;
@@ -308,8 +282,6 @@
             from { transform: translateY(-50px); opacity: 0; }
             to   { transform: translateY(0);     opacity: 1; }
         }
-        /* ===== FIM DA CORREÇÃO ===== */
-
         .modal-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -325,7 +297,6 @@
             gap: 10px;
             justify-content: flex-end;
         }
-
         .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
@@ -341,13 +312,9 @@
             border-radius: 8px;
             font-size: 14px;
         }
-        .form-group input:focus  { outline: none; border-color: #667eea; }
-        .form-group input:disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-        }
+        .form-group input:focus    { outline: none; border-color: #667eea; }
+        .form-group input:disabled { background-color: #e9ecef; cursor: not-allowed; }
         .form-group small { display: block; margin-top: 5px; color: #666; font-size: 12px; }
-
         .close {
             color: white;
             float: right;
@@ -357,7 +324,6 @@
             line-height: 20px;
         }
         .close:hover { opacity: 0.8; }
-
         .receita-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -368,7 +334,6 @@
         }
         .receita-ativa    { background: #d4edda; color: #155724; }
         .receita-esgotada { background: #f8d7da; color: #721c24; }
-
         .receitas-list { margin-top: 20px; }
         .receita-item {
             background: #f8f9fa;
@@ -394,18 +359,15 @@
         }
         .receita-actions {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 15px; right: 15px;
             display: flex;
             gap: 5px;
         }
-
         @media print {
             body { background: white; padding: 0; }
             .controls, .modal, .install-prompt, .sync-status, .user-info { display: none !important; }
             .container { box-shadow: none; }
         }
-
         @media (max-width: 768px) {
             body { padding: 0; }
             .container { border-radius: 0; }
@@ -423,17 +385,14 @@
 </head>
 <body>
 
-    <!-- ===== TELA DE AUTENTICAÇÃO ===== -->
     <div id="authScreen" class="auth-screen show">
         <div class="auth-box">
             <h2>🔐 Controle de Medicação</h2>
             <p>Faça login ou crie sua conta para sincronizar seus dados.</p>
-
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="trocarAba('login')">Login</button>
                 <button class="auth-tab"        onclick="trocarAba('registro')">Criar Conta</button>
             </div>
-
             <form id="formLogin" class="auth-form active" onsubmit="fazerLogin(event)">
                 <div class="form-group">
                     <label for="loginEmail">E-mail</label>
@@ -445,7 +404,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%;">Entrar</button>
             </form>
-
             <form id="formRegistro" class="auth-form" onsubmit="fazerRegistro(event)">
                 <div class="form-group">
                     <label for="registroEmail">E-mail</label>
@@ -466,13 +424,11 @@
         </div>
     </div>
 
-    <!-- ===== LOADING ===== -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Conectando...</div>
     </div>
 
-    <!-- ===== PROMPT DE INSTALAÇÃO ===== -->
     <div id="installPrompt" class="install-prompt">
         <span>📱 Instalar este app na tela inicial?</span>
         <div>
@@ -481,7 +437,6 @@
         </div>
     </div>
 
-    <!-- ===== CONTAINER PRINCIPAL ===== -->
     <div class="container">
         <div class="header">
             <div class="user-info">
@@ -503,38 +458,32 @@
                 <p><strong>Intervalo:</strong> Variável conforme receita cadastrada</p>
                 <p><strong>Medicamento:</strong> Cipionato de Testosterona (controlado)</p>
             </div>
-
             <div class="warning-box">
                 <h3>⚠️ Controle de Receitas</h3>
                 <p>Cada receita permite 3 doses (1 caixa). O interstício e a data da 1ª aplicação são definidos ao cadastrar cada receita. Receitas antigas permanecem com seus registros de aplicação inalterados.</p>
             </div>
-
             <div class="controls">
-                <button class="btn btn-info"   onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
+                <button class="btn btn-info"    onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
                 <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
                 <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
                 <button class="btn btn-danger"  onclick="limparTodas()">✗ Limpar todas</button>
             </div>
-
             <div class="stats">
                 <div class="stat-card"><h4>Total de Aplicações</h4><p id="totalAplicacoes">0</p></div>
                 <div class="stat-card"><h4>Aplicadas</h4><p id="totalAplicadas" style="color:#28a745;">0</p></div>
                 <div class="stat-card"><h4>Não Aplicadas</h4><p id="totalNaoAplicadas" style="color:#dc3545;">0</p></div>
                 <div class="stat-card"><h4>Taxa de Adesão</h4><p id="taxaAdesao">0%</p></div>
             </div>
-
             <div class="stats">
-                <div class="stat-card" style="border-left-color:#17a2b8;"><h4>Receitas Cadastradas</h4><p id="totalReceitas"      style="color:#17a2b8;">0</p></div>
-                <div class="stat-card" style="border-left-color:#28a745;"><h4>Doses Disponíveis</h4>  <p id="dosesDisponiveis"   style="color:#28a745;">0</p></div>
-                <div class="stat-card" style="border-left-color:#ffc107;"><h4>Doses Utilizadas</h4>   <p id="dosesUtilizadas"    style="color:#ffc107;">0</p></div>
+                <div class="stat-card" style="border-left-color:#17a2b8;"><h4>Receitas Cadastradas</h4><p id="totalReceitas"       style="color:#17a2b8;">0</p></div>
+                <div class="stat-card" style="border-left-color:#28a745;"><h4>Doses Disponíveis</h4>  <p id="dosesDisponiveis"    style="color:#28a745;">0</p></div>
+                <div class="stat-card" style="border-left-color:#ffc107;"><h4>Doses Utilizadas</h4>   <p id="dosesUtilizadas"     style="color:#ffc107;">0</p></div>
                 <div class="stat-card" style="border-left-color:#dc3545;"><h4>Receitas Necessárias</h4><p id="receitasNecessarias" style="color:#dc3545;">0</p></div>
             </div>
-
             <div id="listaReceitas" class="receitas-list" style="display:none;">
                 <h3 style="color:#667eea;margin-bottom:15px;">📋 Receitas Cadastradas</h3>
                 <div id="receitasContainer"></div>
             </div>
-
             <div class="table-container">
                 <table>
                     <thead>
@@ -552,7 +501,6 @@
         </div>
     </div>
 
-    <!-- ===== MODAL DE RECEITA ===== -->
     <div id="modalReceita" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -596,19 +544,17 @@
         </div>
     </div>
 
-    <!-- ===== LIBS PDF ===== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- ===== FIREBASE (module) ===== -->
     <script type="module">
-        import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { initializeApp }                         from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword,
                  signInWithEmailAndPassword, signOut,
-                 onAuthStateChanged }                     from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+                 onAuthStateChanged }                    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { initializeFirestore, persistentLocalCache,
                  collection, doc, setDoc, getDoc,
-                 getDocs, deleteDoc, onSnapshot }         from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+                 getDocs, deleteDoc, onSnapshot }        from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey:            "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
@@ -621,16 +567,12 @@
 
         const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
-        const db = initializeFirestore(app, {
-            localCache: persistentLocalCache()
-        });
+        const db   = initializeFirestore(app, { localCache: persistentLocalCache() });
 
         window.db            = db;
         window.auth          = auth;
         window.currentUserId = null;
 
-        // ---------- UI helpers ----------
         window.mostrarLoading = function(show, texto = 'Conectando...') {
             const overlay = document.getElementById('loadingOverlay');
             const txt     = document.querySelector('.loading-text');
@@ -649,7 +591,6 @@
             else                           { iconEl.textContent = '🔄'; textEl.textContent = 'Sincronizando...'; }
         };
 
-        // ---------- Auth helpers ----------
         window.trocarAba = function(aba) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
@@ -664,11 +605,11 @@
 
         window.fazerLogin = async function(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
             mostrarLoading(true, 'Fazendo login...');
             try {
-                await signInWithEmailAndPassword(auth, email, senha);
+                await signInWithEmailAndPassword(auth,
+                    document.getElementById('loginEmail').value,
+                    document.getElementById('loginSenha').value);
             } catch(err) {
                 mostrarLoading(false);
                 alert('Erro ao fazer login: ' + err.message);
@@ -696,11 +637,9 @@
             await signOut(auth);
         };
 
-        // ---------- Firestore: Receitas ----------
         window.carregarReceitas = async function() {
             if (!window.currentUserId) return [];
-            const ref  = collection(db, 'usuarios', window.currentUserId, 'receitas');
-            const snap = await getDocs(ref);
+            const snap = await getDocs(collection(db, 'usuarios', window.currentUserId, 'receitas'));
             return snap.docs.map(d => ({ id: d.id, ...d.data() }));
         };
 
@@ -718,11 +657,9 @@
             atualizarStatusSync('online');
         };
 
-        // ---------- Firestore: Aplicações ----------
         window.carregarAplicacoes = async function() {
             if (!window.currentUserId) return {};
-            const ref  = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
-            const snap = await getDoc(ref);
+            const snap = await getDoc(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'));
             return snap.exists() ? snap.data() : {};
         };
 
@@ -733,7 +670,6 @@
             atualizarStatusSync('online');
         };
 
-        // ---------- Sincronização em tempo real ----------
         let _renderizando = false;
         async function _renderizarSafe() {
             if (_renderizando) return;
@@ -744,20 +680,13 @@
 
         window.iniciarSincronizacao = function() {
             if (!window.currentUserId) return;
-            const recRef = collection(db, 'usuarios', window.currentUserId, 'receitas');
-            onSnapshot(recRef, async () => {
+            onSnapshot(collection(db, 'usuarios', window.currentUserId, 'receitas'), async () => {
                 await window.gerarPlanoAplicacoes?.();
                 await _renderizarSafe();
             });
-            const aplRef = doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes');
-            onSnapshot(aplRef, () => _renderizarSafe());
+            onSnapshot(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'),
+                () => _renderizarSafe());
         };
-
-        async function inicializarApp() {
-            await window.gerarPlanoAplicacoes();
-            window.iniciarSincronizacao();
-            await window.renderizarTabela();
-        }
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -767,9 +696,11 @@
                 mostrarLoading(true, 'Carregando dados...');
                 atualizarStatusSync('online');
                 try {
-                    await inicializarApp();
+                    await window.gerarPlanoAplicacoes();
+                    window.iniciarSincronizacao();
+                    await window.renderizarTabela();
                 } catch(err) {
-                    console.error('Erro ao carregar dados:', err);
+                    console.error(err);
                     alert('Erro ao carregar dados: ' + err.message);
                 } finally {
                     mostrarLoading(false);
@@ -784,17 +715,14 @@
             }
         });
     </script>
-
-    <!-- ===== LÓGICA DE NEGÓCIO (não-module) ===== -->
     <script>
-        const dosesPorCaixa = 3;
+        const dosesPorCaixa    = 3;
         window.planoAplicacoes = [];
 
         function formatarData(d) {
-            const dia = String(d.getDate()).padStart(2, '0');
-            const mes = String(d.getMonth() + 1).padStart(2, '0');
-            const ano = d.getFullYear();
-            return `${dia}/${mes}/${ano}`;
+            return String(d.getDate()).padStart(2,'0') + '/' +
+                   String(d.getMonth()+1).padStart(2,'0') + '/' +
+                   d.getFullYear();
         }
 
         function obterDiaSemana(d) {
@@ -803,20 +731,20 @@
 
         function dataFromDDMMYYYY(str) {
             const [d, m, a] = str.split('/');
-            return new Date(parseInt(a), parseInt(m) - 1, parseInt(d));
+            return new Date(parseInt(a), parseInt(m)-1, parseInt(d));
         }
 
-        // -------- Plano de datas (NÃO grava em Firestore) --------
+        // -------- Plano de datas --------
         window.gerarPlanoAplicacoes = async function() {
             const receitas   = await carregarReceitas();
             const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
             const plano      = [];
 
             if (!receitas.length) {
-                let dataAtual = new Date(2026, 1, 7, 12, 0, 0);
-                while (dataAtual <= dataLimite) {
-                    plano.push({ data: new Date(dataAtual), receita: null, intersticio: 10 });
-                    dataAtual.setDate(dataAtual.getDate() + 10);
+                let cur = new Date(2026, 1, 7, 12, 0, 0);
+                while (cur <= dataLimite) {
+                    plano.push({ data: new Date(cur), receita: null, intersticio: 10 });
+                    cur.setDate(cur.getDate() + 10);
                 }
                 window.planoAplicacoes = plano;
                 return;
@@ -824,25 +752,18 @@
 
             for (const receita of receitas) {
                 const intersticio = receita.intersticioAplicacao || 10;
-
                 let dataBase;
-                if (receita.dataPrimeiraAplicacao) {
-                    dataBase = dataFromDDMMYYYY(receita.dataPrimeiraAplicacao);
-                } else if (receita.dataEmissao) {
-                    dataBase = dataFromDDMMYYYY(receita.dataEmissao);
-                } else if (receita.dataCadastro) {
-                    dataBase = new Date(receita.dataCadastro);
-                } else {
-                    dataBase = new Date(2026, 1, 7);
-                }
-                dataBase.setHours(12,0,0,0);
+                if      (receita.dataPrimeiraAplicacao) dataBase = dataFromDDMMYYYY(receita.dataPrimeiraAplicacao);
+                else if (receita.dataEmissao)           dataBase = dataFromDDMMYYYY(receita.dataEmissao);
+                else if (receita.dataCadastro)          dataBase = new Date(receita.dataCadastro);
+                else                                    dataBase = new Date(2026, 1, 7);
+                dataBase.setHours(12, 0, 0, 0);
 
                 for (let i = 0; i < dosesPorCaixa; i++) {
-                    const dataAplic = new Date(dataBase.getTime());
-                    dataAplic.setDate(dataAplic.getDate() + i * intersticio);
-                    if (dataAplic <= dataLimite) {
-                        plano.push({ data: dataAplic, receita: receita.codigo, intersticio });
-                    }
+                    const dt = new Date(dataBase.getTime());
+                    dt.setDate(dt.getDate() + i * intersticio);
+                    if (dt <= dataLimite)
+                        plano.push({ data: dt, receita: receita.codigo, intersticio });
                 }
             }
 
@@ -851,85 +772,83 @@
         };
 
         function gerarDatasAplicacao() {
-            if (window.planoAplicacoes && window.planoAplicacoes.length > 0) {
+            if (window.planoAplicacoes?.length)
                 return window.planoAplicacoes.map(p => p.data);
-            }
-            const datas      = [];
-            let dataAtual    = new Date(2026, 1, 7, 12, 0, 0);
-            const limite     = new Date(2026, 11, 31, 12, 0, 0);
-            while (dataAtual <= limite) {
-                datas.push(new Date(dataAtual));
-                dataAtual.setDate(dataAtual.getDate() + 10);
-            }
+            const datas = [];
+            let cur     = new Date(2026, 1, 7, 12, 0, 0);
+            const lim   = new Date(2026, 11, 31, 12, 0, 0);
+            while (cur <= lim) { datas.push(new Date(cur)); cur.setDate(cur.getDate() + 10); }
             return datas;
         }
 
-        async function atribuirReceita() {
+        // =====================================================================
+        // CORREÇÃO DO BUG: atribuirReceita recebe a dataStr e busca no plano
+        // qual receita está associada àquela data, garantindo que a receita
+        // mais recente seja usada mesmo que a anterior tenha doses em aberto.
+        // =====================================================================
+        async function atribuirReceita(dataStr) {
+            // 1. Consulta o plano: a receita correta para esta data
+            if (dataStr && window.planoAplicacoes?.length) {
+                const entrada = window.planoAplicacoes.find(p => formatarData(p.data) === dataStr);
+                if (entrada?.receita) return entrada.receita;
+            }
+            // 2. Fallback: receita mais recente com doses disponíveis
             const receitas   = await carregarReceitas();
             const aplicacoes = await carregarAplicacoes();
             const uso        = {};
             receitas.forEach(r => uso[r.codigo] = 0);
             Object.values(aplicacoes).forEach(reg => {
-                if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1;
+                if (reg.aplicacao === 'Sim' && reg.receita)
+                    uso[reg.receita] = (uso[reg.receita] || 0) + 1;
             });
-            for (const r of receitas) {
-                if ((uso[r.codigo] || 0) < dosesPorCaixa) return r.codigo;
+            for (let i = receitas.length - 1; i >= 0; i--) {
+                if ((uso[receitas[i].codigo] || 0) < dosesPorCaixa)
+                    return receitas[i].codigo;
             }
             return null;
         }
 
         // ---------- Modal de Receita ----------
         window.abrirModalReceita = function(codigo = null) {
-            const modal   = document.getElementById('modalReceita');
-            const titulo  = document.getElementById('modalReceitaTitulo');
-            const idInput = document.getElementById('receitaEditandoId');
-
-            const campoIntersticio       = document.getElementById('intersticioAplicacao');
-            const campoPrimeiraAplicacao = document.getElementById('dataPrimeiraAplicacao');
+            const modal                = document.getElementById('modalReceita');
+            const titulo               = document.getElementById('modalReceitaTitulo');
+            const idInput              = document.getElementById('receitaEditandoId');
+            const campoIntersticio     = document.getElementById('intersticioAplicacao');
+            const campoPrimeiraAplic   = document.getElementById('dataPrimeiraAplicacao');
 
             if (codigo) {
                 titulo.textContent = '✏️ Editar Receita';
-                idInput.value = codigo;
+                idInput.value      = codigo;
                 carregarReceitas().then(rs => {
                     const r = rs.find(x => x.codigo === codigo);
                     if (!r) return;
-
                     document.getElementById('codigoReceita').value = r.codigo;
-
-                    const [d, m, a] = r.dataEmissao.split('/');
+                    const [d,m,a] = r.dataEmissao.split('/');
                     document.getElementById('dataEmissao').value = `${a}-${m}-${d}`;
-
                     if (r.dataPrimeiraAplicacao) {
-                        const [dp, mp, ap] = r.dataPrimeiraAplicacao.split('/');
-                        campoPrimeiraAplicacao.value = `${ap}-${mp}-${dp}`;
-                    } else {
-                        campoPrimeiraAplicacao.value = '';
-                    }
-
+                        const [dp,mp,ap] = r.dataPrimeiraAplicacao.split('/');
+                        campoPrimeiraAplic.value = `${ap}-${mp}-${dp}`;
+                    } else { campoPrimeiraAplic.value = ''; }
                     if (r.dataValidade) {
-                        const [dv, mv, av] = r.dataValidade.split('/');
+                        const [dv,mv,av] = r.dataValidade.split('/');
                         document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
-                    } else {
-                        document.getElementById('dataValidade').value = '';
-                    }
-
+                    } else { document.getElementById('dataValidade').value = ''; }
                     document.getElementById('observacoes').value = r.observacoes || '';
-                    campoIntersticio.value                        = r.intersticioAplicacao || 10;
-
-                    campoIntersticio.disabled       = true;
-                    campoPrimeiraAplicacao.disabled = true;
+                    campoIntersticio.value    = r.intersticioAplicacao || 10;
+                    campoIntersticio.disabled = true;
+                    campoPrimeiraAplic.disabled = true;
                 });
             } else {
                 titulo.textContent = '📝 Cadastrar Nova Receita';
-                idInput.value = '';
-                document.getElementById('codigoReceita').value   = '';
-                document.getElementById('dataEmissao').value     = '';
-                document.getElementById('dataValidade').value    = '';
-                document.getElementById('observacoes').value     = '';
-                campoIntersticio.value                           = '10';
-                campoIntersticio.disabled                        = false;
-                campoPrimeiraAplicacao.value                     = '';
-                campoPrimeiraAplicacao.disabled                  = false;
+                idInput.value      = '';
+                document.getElementById('codigoReceita').value  = '';
+                document.getElementById('dataEmissao').value    = '';
+                document.getElementById('dataValidade').value   = '';
+                document.getElementById('observacoes').value    = '';
+                campoIntersticio.value       = '10';
+                campoIntersticio.disabled    = false;
+                campoPrimeiraAplic.value     = '';
+                campoPrimeiraAplic.disabled  = false;
             }
             modal.style.display = 'block';
         };
@@ -957,51 +876,36 @@
             }
 
             const receitas = await carregarReceitas();
-
             if (!editId && receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe receita com esse código.');
-                return;
+                alert('Já existe receita com esse código.'); return;
             }
             if (editId && codigo !== editId && receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe receita com esse novo código.');
-                return;
+                alert('Já existe receita com esse novo código.'); return;
             }
-
             if (editId && codigo !== editId) {
-                const aplicacoes = await carregarAplicacoes();
-                Object.keys(aplicacoes).forEach(data => {
-                    if (aplicacoes[data].receita === editId) aplicacoes[data].receita = codigo;
-                });
-                await salvarAplicacoesFirebase(aplicacoes);
+                const apl = await carregarAplicacoes();
+                Object.keys(apl).forEach(d => { if (apl[d].receita === editId) apl[d].receita = codigo; });
+                await salvarAplicacoesFirebase(apl);
                 await excluirReceitaFirebase(editId);
             }
 
-            const receitaExistente = receitas.find(r => r.codigo === (editId || codigo));
+            const receitaExistente     = receitas.find(r => r.codigo === (editId || codigo));
+            const intersticioFinal     = editId ? (receitaExistente?.intersticioAplicacao || 10) : intersticio;
+            const dataPrimeiraFinal    = editId
+                ? (receitaExistente?.dataPrimeiraAplicacao || null)
+                : formatarData(new Date((primeira || emissao) + 'T12:00:00'));
 
-            const intersticioFinal = editId
-                ? (receitaExistente?.intersticioAplicacao || 10)
-                : intersticio;
-
-            let dataPrimeiraAplicacaoFinal;
-            if (editId) {
-                dataPrimeiraAplicacaoFinal = receitaExistente?.dataPrimeiraAplicacao || null;
-            } else {
-                dataPrimeiraAplicacaoFinal = formatarData(new Date((primeira || emissao) + 'T12:00:00'));
-            }
-
-            const rec = {
+            await salvarReceitaFirebase({
                 codigo,
                 dataEmissao:           formatarData(new Date(emissao + 'T12:00:00')),
                 dataValidade:          validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
                 observacoes:           obs || null,
                 intersticioAplicacao:  intersticioFinal,
                 dataCadastro:          receitaExistente?.dataCadastro || new Date().toISOString(),
-                dataPrimeiraAplicacao: dataPrimeiraAplicacaoFinal
-            };
+                dataPrimeiraAplicacao: dataPrimeiraFinal
+            });
 
-            await salvarReceitaFirebase(rec);
             fecharModalReceita();
-
             await gerarPlanoAplicacoes();
             alert(editId ? 'Receita atualizada.' : 'Receita cadastrada. Datas recalculadas.');
         };
@@ -1034,33 +938,28 @@
             const datas = gerarDatasAplicacao();
             const total = datas.length;
 
-            const aplicadas = Object.values(apl).filter(x =>
-                x.aplicacao === 'Sim' && x.receita != null
-            ).length;
-            const nao  = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
-            const taxa = total ? Math.round(aplicadas / total * 100) : 0;
+            const aplicadas = Object.values(apl).filter(x => x.aplicacao === 'Sim' && x.receita != null).length;
+            const nao       = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
+            const taxa      = total ? Math.round(aplicadas / total * 100) : 0;
 
             document.getElementById('totalAplicacoes').textContent   = total;
             document.getElementById('totalAplicadas').textContent    = aplicadas;
             document.getElementById('totalNaoAplicadas').textContent = nao;
             document.getElementById('taxaAdesao').textContent        = taxa + '%';
 
-            const dosesUtilizadasPorReceita = {};
-            recs.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
+            const uso = {};
+            recs.forEach(r => uso[r.codigo] = 0);
             Object.values(apl).forEach(reg => {
                 if (reg.aplicacao === 'Sim' && reg.receita)
-                    dosesUtilizadasPorReceita[reg.receita] = (dosesUtilizadasPorReceita[reg.receita] || 0) + 1;
+                    uso[reg.receita] = (uso[reg.receita] || 0) + 1;
             });
-
-            const dosesUtilizadas  = Object.values(dosesUtilizadasPorReceita).reduce((a, b) => a + b, 0);
-            const dosesTotais      = recs.length * dosesPorCaixa;
-            const dosesDisponiveis = Math.max(0, dosesTotais - dosesUtilizadas);
-            const nec              = Math.ceil(total / dosesPorCaixa);
+            const dosesUtilizadas  = Object.values(uso).reduce((a,b) => a+b, 0);
+            const dosesDisponiveis = Math.max(0, recs.length * dosesPorCaixa - dosesUtilizadas);
 
             document.getElementById('totalReceitas').textContent       = recs.length;
             document.getElementById('dosesDisponiveis').textContent    = dosesDisponiveis;
             document.getElementById('dosesUtilizadas').textContent     = dosesUtilizadas;
-            document.getElementById('receitasNecessarias').textContent = nec;
+            document.getElementById('receitasNecessarias').textContent = Math.ceil(total / dosesPorCaixa);
 
             await window.atualizarListaReceitas();
         };
@@ -1095,13 +994,12 @@
                         <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
                         <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
                         <p><strong>1ª Aplicação:</strong> ${r.dataPrimeiraAplicacao || '-'}</p>
-                        <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
+                        <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias</p>
                         ${r.dataValidade ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
                         ${r.observacoes  ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
                         <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
                         <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
-                    </div>
-                `);
+                    </div>`);
             }
             container.innerHTML = html.join('');
         };
@@ -1114,16 +1012,13 @@
             const tbody    = document.getElementById('corpoTabela');
             tbody.innerHTML = '';
 
-            const dosesUtilizadasPorReceita = {};
-            receitas.forEach(r => dosesUtilizadasPorReceita[r.codigo] = 0);
+            const uso = {};
+            receitas.forEach(r => uso[r.codigo] = 0);
             Object.values(apl).forEach(reg => {
                 if (reg.aplicacao === 'Sim' && reg.receita)
-                    dosesUtilizadasPorReceita[reg.receita] = (dosesUtilizadasPorReceita[reg.receita] || 0) + 1;
+                    uso[reg.receita] = (uso[reg.receita] || 0) + 1;
             });
-
-            const temReceitaDisponivel = receitas.some(r =>
-                (dosesUtilizadasPorReceita[r.codigo] || 0) < dosesPorCaixa
-            );
+            const temReceitaDisponivel = receitas.some(r => (uso[r.codigo] || 0) < dosesPorCaixa);
 
             datas.forEach((d, i) => {
                 const dataStr     = formatarData(d);
@@ -1137,7 +1032,7 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${i + 1}</strong></td>
+                    <td><strong>${i+1}</strong></td>
                     <td>${dataStr}</td>
                     <td>${obterDiaSemana(d)}</td>
                     <td>
@@ -1146,14 +1041,13 @@
                                 data-tem-receita="${temReceitaDisponivel}"
                                 onchange="atualizarAplicacao('${dataStr}', this.value, this)">
                             <option value="">-- Selecione --</option>
-                            <option value="Sim" ${reg.aplicacao === 'Sim' ? 'selected' : ''} ${simDisabled ? 'disabled' : ''}>
-                                Sim${simDisabled ? ' (sem receita)' : ''}
+                            <option value="Sim" ${reg.aplicacao==='Sim'?'selected':''} ${simDisabled?'disabled':''}>
+                                Sim${simDisabled?' (sem receita)':''}
                             </option>
-                            <option value="Não" ${reg.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
+                            <option value="Não" ${reg.aplicacao==='Não'?'selected':''}>Não</option>
                         </select>
                     </td>
-                    <td>${info}</td>
-                `;
+                    <td>${info}</td>`;
                 tbody.appendChild(tr);
             });
 
@@ -1175,7 +1069,8 @@
                     el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
                     return;
                 }
-                const rec = await atribuirReceita();
+                // Usa a receita correta para essa data pelo plano
+                const rec = await atribuirReceita(dataStr);
                 if (!rec) {
                     alert('Não há receitas com doses restantes.');
                     el.value     = apl[dataStr]?.aplicacao || '';
@@ -1194,25 +1089,19 @@
         // ---------- Ações em lote ----------
         window.marcarTodasSim = async function() {
             if (!confirm('Marcar todas as aplicações como realizadas?')) return;
-
             const datas = gerarDatasAplicacao();
             const apl   = await carregarAplicacoes();
-            let ok = true;
-
+            let ok      = true;
             for (let i = 0; i < datas.length; i++) {
                 const dataStr = formatarData(datas[i]);
-
                 if (apl[dataStr]?.aplicacao === 'Sim') continue;
-
-                const rec = await atribuirReceita();
+                const rec = await atribuirReceita(dataStr);
                 if (!rec && ok) {
                     ok = false;
-                    alert(`Receitas insuficientes a partir da aplicação #${i + 1}. As anteriores foram mantidas.`);
+                    alert(`Receitas insuficientes a partir da aplicação #${i+1}. As anteriores foram mantidas.`);
                     break;
                 }
-                if (rec) {
-                    apl[dataStr] = { aplicacao: 'Sim', receita: rec };
-                }
+                if (rec) apl[dataStr] = { aplicacao: 'Sim', receita: rec };
             }
             await salvarAplicacoesFirebase(apl);
         };
@@ -1224,9 +1113,8 @@
 
         // ---------- Service Worker ----------
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js').catch(() => {});
-            });
+            window.addEventListener('load', () =>
+                navigator.serviceWorker.register('service-worker.js').catch(() => {}));
         }
 
         // ---------- Prompt de instalação ----------
@@ -1236,7 +1124,6 @@
             deferredPrompt = e;
             document.getElementById('installPrompt').classList.add('show');
         });
-
         window.instalarApp = function() {
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
@@ -1245,7 +1132,6 @@
                 document.getElementById('installPrompt').classList.remove('show');
             });
         };
-
         window.fecharPromptInstalacao = function() {
             document.getElementById('installPrompt').classList.remove('show');
         };
@@ -1266,7 +1152,7 @@
             doc.text('Intervalo: Variável conforme receita', 14, 40);
             doc.text('Gerado em: ' + formatarData(new Date()), 14, 46);
 
-                        const apl       = await carregarAplicacoes();
+            const apl       = await carregarAplicacoes();
             const recs      = await carregarReceitas();
             const datas     = gerarDatasAplicacao();
             const aplicadas = Object.values(apl).filter(v => v.aplicacao === 'Sim' && v.receita).length;
@@ -1276,13 +1162,12 @@
             doc.setFontSize(11);
             doc.setTextColor(102, 126, 234);
             doc.text('Estatísticas', 14, 56);
-
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
-            doc.text(`Previstas: ${datas.length}`, 14, 62);
-            doc.text(`Realizadas: ${aplicadas}`,   14, 68);
-            doc.text(`Não realizadas: ${nao}`,     14, 74);
-            doc.text(`Taxa de adesão: ${taxa}%`,   14, 80);
+            doc.text(`Previstas: ${datas.length}`,    14, 62);
+            doc.text(`Realizadas: ${aplicadas}`,      14, 68);
+            doc.text(`Não realizadas: ${nao}`,        14, 74);
+            doc.text(`Taxa de adesão: ${taxa}%`,      14, 80);
 
             if (recs.length) {
                 const uso = {};
@@ -1290,39 +1175,31 @@
                 Object.values(apl).forEach(r => {
                     if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1;
                 });
-                const linhas = recs.map(r => {
-                    const usadas = uso[r.codigo] || 0;
-                    const status = usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
-                    return [
-                        r.codigo,
-                        r.dataEmissao,
-                        `${r.intersticioAplicacao || 10} dias`,
-                        `${usadas}/${dosesPorCaixa}`,
-                        status
-                    ];
-                });
                 doc.autoTable({
                     startY: 88,
-                    head:   [['Código', 'Emissão', 'Interstício', 'Doses', 'Status']],
-                    body:   linhas
+                    head:   [['Código','Emissão','Interstício','Doses','Status']],
+                    body:   recs.map(r => {
+                        const usadas = uso[r.codigo] || 0;
+                        return [r.codigo, r.dataEmissao,
+                                `${r.intersticioAplicacao||10} dias`,
+                                `${usadas}/${dosesPorCaixa}`,
+                                usadas >= dosesPorCaixa ? 'Esgotada' : '
+
+                                usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa'];
+                    })
                 });
             }
 
             const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 96;
 
             doc.autoTable({
-                startY: finalY,
-                head:   [['#', 'Data', 'Dia', 'Aplicação', 'Receita']],
-                body:   datas.map((d, i) => {
+                startY:     finalY,
+                head:       [['#','Data','Dia','Aplicação','Receita']],
+                body:       datas.map((d, i) => {
                     const dataStr = formatarData(d);
                     const reg     = apl[dataStr] || {};
-                    return [
-                        i + 1,
-                        dataStr,
-                        obterDiaSemana(d),
-                        reg.aplicacao || '–',
-                        reg.receita   || '–'
-                    ];
+                    return [i+1, dataStr, obterDiaSemana(d),
+                            reg.aplicacao || '–', reg.receita || '–'];
                 }),
                 styles:     { fontSize: 9 },
                 headStyles: { fillColor: [102, 126, 234] }
