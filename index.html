@@ -926,7 +926,13 @@
         window.carregarReceitas = async function () {
             if (!window.currentUserId) return [];
             const snap = await getDocs(collection(db, 'usuarios', window.currentUserId, 'receitas'));
-            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const receitas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            receitas.sort((a, b) => {
+                const dA = a.dataCadastro ? new Date(a.dataCadastro) : new Date(0);
+                const dB = b.dataCadastro ? new Date(b.dataCadastro) : new Date(0);
+                return dA - dB;
+            });
+            return receitas;
         };
 
         window.salvarReceitaFirebase = async function (r) {
@@ -1063,8 +1069,9 @@
             Object.values(aplicacoes).forEach(reg => {
                 if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1;
             });
-            for (let i = receitas.length - 1; i >= 0; i--) {
-                if ((uso[receitas[i].codigo] || 0) < dosesPorCaixa) return receitas[i].codigo;
+            if (receitas.length > 0) {
+                const ultima = receitas[receitas.length - 1];
+                if ((uso[ultima.codigo] || 0) < dosesPorCaixa) return ultima.codigo;
             }
             return null;
         }
@@ -1177,7 +1184,14 @@
             recs.forEach(r => uso[r.codigo] = 0);
             Object.values(apl).forEach(reg => { if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1; });
             const dosesUtilizadas = Object.values(uso).reduce((a, b) => a + b, 0);
-            const dosesDisponiveis = Math.max(0, recs.length * dosesPorCaixa - dosesUtilizadas);
+            let dosesDisponiveis = 0;
+            if (recs.length > 0) {
+                const ultima = recs[recs.length - 1];
+                const usadasUltima = uso[ultima.codigo] || 0;
+                if (usadasUltima < dosesPorCaixa) {
+                    dosesDisponiveis = dosesPorCaixa - usadasUltima;
+                }
+            }
             document.getElementById('totalReceitas').textContent = recs.length;
             document.getElementById('dosesDisponiveis').textContent = dosesDisponiveis;
             document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
@@ -1196,11 +1210,13 @@
             recs.forEach(r => uso[r.codigo] = 0);
             Object.values(apl).forEach(r => { if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1; });
             const html = [];
-            for (const r of recs) {
+            for (let idx = 0; idx < recs.length; idx++) {
+                const r = recs[idx];
                 const usadas = uso[r.codigo] || 0;
                 const perc = usadas / dosesPorCaixa * 100;
-                const status = usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
-                const cls = usadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
+                const isUltima = idx === recs.length - 1;
+                const status = (usadas >= dosesPorCaixa || !isUltima) ? 'Esgotada' : 'Ativa';
+                const cls = (usadas >= dosesPorCaixa || !isUltima) ? 'receita-esgotada' : 'receita-ativa';
                 const pode = await podeEditarOuExcluir(r, recs);
                 html.push(`<div class="receita-item">
       ${pode ? `<div class="receita-actions">
@@ -1229,7 +1245,7 @@
             const uso = {};
             receitas.forEach(r => uso[r.codigo] = 0);
             Object.values(apl).forEach(reg => { if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1; });
-            const temReceita = receitas.some(r => (uso[r.codigo] || 0) < dosesPorCaixa);
+            const temReceita = receitas.length > 0 && (uso[receitas[receitas.length - 1].codigo] || 0) < dosesPorCaixa;
             datas.forEach((d, i) => {
                 const dataStr = formatarData(d);
                 const reg = apl[dataStr] || { aplicacao: '', receita: null };
@@ -1340,9 +1356,11 @@
                 doc.autoTable({
                     startY: 88,
                     head: [['Código', 'Emissão', 'Interstício', 'Doses', 'Status']],
-                    body: recs.map(r => {
+                    body: recs.map((r, idx) => {
                         const usadas = uso[r.codigo] || 0;
-                        return [r.codigo, r.dataEmissao, `${r.intersticioAplicacao || 10} dias`, `${usadas}/${dosesPorCaixa}`, usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa'];
+                        const isUltima = idx === recs.length - 1;
+                        const status = (usadas >= dosesPorCaixa || !isUltima) ? 'Esgotada' : 'Ativa';
+                        return [r.codigo, r.dataEmissao, `${r.intersticioAplicacao || 10} dias`, `${usadas}/${dosesPorCaixa}`, status];
                     })
                 });
             }
