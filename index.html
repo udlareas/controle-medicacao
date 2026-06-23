@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,23 +13,29 @@
     <title>Controle de Medicação - Cipionato de Testosterona</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -36,12 +43,22 @@
             text-align: center;
             position: relative;
         }
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p  { font-size: 14px; opacity: 0.9; }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
         .user-info {
             position: absolute;
-            top: 15px; left: 15px;
-            background: rgba(255,255,255,0.2);
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.2);
             padding: 8px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -49,10 +66,12 @@
             align-items: center;
             gap: 8px;
         }
+
         .sync-status {
             position: absolute;
-            top: 15px; right: 15px;
-            background: rgba(255,255,255,0.2);
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
             padding: 8px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -60,9 +79,19 @@
             align-items: center;
             gap: 5px;
         }
-        .sync-status.online  { background: rgba(40,167,69,0.3); }
-        .sync-status.offline { background: rgba(220,53,69,0.3); }
-        .sync-status.syncing { background: rgba(255,193,7,0.3); }
+
+        .sync-status.online {
+            background: rgba(40, 167, 69, 0.3);
+        }
+
+        .sync-status.offline {
+            background: rgba(220, 53, 69, 0.3);
+        }
+
+        .sync-status.syncing {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
         .install-prompt {
             background: #28a745;
             color: white;
@@ -73,7 +102,11 @@
             justify-content: space-between;
             gap: 15px;
         }
-        .install-prompt.show { display: flex; }
+
+        .install-prompt.show {
+            display: flex;
+        }
+
         .install-prompt button {
             background: white;
             color: #28a745;
@@ -83,10 +116,11 @@
             font-weight: bold;
             cursor: pointer;
         }
+
         .loading-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             display: none;
             align-items: center;
             justify-content: center;
@@ -94,16 +128,31 @@
             flex-direction: column;
             gap: 20px;
         }
-        .loading-overlay.show { display: flex; }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
         .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-top: 4px solid white;
             border-radius: 50%;
-            width: 50px; height: 50px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
         }
-        .loading-text { color: white; font-size: 16px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .auth-screen {
             position: fixed;
             inset: 0;
@@ -114,23 +163,39 @@
             z-index: 10000;
             padding: 20px;
         }
-        .auth-screen.show { display: flex; }
+
+        .auth-screen.show {
+            display: flex;
+        }
+
         .auth-box {
             background: white;
             border-radius: 15px;
             padding: 40px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
-        .auth-box h2 { color: #667eea; margin-bottom: 10px; font-size: 24px; }
-        .auth-box p  { color: #666; margin-bottom: 25px; font-size: 14px; }
+
+        .auth-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .auth-box p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
         .auth-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 25px;
             border-bottom: 2px solid #dee2e6;
         }
+
         .auth-tab {
             flex: 1;
             padding: 12px;
@@ -143,33 +208,71 @@
             color: #666;
             transition: all 0.3s;
         }
-        .auth-tab.active { color: #667eea; border-bottom-color: #667eea; }
-        .auth-form { display: none; }
-        .auth-form.active { display: block; }
-        .content { padding: 30px; }
-        .info-box, .warning-box {
+
+        .auth-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-box,
+        .warning-box {
             padding: 15px;
             margin-bottom: 25px;
             border-radius: 5px;
         }
+
         .info-box {
             background: #f8f9fa;
             border-left: 4px solid #667eea;
         }
-        .info-box h3 { color: #667eea; margin-bottom: 8px; font-size: 16px; }
-        .info-box p  { color: #666; font-size: 14px; margin-bottom: 5px; }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
         .warning-box {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
         }
-        .warning-box h3 { color: #856404; margin-bottom: 8px; font-size: 16px; }
-        .warning-box p  { color: #856404; font-size: 14px; }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            font-size: 14px;
+        }
+
         .controls {
             display: flex;
             gap: 15px;
             margin-bottom: 25px;
             flex-wrap: wrap;
         }
+
         .btn {
             padding: 12px 24px;
             border: none;
@@ -182,32 +285,86 @@
             align-items: center;
             gap: 8px;
         }
-        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
-        .btn-success { background: #28a745; color: white; }
-        .btn-danger  { background: #dc3545; color: white; }
-        .btn-info    { background: #17a2b8; color: white; }
-        .btn-warning { background: #ffc107; color: #333; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
         .btn-logout {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             padding: 6px 12px;
             font-size: 11px;
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
         .table-container {
             overflow-x: auto;
             border-radius: 8px;
             border: 1px solid #dee2e6;
             margin-bottom: 25px;
         }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        thead { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        th { padding: 15px; text-align: left; font-weight: 600; font-size: 14px; }
-        td { padding: 12px 15px; border-bottom: 1px solid #dee2e6; font-size: 14px; }
-        tbody tr:hover { background: #f8f9fa; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
         select {
             width: 100%;
             padding: 8px 12px;
@@ -217,29 +374,34 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+
         select.aplicado-sim {
             background: #d4edda;
             border-color: #28a745;
             color: #155724;
             font-weight: 600;
         }
+
         select.aplicado-nao {
             background: #f8d7da;
             border-color: #dc3545;
             color: #721c24;
             font-weight: 600;
         }
+
         select option:disabled {
             color: #999;
             font-style: italic;
             background: #f5f5f5;
         }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
+
         .stat-card {
             background: #f8f9fa;
             padding: 20px;
@@ -247,49 +409,79 @@
             text-align: center;
             border-left: 4px solid #667eea;
         }
+
         .stat-card h4 {
             color: #666;
             font-size: 12px;
             text-transform: uppercase;
             margin-bottom: 8px;
         }
+
         .stat-card p {
             font-size: 24px;
             font-weight: bold;
             color: #333;
         }
+
         .modal {
             display: none;
             position: fixed;
             z-index: 1000;
             inset: 0;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             animation: fadeIn 0.3s;
             overflow-y: auto;
             padding: 20px 0;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         .modal-content {
             background-color: white;
             margin: 0 auto;
             border-radius: 15px;
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             animation: slideDown 0.3s;
         }
+
         @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to   { transform: translateY(0);     opacity: 1; }
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
+
         .modal-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 20px 30px;
             border-radius: 15px 15px 0 0;
         }
-        .modal-header h2 { font-size: 22px; margin: 0; }
-        .modal-body   { padding: 30px; }
+
+        .modal-header h2 {
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
         .modal-footer {
             padding: 20px 30px;
             border-top: 1px solid #dee2e6;
@@ -297,7 +489,11 @@
             gap: 10px;
             justify-content: flex-end;
         }
-        .form-group { margin-bottom: 20px; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -305,6 +501,7 @@
             color: #333;
             font-size: 14px;
         }
+
         .form-group input {
             width: 100%;
             padding: 12px;
@@ -312,9 +509,24 @@
             border-radius: 8px;
             font-size: 14px;
         }
-        .form-group input:focus    { outline: none; border-color: #667eea; }
-        .form-group input:disabled { background-color: #e9ecef; cursor: not-allowed; }
-        .form-group small { display: block; margin-top: 5px; color: #666; font-size: 12px; }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
         .close {
             color: white;
             float: right;
@@ -323,7 +535,11 @@
             cursor: pointer;
             line-height: 20px;
         }
-        .close:hover { opacity: 0.8; }
+
+        .close:hover {
+            opacity: 0.8;
+        }
+
         .receita-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -332,9 +548,21 @@
             font-weight: 600;
             margin-left: 5px;
         }
-        .receita-ativa    { background: #d4edda; color: #155724; }
-        .receita-esgotada { background: #f8d7da; color: #721c24; }
-        .receitas-list { margin-top: 20px; }
+
+        .receita-ativa {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .receita-esgotada {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .receitas-list {
+            margin-top: 20px;
+        }
+
         .receita-item {
             background: #f8f9fa;
             padding: 15px;
@@ -343,8 +571,19 @@
             border-left: 4px solid #667eea;
             position: relative;
         }
-        .receita-item h4 { color: #667eea; font-size: 14px; margin-bottom: 8px; }
-        .receita-item p  { font-size: 13px; color: #666; margin: 3px 0; }
+
+        .receita-item h4 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .receita-item p {
+            font-size: 13px;
+            color: #666;
+            margin: 3px 0;
+        }
+
         .receita-item .progress-bar {
             background: #e9ecef;
             height: 8px;
@@ -352,37 +591,97 @@
             margin-top: 10px;
             overflow: hidden;
         }
+
         .receita-item .progress-fill {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             height: 100%;
             transition: width 0.3s;
         }
+
         .receita-actions {
             position: absolute;
-            top: 15px; right: 15px;
+            top: 15px;
+            right: 15px;
             display: flex;
             gap: 5px;
         }
+
         @media print {
-            body { background: white; padding: 0; }
-            .controls, .modal, .install-prompt, .sync-status, .user-info { display: none !important; }
-            .container { box-shadow: none; }
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .controls,
+            .modal,
+            .install-prompt,
+            .sync-status,
+            .user-info {
+                display: none !important;
+            }
+
+            .container {
+                box-shadow: none;
+            }
         }
-        @media (max-width: 768px) {
-            body { padding: 0; }
-            .container { border-radius: 0; }
-            .header h1 { font-size: 22px; }
-            .user-info, .sync-status { position: static; margin: 10px auto 0; justify-content: center; }
-            .controls { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
-            th, td { padding: 10px 8px; font-size: 12px; }
-            .modal-content { width: 95%; margin: 0 auto; }
-            .content { padding: 15px; }
-            .receita-actions { position: static; margin-top: 10px; justify-content: flex-start; }
-            .auth-box { padding: 30px 20px; }
+
+        @media (max-width:768px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .user-info,
+            .sync-status {
+                position: static;
+                margin: 10px auto 0;
+                justify-content: center;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 0 auto;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .receita-actions {
+                position: static;
+                margin-top: 10px;
+                justify-content: flex-start;
+            }
+
+            .auth-box {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div id="authScreen" class="auth-screen show">
@@ -391,34 +690,20 @@
             <p>Faça login ou crie sua conta para sincronizar seus dados.</p>
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="trocarAba('login')">Login</button>
-                <button class="auth-tab"        onclick="trocarAba('registro')">Criar Conta</button>
+                <button class="auth-tab" onclick="trocarAba('registro')">Criar Conta</button>
             </div>
             <form id="formLogin" class="auth-form active" onsubmit="fazerLogin(event)">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginSenha">Senha</label>
-                    <input type="password" id="loginSenha" required>
-                </div>
+                <div class="form-group"><label>E-mail</label><input type="email" id="loginEmail" required></div>
+                <div class="form-group"><label>Senha</label><input type="password" id="loginSenha" required></div>
                 <button type="submit" class="btn btn-primary" style="width:100%;">Entrar</button>
             </form>
             <form id="formRegistro" class="auth-form" onsubmit="fazerRegistro(event)">
-                <div class="form-group">
-                    <label for="registroEmail">E-mail</label>
-                    <input type="email" id="registroEmail" required>
-                    <small>Use um e-mail válido para recuperação de senha</small>
-                </div>
-                <div class="form-group">
-                    <label for="registroSenha">Senha</label>
-                    <input type="password" id="registroSenha" minlength="6" required>
-                    <small>Mínimo 6 caracteres</small>
-                </div>
-                <div class="form-group">
-                    <label for="registroConfirmaSenha">Confirme a senha</label>
-                    <input type="password" id="registroConfirmaSenha" minlength="6" required>
-                </div>
+                <div class="form-group"><label>E-mail</label><input type="email" id="registroEmail" required><small>Use
+                        um e-mail válido para recuperação de senha</small></div>
+                <div class="form-group"><label>Senha</label><input type="password" id="registroSenha" minlength="6"
+                        required><small>Mínimo 6 caracteres</small></div>
+                <div class="form-group"><label>Confirme a senha</label><input type="password" id="registroConfirmaSenha"
+                        minlength="6" required></div>
                 <button type="submit" class="btn btn-success" style="width:100%;">Criar conta</button>
             </form>
         </div>
@@ -439,18 +724,13 @@
 
     <div class="container">
         <div class="header">
-            <div class="user-info">
-                <span id="userEmail">–</span>
-                <button class="btn-logout" onclick="fazerLogout()">Sair</button>
-            </div>
-            <div id="syncStatus" class="sync-status offline">
-                <span id="syncIcon">⚫</span>
-                <span id="syncText">Offline</span>
-            </div>
+            <div class="user-info"><span id="userEmail">–</span><button class="btn-logout"
+                    onclick="fazerLogout()">Sair</button></div>
+            <div id="syncStatus" class="sync-status offline"><span id="syncIcon">⚫</span><span
+                    id="syncText">Offline</span></div>
             <h1>📋 Controle de Medicação</h1>
             <p>Cipionato de Testosterona - Aplicação a cada 10 dias</p>
         </div>
-
         <div class="content">
             <div class="info-box">
                 <h3>ℹ️ Informações do Tratamento</h3>
@@ -460,25 +740,50 @@
             </div>
             <div class="warning-box">
                 <h3>⚠️ Controle de Receitas</h3>
-                <p>Cada receita permite 3 doses (1 caixa). O interstício e a data da 1ª aplicação são definidos ao cadastrar cada receita. Receitas antigas permanecem com seus registros de aplicação inalterados.</p>
+                <p>Cada receita permite 3 doses (1 caixa). O interstício e a data da 1ª aplicação são definidos ao
+                    cadastrar cada receita. Receitas antigas permanecem com seus registros de aplicação inalterados.</p>
             </div>
             <div class="controls">
-                <button class="btn btn-info"    onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
+                <button class="btn btn-info" onclick="abrirModalReceita()">📝 Cadastrar Receita</button>
                 <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar Relatório PDF</button>
                 <button class="btn btn-success" onclick="marcarTodasSim()">✓ Marcar todas como aplicadas</button>
-                <button class="btn btn-danger"  onclick="limparTodas()">✗ Limpar todas</button>
+                <button class="btn btn-danger" onclick="limparTodas()">✗ Limpar todas</button>
             </div>
             <div class="stats">
-                <div class="stat-card"><h4>Total de Aplicações</h4><p id="totalAplicacoes">0</p></div>
-                <div class="stat-card"><h4>Aplicadas</h4><p id="totalAplicadas" style="color:#28a745;">0</p></div>
-                <div class="stat-card"><h4>Não Aplicadas</h4><p id="totalNaoAplicadas" style="color:#dc3545;">0</p></div>
-                <div class="stat-card"><h4>Taxa de Adesão</h4><p id="taxaAdesao">0%</p></div>
+                <div class="stat-card">
+                    <h4>Total de Aplicações</h4>
+                    <p id="totalAplicacoes">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Aplicadas</h4>
+                    <p id="totalAplicadas" style="color:#28a745;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Não Aplicadas</h4>
+                    <p id="totalNaoAplicadas" style="color:#dc3545;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Taxa de Adesão</h4>
+                    <p id="taxaAdesao">0%</p>
+                </div>
             </div>
             <div class="stats">
-                <div class="stat-card" style="border-left-color:#17a2b8;"><h4>Receitas Cadastradas</h4><p id="totalReceitas"       style="color:#17a2b8;">0</p></div>
-                <div class="stat-card" style="border-left-color:#28a745;"><h4>Doses Disponíveis</h4>  <p id="dosesDisponiveis"    style="color:#28a745;">0</p></div>
-                <div class="stat-card" style="border-left-color:#ffc107;"><h4>Doses Utilizadas</h4>   <p id="dosesUtilizadas"     style="color:#ffc107;">0</p></div>
-                <div class="stat-card" style="border-left-color:#dc3545;"><h4>Receitas Necessárias</h4><p id="receitasNecessarias" style="color:#dc3545;">0</p></div>
+                <div class="stat-card" style="border-left-color:#17a2b8;">
+                    <h4>Receitas Cadastradas</h4>
+                    <p id="totalReceitas" style="color:#17a2b8;">0</p>
+                </div>
+                <div class="stat-card" style="border-left-color:#28a745;">
+                    <h4>Doses Disponíveis</h4>
+                    <p id="dosesDisponiveis" style="color:#28a745;">0</p>
+                </div>
+                <div class="stat-card" style="border-left-color:#ffc107;">
+                    <h4>Doses Utilizadas</h4>
+                    <p id="dosesUtilizadas" style="color:#ffc107;">0</p>
+                </div>
+                <div class="stat-card" style="border-left-color:#dc3545;">
+                    <h4>Receitas Necessárias</h4>
+                    <p id="receitasNecessarias" style="color:#dc3545;">0</p>
+                </div>
             </div>
             <div id="listaReceitas" class="receitas-list" style="display:none;">
                 <h3 style="color:#667eea;margin-bottom:15px;">📋 Receitas Cadastradas</h3>
@@ -509,89 +814,76 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="receitaEditandoId">
-                <div class="form-group">
-                    <label for="codigoReceita">Código da Receita *</label>
-                    <input type="text" id="codigoReceita" required>
-                    <small>Código completo da receita</small>
+                <div class="form-group"><label>Código da Receita *</label><input type="text" id="codigoReceita"
+                        required><small>Código completo da receita</small></div>
+                <div class="form-group"><label>Data de Emissão *</label><input type="date" id="dataEmissao" required>
                 </div>
-                <div class="form-group">
-                    <label for="dataEmissao">Data de Emissão *</label>
-                    <input type="date" id="dataEmissao" required>
-                </div>
-                <div class="form-group">
-                    <label for="dataPrimeiraAplicacao">Data da 1ª Aplicação *</label>
-                    <input type="date" id="dataPrimeiraAplicacao" required>
-                    <small>Pode ser diferente da data de emissão.</small>
-                </div>
-                <div class="form-group">
-                    <label for="dataValidade">Data de Validade</label>
-                    <input type="date" id="dataValidade">
-                </div>
-                <div class="form-group">
-                    <label for="intersticioAplicacao">Interstício entre Aplicações (dias) *</label>
-                    <input type="number" id="intersticioAplicacao" min="1" max="365" value="10" required>
-                    <small>Intervalo em dias entre cada uma das 3 aplicações desta receita</small>
-                </div>
-                <div class="form-group">
-                    <label for="observacoes">Observações</label>
-                    <input type="text" id="observacoes">
-                </div>
+                <div class="form-group"><label>Data da 1ª Aplicação *</label><input type="date"
+                        id="dataPrimeiraAplicacao" required><small>Pode ser diferente da data de emissão.</small></div>
+                <div class="form-group"><label>Data de Validade</label><input type="date" id="dataValidade"></div>
+                <div class="form-group"><label>Interstício entre Aplicações (dias) *</label><input type="number"
+                        id="intersticioAplicacao" min="1" max="365" value="10" required><small>Intervalo em dias entre
+                        cada uma das 3 aplicações desta receita</small></div>
+                <div class="form-group"><label>Observações</label><input type="text" id="observacoes"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger"  onclick="fecharModalReceita()">Cancelar</button>
+                <button class="btn btn-danger" onclick="fecharModalReceita()">Cancelar</button>
                 <button class="btn btn-success" onclick="salvarReceita()">Salvar</button>
             </div>
         </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <script type="module">
-        import { initializeApp }                         from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword,
-                 signInWithEmailAndPassword, signOut,
-                 onAuthStateChanged }                    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { initializeFirestore, persistentLocalCache,
-                 collection, doc, setDoc, getDoc,
-                 getDocs, deleteDoc, onSnapshot }        from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import {
+            getAuth, createUserWithEmailAndPassword,
+            signInWithEmailAndPassword, signOut,
+            onAuthStateChanged
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import {
+            initializeFirestore, persistentLocalCache,
+            collection, doc, setDoc, getDoc,
+            getDocs, deleteDoc, onSnapshot
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
-            apiKey:            "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
-            authDomain:        "controle-medicacao-99cb5.firebaseapp.com",
-            projectId:         "controle-medicacao-99cb5",
-            storageBucket:     "controle-medicacao-99cb5.firebasestorage.app",
+            apiKey: "AIzaSyAdtY0kQsMukgbJj6hKCQ3dHR17BfZyvUY",
+            authDomain: "controle-medicacao-99cb5.firebaseapp.com",
+            projectId: "controle-medicacao-99cb5",
+            storageBucket: "controle-medicacao-99cb5.firebasestorage.app",
             messagingSenderId: "268683516299",
-            appId:             "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
+            appId: "1:268683516299:web:611fb5e4cc2d67e8f6b78e"
         };
 
-        const app  = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db   = initializeFirestore(app, { localCache: persistentLocalCache() });
+        const db = initializeFirestore(app, { localCache: persistentLocalCache() });
 
-        window.db            = db;
-        window.auth          = auth;
+        window.db = db;
+        window.auth = auth;
         window.currentUserId = null;
 
-        window.mostrarLoading = function(show, texto = 'Conectando...') {
+        window.mostrarLoading = function (show, texto = 'Conectando...') {
             const overlay = document.getElementById('loadingOverlay');
-            const txt     = document.querySelector('.loading-text');
+            const txt = document.querySelector('.loading-text');
             if (txt) txt.textContent = texto;
             overlay.classList.toggle('show', show);
         };
 
-        window.atualizarStatusSync = function(status) {
-            const statusEl = document.getElementById('syncStatus');
-            const iconEl   = document.getElementById('syncIcon');
-            const textEl   = document.getElementById('syncText');
-            if (!statusEl || !iconEl || !textEl) return;
-            statusEl.className = 'sync-status ' + status;
-            if      (status === 'online')  { iconEl.textContent = '🟢'; textEl.textContent = 'Online'; }
-            else if (status === 'offline') { iconEl.textContent = '⚫'; textEl.textContent = 'Offline'; }
-            else                           { iconEl.textContent = '🔄'; textEl.textContent = 'Sincronizando...'; }
+        window.atualizarStatusSync = function (status) {
+            const sEl = document.getElementById('syncStatus');
+            const iEl = document.getElementById('syncIcon');
+            const tEl = document.getElementById('syncText');
+            if (!sEl) return;
+            sEl.className = 'sync-status ' + status;
+            if (status === 'online') { iEl.textContent = '🟢'; tEl.textContent = 'Online'; }
+            else if (status === 'offline') { iEl.textContent = '⚫'; tEl.textContent = 'Offline'; }
+            else { iEl.textContent = '🔄'; tEl.textContent = 'Sincronizando...'; }
         };
 
-        window.trocarAba = function(aba) {
+        window.trocarAba = function (aba) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
             if (aba === 'login') {
@@ -603,67 +895,61 @@
             }
         };
 
-        window.fazerLogin = async function(e) {
+        window.fazerLogin = async function (e) {
             e.preventDefault();
             mostrarLoading(true, 'Fazendo login...');
             try {
                 await signInWithEmailAndPassword(auth,
                     document.getElementById('loginEmail').value,
                     document.getElementById('loginSenha').value);
-            } catch(err) {
-                mostrarLoading(false);
-                alert('Erro ao fazer login: ' + err.message);
-            }
+            } catch (err) { mostrarLoading(false); alert('Erro ao fazer login: ' + err.message); }
         };
 
-        window.fazerRegistro = async function(e) {
+        window.fazerRegistro = async function (e) {
             e.preventDefault();
             const email = document.getElementById('registroEmail').value;
             const senha = document.getElementById('registroSenha').value;
-            const conf  = document.getElementById('registroConfirmaSenha').value;
+            const conf = document.getElementById('registroConfirmaSenha').value;
             if (senha !== conf) { alert('As senhas não conferem.'); return; }
             mostrarLoading(true, 'Criando conta...');
             try {
                 await createUserWithEmailAndPassword(auth, email, senha);
                 alert('Conta criada. Você já está logado.');
-            } catch(err) {
-                mostrarLoading(false);
-                alert('Erro ao criar conta: ' + err.message);
-            }
+            } catch (err) { mostrarLoading(false); alert('Erro ao criar conta: ' + err.message); }
         };
 
-        window.fazerLogout = async function() {
+        window.fazerLogout = async function () {
             if (!confirm('Deseja sair da conta?')) return;
             await signOut(auth);
         };
 
-        window.carregarReceitas = async function() {
+        window.carregarReceitas = async function () {
             if (!window.currentUserId) return [];
             const snap = await getDocs(collection(db, 'usuarios', window.currentUserId, 'receitas'));
             return snap.docs.map(d => ({ id: d.id, ...d.data() }));
         };
 
-        window.salvarReceitaFirebase = async function(r) {
+        window.salvarReceitaFirebase = async function (r) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
             await setDoc(doc(db, 'usuarios', window.currentUserId, 'receitas', r.codigo), r);
             atualizarStatusSync('online');
         };
 
-        window.excluirReceitaFirebase = async function(cod) {
+        window.excluirReceitaFirebase = async function (cod) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
             await deleteDoc(doc(db, 'usuarios', window.currentUserId, 'receitas', cod));
             atualizarStatusSync('online');
         };
 
-        window.carregarAplicacoes = async function() {
+        window.carregarAplicacoes = async function () {
             if (!window.currentUserId) return {};
             const snap = await getDoc(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'));
             return snap.exists() ? snap.data() : {};
         };
 
-        window.salvarAplicacoesFirebase = async function(apl) {
+        window.salvarAplicacoesFirebase = async function (apl) {
             if (!window.currentUserId) return;
             atualizarStatusSync('syncing');
             await setDoc(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'), apl);
@@ -674,18 +960,16 @@
         async function _renderizarSafe() {
             if (_renderizando) return;
             _renderizando = true;
-            try { await window.renderizarTabela?.(); }
-            finally { _renderizando = false; }
+            try { await window.renderizarTabela?.(); } finally { _renderizando = false; }
         }
 
-        window.iniciarSincronizacao = function() {
+        window.iniciarSincronizacao = function () {
             if (!window.currentUserId) return;
             onSnapshot(collection(db, 'usuarios', window.currentUserId, 'receitas'), async () => {
                 await window.gerarPlanoAplicacoes?.();
                 await _renderizarSafe();
             });
-            onSnapshot(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'),
-                () => _renderizarSafe());
+            onSnapshot(doc(db, 'usuarios', window.currentUserId, 'dados', 'aplicacoes'), () => _renderizarSafe());
         };
 
         onAuthStateChanged(auth, async (user) => {
@@ -699,12 +983,10 @@
                     await window.gerarPlanoAplicacoes();
                     window.iniciarSincronizacao();
                     await window.renderizarTabela();
-                } catch(err) {
+                } catch (err) {
                     console.error(err);
                     alert('Erro ao carregar dados: ' + err.message);
-                } finally {
-                    mostrarLoading(false);
-                }
+                } finally { mostrarLoading(false); }
             } else {
                 window.currentUserId = null;
                 document.getElementById('userEmail').textContent = '–';
@@ -716,201 +998,151 @@
         });
     </script>
     <script>
-        const dosesPorCaixa    = 3;
+        const dosesPorCaixa = 3;
         window.planoAplicacoes = [];
 
         function formatarData(d) {
-            return String(d.getDate()).padStart(2,'0') + '/' +
-                   String(d.getMonth()+1).padStart(2,'0') + '/' +
-                   d.getFullYear();
+            return String(d.getDate()).padStart(2, '0') + '/' +
+                String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
         }
-
         function obterDiaSemana(d) {
-            return ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d.getDay()];
+            return ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][d.getDay()];
         }
-
         function dataFromDDMMYYYY(str) {
             const [d, m, a] = str.split('/');
-            return new Date(parseInt(a), parseInt(m)-1, parseInt(d));
+            return new Date(parseInt(a), parseInt(m) - 1, parseInt(d));
         }
 
-        // -------- Plano de datas --------
-        window.gerarPlanoAplicacoes = async function() {
-            const receitas   = await carregarReceitas();
+        window.gerarPlanoAplicacoes = async function () {
+            const receitas = await carregarReceitas();
             const dataLimite = new Date(2026, 11, 31, 12, 0, 0);
-            const plano      = [];
-
+            const plano = [];
             if (!receitas.length) {
                 let cur = new Date(2026, 1, 7, 12, 0, 0);
                 while (cur <= dataLimite) {
                     plano.push({ data: new Date(cur), receita: null, intersticio: 10 });
                     cur.setDate(cur.getDate() + 10);
                 }
-                window.planoAplicacoes = plano;
-                return;
+                window.planoAplicacoes = plano; return;
             }
-
             for (const receita of receitas) {
                 const intersticio = receita.intersticioAplicacao || 10;
                 let dataBase;
-                if      (receita.dataPrimeiraAplicacao) dataBase = dataFromDDMMYYYY(receita.dataPrimeiraAplicacao);
-                else if (receita.dataEmissao)           dataBase = dataFromDDMMYYYY(receita.dataEmissao);
-                else if (receita.dataCadastro)          dataBase = new Date(receita.dataCadastro);
-                else                                    dataBase = new Date(2026, 1, 7);
+                if (receita.dataPrimeiraAplicacao) dataBase = dataFromDDMMYYYY(receita.dataPrimeiraAplicacao);
+                else if (receita.dataEmissao) dataBase = dataFromDDMMYYYY(receita.dataEmissao);
+                else if (receita.dataCadastro) dataBase = new Date(receita.dataCadastro);
+                else dataBase = new Date(2026, 1, 7);
                 dataBase.setHours(12, 0, 0, 0);
-
                 for (let i = 0; i < dosesPorCaixa; i++) {
                     const dt = new Date(dataBase.getTime());
                     dt.setDate(dt.getDate() + i * intersticio);
-                    if (dt <= dataLimite)
-                        plano.push({ data: dt, receita: receita.codigo, intersticio });
+                    if (dt <= dataLimite) plano.push({ data: dt, receita: receita.codigo, intersticio });
                 }
             }
-
             plano.sort((a, b) => a.data - b.data);
             window.planoAplicacoes = plano;
         };
 
         function gerarDatasAplicacao() {
-            if (window.planoAplicacoes?.length)
-                return window.planoAplicacoes.map(p => p.data);
-            const datas = [];
-            let cur     = new Date(2026, 1, 7, 12, 0, 0);
-            const lim   = new Date(2026, 11, 31, 12, 0, 0);
+            if (window.planoAplicacoes?.length) return window.planoAplicacoes.map(p => p.data);
+            const datas = []; let cur = new Date(2026, 1, 7, 12, 0, 0); const lim = new Date(2026, 11, 31, 12, 0, 0);
             while (cur <= lim) { datas.push(new Date(cur)); cur.setDate(cur.getDate() + 10); }
             return datas;
         }
 
-        // =====================================================================
-        // CORREÇÃO DO BUG: atribuirReceita recebe a dataStr e busca no plano
-        // qual receita está associada àquela data, garantindo que a receita
-        // mais recente seja usada mesmo que a anterior tenha doses em aberto.
-        // =====================================================================
+        // CORREÇÃO DO BUG: atribuirReceita agora recebe dataStr e consulta o plano
         async function atribuirReceita(dataStr) {
-            // 1. Consulta o plano: a receita correta para esta data
             if (dataStr && window.planoAplicacoes?.length) {
                 const entrada = window.planoAplicacoes.find(p => formatarData(p.data) === dataStr);
                 if (entrada?.receita) return entrada.receita;
             }
-            // 2. Fallback: receita mais recente com doses disponíveis
-            const receitas   = await carregarReceitas();
+            const receitas = await carregarReceitas();
             const aplicacoes = await carregarAplicacoes();
-            const uso        = {};
+            const uso = {};
             receitas.forEach(r => uso[r.codigo] = 0);
             Object.values(aplicacoes).forEach(reg => {
-                if (reg.aplicacao === 'Sim' && reg.receita)
-                    uso[reg.receita] = (uso[reg.receita] || 0) + 1;
+                if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1;
             });
             for (let i = receitas.length - 1; i >= 0; i--) {
-                if ((uso[receitas[i].codigo] || 0) < dosesPorCaixa)
-                    return receitas[i].codigo;
+                if ((uso[receitas[i].codigo] || 0) < dosesPorCaixa) return receitas[i].codigo;
             }
             return null;
         }
 
-        // ---------- Modal de Receita ----------
-        window.abrirModalReceita = function(codigo = null) {
-            const modal                = document.getElementById('modalReceita');
-            const titulo               = document.getElementById('modalReceitaTitulo');
-            const idInput              = document.getElementById('receitaEditandoId');
-            const campoIntersticio     = document.getElementById('intersticioAplicacao');
-            const campoPrimeiraAplic   = document.getElementById('dataPrimeiraAplicacao');
-
+        window.abrirModalReceita = function (codigo = null) {
+            const modal = document.getElementById('modalReceita');
+            const titulo = document.getElementById('modalReceitaTitulo');
+            const idInput = document.getElementById('receitaEditandoId');
+            const campoI = document.getElementById('intersticioAplicacao');
+            const campoP = document.getElementById('dataPrimeiraAplicacao');
             if (codigo) {
-                titulo.textContent = '✏️ Editar Receita';
-                idInput.value      = codigo;
+                titulo.textContent = '✏️ Editar Receita'; idInput.value = codigo;
                 carregarReceitas().then(rs => {
-                    const r = rs.find(x => x.codigo === codigo);
-                    if (!r) return;
+                    const r = rs.find(x => x.codigo === codigo); if (!r) return;
                     document.getElementById('codigoReceita').value = r.codigo;
-                    const [d,m,a] = r.dataEmissao.split('/');
+                    const [d, m, a] = r.dataEmissao.split('/');
                     document.getElementById('dataEmissao').value = `${a}-${m}-${d}`;
-                    if (r.dataPrimeiraAplicacao) {
-                        const [dp,mp,ap] = r.dataPrimeiraAplicacao.split('/');
-                        campoPrimeiraAplic.value = `${ap}-${mp}-${dp}`;
-                    } else { campoPrimeiraAplic.value = ''; }
-                    if (r.dataValidade) {
-                        const [dv,mv,av] = r.dataValidade.split('/');
-                        document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`;
-                    } else { document.getElementById('dataValidade').value = ''; }
+                    if (r.dataPrimeiraAplicacao) { const [dp, mp, ap] = r.dataPrimeiraAplicacao.split('/'); campoP.value = `${ap}-${mp}-${dp}`; } else campoP.value = '';
+                    if (r.dataValidade) { const [dv, mv, av] = r.dataValidade.split('/'); document.getElementById('dataValidade').value = `${av}-${mv}-${dv}`; } else document.getElementById('dataValidade').value = '';
                     document.getElementById('observacoes').value = r.observacoes || '';
-                    campoIntersticio.value    = r.intersticioAplicacao || 10;
-                    campoIntersticio.disabled = true;
-                    campoPrimeiraAplic.disabled = true;
+                    campoI.value = r.intersticioAplicacao || 10;
+                    campoI.disabled = true; campoP.disabled = true;
                 });
             } else {
-                titulo.textContent = '📝 Cadastrar Nova Receita';
-                idInput.value      = '';
-                document.getElementById('codigoReceita').value  = '';
-                document.getElementById('dataEmissao').value    = '';
-                document.getElementById('dataValidade').value   = '';
-                document.getElementById('observacoes').value    = '';
-                campoIntersticio.value       = '10';
-                campoIntersticio.disabled    = false;
-                campoPrimeiraAplic.value     = '';
-                campoPrimeiraAplic.disabled  = false;
+                titulo.textContent = '📝 Cadastrar Nova Receita'; idInput.value = '';
+                document.getElementById('codigoReceita').value = '';
+                document.getElementById('dataEmissao').value = '';
+                document.getElementById('dataValidade').value = '';
+                document.getElementById('observacoes').value = '';
+                campoI.value = '10'; campoI.disabled = false;
+                campoP.value = ''; campoP.disabled = false;
             }
             modal.style.display = 'block';
         };
 
-        window.fecharModalReceita = function() {
+        window.fecharModalReceita = function () {
             document.getElementById('modalReceita').style.display = 'none';
         };
 
-        window.salvarReceita = async function() {
-            const codigo      = document.getElementById('codigoReceita').value.trim();
-            const emissao     = document.getElementById('dataEmissao').value;
-            const primeira    = document.getElementById('dataPrimeiraAplicacao').value;
-            const validade    = document.getElementById('dataValidade').value;
-            const obs         = document.getElementById('observacoes').value.trim();
+        window.salvarReceita = async function () {
+            const codigo = document.getElementById('codigoReceita').value.trim();
+            const emissao = document.getElementById('dataEmissao').value;
+            const primeira = document.getElementById('dataPrimeiraAplicacao').value;
+            const validade = document.getElementById('dataValidade').value;
+            const obs = document.getElementById('observacoes').value.trim();
             const intersticio = parseInt(document.getElementById('intersticioAplicacao').value);
-            const editId      = document.getElementById('receitaEditandoId').value;
-
-            if (!codigo || !emissao || (!primeira && !editId)) {
-                alert('Preencha código, data de emissão e data da primeira aplicação.');
-                return;
-            }
-            if (!intersticio || intersticio < 1 || intersticio > 365) {
-                alert('Interstício deve estar entre 1 e 365 dias.');
-                return;
-            }
-
+            const editId = document.getElementById('receitaEditandoId').value;
+            if (!codigo || !emissao || (!primeira && !editId)) { alert('Preencha código, data de emissão e data da primeira aplicação.'); return; }
+            if (!intersticio || intersticio < 1 || intersticio > 365) { alert('Interstício deve estar entre 1 e 365 dias.'); return; }
             const receitas = await carregarReceitas();
-            if (!editId && receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe receita com esse código.'); return;
-            }
-            if (editId && codigo !== editId && receitas.some(r => r.codigo === codigo)) {
-                alert('Já existe receita com esse novo código.'); return;
-            }
+            if (!editId && receitas.some(r => r.codigo === codigo)) { alert('Já existe receita com esse código.'); return; }
+            if (editId && codigo !== editId && receitas.some(r => r.codigo === codigo)) { alert('Já existe receita com esse novo código.'); return; }
             if (editId && codigo !== editId) {
                 const apl = await carregarAplicacoes();
                 Object.keys(apl).forEach(d => { if (apl[d].receita === editId) apl[d].receita = codigo; });
                 await salvarAplicacoesFirebase(apl);
                 await excluirReceitaFirebase(editId);
             }
-
-            const receitaExistente     = receitas.find(r => r.codigo === (editId || codigo));
-            const intersticioFinal     = editId ? (receitaExistente?.intersticioAplicacao || 10) : intersticio;
-            const dataPrimeiraFinal    = editId
+            const receitaExistente = receitas.find(r => r.codigo === (editId || codigo));
+            const intersticioFinal = editId ? (receitaExistente?.intersticioAplicacao || 10) : intersticio;
+            const dataPrimeiraFinal = editId
                 ? (receitaExistente?.dataPrimeiraAplicacao || null)
                 : formatarData(new Date((primeira || emissao) + 'T12:00:00'));
-
             await salvarReceitaFirebase({
                 codigo,
-                dataEmissao:           formatarData(new Date(emissao + 'T12:00:00')),
-                dataValidade:          validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
-                observacoes:           obs || null,
-                intersticioAplicacao:  intersticioFinal,
-                dataCadastro:          receitaExistente?.dataCadastro || new Date().toISOString(),
+                dataEmissao: formatarData(new Date(emissao + 'T12:00:00')),
+                dataValidade: validade ? formatarData(new Date(validade + 'T12:00:00')) : null,
+                observacoes: obs || null,
+                intersticioAplicacao: intersticioFinal,
+                dataCadastro: receitaExistente?.dataCadastro || new Date().toISOString(),
                 dataPrimeiraAplicacao: dataPrimeiraFinal
             });
-
             fecharModalReceita();
             await gerarPlanoAplicacoes();
             alert(editId ? 'Receita atualizada.' : 'Receita cadastrada. Datas recalculadas.');
         };
 
-        window.excluirReceita = async function(codigo) {
+        window.excluirReceita = async function (codigo) {
             if (!confirm(`Excluir receita ${codigo}?`)) return;
             const apl = await carregarAplicacoes();
             Object.keys(apl).forEach(d => { if (apl[d].receita === codigo) apl[d].receita = null; });
@@ -925,288 +1157,209 @@
             if (!ultima || ultima.codigo !== receita.codigo) return false;
             const apl = await carregarAplicacoes();
             let usadas = 0;
-            Object.values(apl).forEach(r => {
-                if (r.aplicacao === 'Sim' && r.receita === receita.codigo) usadas++;
-            });
+            Object.values(apl).forEach(r => { if (r.aplicacao === 'Sim' && r.receita === receita.codigo) usadas++; });
             return usadas < dosesPorCaixa;
         }
 
-        // ---------- Estatísticas ----------
-        window.atualizarEstatisticas = async function() {
-            const apl   = await carregarAplicacoes();
-            const recs  = await carregarReceitas();
+        window.atualizarEstatisticas = async function () {
+            const apl = await carregarAplicacoes();
+            const recs = await carregarReceitas();
             const datas = gerarDatasAplicacao();
             const total = datas.length;
-
             const aplicadas = Object.values(apl).filter(x => x.aplicacao === 'Sim' && x.receita != null).length;
-            const nao       = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
-            const taxa      = total ? Math.round(aplicadas / total * 100) : 0;
-
-            document.getElementById('totalAplicacoes').textContent   = total;
-            document.getElementById('totalAplicadas').textContent    = aplicadas;
+            const nao = Object.values(apl).filter(x => x.aplicacao === 'Não').length;
+            const taxa = total ? Math.round(aplicadas / total * 100) : 0;
+            document.getElementById('totalAplicacoes').textContent = total;
+            document.getElementById('totalAplicadas').textContent = aplicadas;
             document.getElementById('totalNaoAplicadas').textContent = nao;
-            document.getElementById('taxaAdesao').textContent        = taxa + '%';
-
+            document.getElementById('taxaAdesao').textContent = taxa + '%';
             const uso = {};
             recs.forEach(r => uso[r.codigo] = 0);
-            Object.values(apl).forEach(reg => {
-                if (reg.aplicacao === 'Sim' && reg.receita)
-                    uso[reg.receita] = (uso[reg.receita] || 0) + 1;
-            });
-            const dosesUtilizadas  = Object.values(uso).reduce((a,b) => a+b, 0);
+            Object.values(apl).forEach(reg => { if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1; });
+            const dosesUtilizadas = Object.values(uso).reduce((a, b) => a + b, 0);
             const dosesDisponiveis = Math.max(0, recs.length * dosesPorCaixa - dosesUtilizadas);
-
-            document.getElementById('totalReceitas').textContent       = recs.length;
-            document.getElementById('dosesDisponiveis').textContent    = dosesDisponiveis;
-            document.getElementById('dosesUtilizadas').textContent     = dosesUtilizadas;
+            document.getElementById('totalReceitas').textContent = recs.length;
+            document.getElementById('dosesDisponiveis').textContent = dosesDisponiveis;
+            document.getElementById('dosesUtilizadas').textContent = dosesUtilizadas;
             document.getElementById('receitasNecessarias').textContent = Math.ceil(total / dosesPorCaixa);
-
             await window.atualizarListaReceitas();
         };
 
-        window.atualizarListaReceitas = async function() {
-            const recs      = await carregarReceitas();
-            const apl       = await carregarAplicacoes();
+        window.atualizarListaReceitas = async function () {
+            const recs = await carregarReceitas();
+            const apl = await carregarAplicacoes();
             const container = document.getElementById('receitasContainer');
-            const bloco     = document.getElementById('listaReceitas');
+            const bloco = document.getElementById('listaReceitas');
             if (!recs.length) { bloco.style.display = 'none'; return; }
             bloco.style.display = 'block';
-
             const uso = {};
             recs.forEach(r => uso[r.codigo] = 0);
-            Object.values(apl).forEach(r => {
-                if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1;
-            });
-
+            Object.values(apl).forEach(r => { if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1; });
             const html = [];
             for (const r of recs) {
                 const usadas = uso[r.codigo] || 0;
-                const perc   = usadas / dosesPorCaixa * 100;
+                const perc = usadas / dosesPorCaixa * 100;
                 const status = usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa';
-                const cls    = usadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
-                const pode   = await podeEditarOuExcluir(r, recs);
-                html.push(`
-                    <div class="receita-item">
-                        ${pode ? `<div class="receita-actions">
-                            <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${r.codigo}')">✏️</button>
-                            <button class="btn btn-danger  btn-sm" onclick="excluirReceita('${r.codigo}')">🗑️</button>
-                        </div>` : ''}
-                        <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
-                        <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
-                        <p><strong>1ª Aplicação:</strong> ${r.dataPrimeiraAplicacao || '-'}</p>
-                        <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias</p>
-                        ${r.dataValidade ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
-                        ${r.observacoes  ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
-                        <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
-                        <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
-                    </div>`);
+                const cls = usadas >= dosesPorCaixa ? 'receita-esgotada' : 'receita-ativa';
+                const pode = await podeEditarOuExcluir(r, recs);
+                html.push(`<div class="receita-item">
+      ${pode ? `<div class="receita-actions">
+        <button class="btn btn-warning btn-sm" onclick="abrirModalReceita('${r.codigo}')">✏️</button>
+        <button class="btn btn-danger btn-sm"  onclick="excluirReceita('${r.codigo}')">🗑️</button>
+      </div>` : ''}
+      <h4>${r.codigo} <span class="receita-badge ${cls}">${status}</span></h4>
+      <p><strong>Emissão:</strong> ${r.dataEmissao}</p>
+      <p><strong>1ª Aplicação:</strong> ${r.dataPrimeiraAplicacao || '-'}</p>
+      <p><strong>Interstício:</strong> ${r.intersticioAplicacao || 10} dias entre aplicações</p>
+      ${r.dataValidade ? `<p><strong>Validade:</strong> ${r.dataValidade}</p>` : ''}
+      ${r.observacoes ? `<p><strong>Obs:</strong> ${r.observacoes}</p>` : ''}
+      <p><strong>Doses:</strong> ${usadas} de ${dosesPorCaixa} utilizadas</p>
+      <div class="progress-bar"><div class="progress-fill" style="width:${perc}%"></div></div>
+    </div>`);
             }
             container.innerHTML = html.join('');
         };
 
-        // ---------- Tabela principal ----------
-        window.renderizarTabela = async function() {
-            const datas    = gerarDatasAplicacao();
-            const apl      = await carregarAplicacoes();
+        window.renderizarTabela = async function () {
+            const datas = gerarDatasAplicacao();
+            const apl = await carregarAplicacoes();
             const receitas = await carregarReceitas();
-            const tbody    = document.getElementById('corpoTabela');
+            const tbody = document.getElementById('corpoTabela');
             tbody.innerHTML = '';
-
             const uso = {};
             receitas.forEach(r => uso[r.codigo] = 0);
-            Object.values(apl).forEach(reg => {
-                if (reg.aplicacao === 'Sim' && reg.receita)
-                    uso[reg.receita] = (uso[reg.receita] || 0) + 1;
-            });
-            const temReceitaDisponivel = receitas.some(r => (uso[r.codigo] || 0) < dosesPorCaixa);
-
+            Object.values(apl).forEach(reg => { if (reg.aplicacao === 'Sim' && reg.receita) uso[reg.receita] = (uso[reg.receita] || 0) + 1; });
+            const temReceita = receitas.some(r => (uso[r.codigo] || 0) < dosesPorCaixa);
             datas.forEach((d, i) => {
-                const dataStr     = formatarData(d);
-                const reg         = apl[dataStr] || { aplicacao: '', receita: null };
-                const cls         = reg.aplicacao === 'Sim' ? 'aplicado-sim'
-                                  : reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
-                const info        = reg.receita
-                    ? `<small style="color:#667eea;">Receita: ${reg.receita}</small>`
-                    : '<small style="color:#999;">Nenhuma receita</small>';
-                const simDisabled = !temReceitaDisponivel && reg.aplicacao !== 'Sim';
-
+                const dataStr = formatarData(d);
+                const reg = apl[dataStr] || { aplicacao: '', receita: null };
+                const cls = reg.aplicacao === 'Sim' ? 'aplicado-sim' : reg.aplicacao === 'Não' ? 'aplicado-nao' : '';
+                const info = reg.receita ? `<small style="color:#667eea;">Receita: ${reg.receita}</small>` : '<small style="color:#999;">Nenhuma receita</small>';
+                const simDisabled = !temReceita && reg.aplicacao !== 'Sim';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${i+1}</strong></td>
-                    <td>${dataStr}</td>
-                    <td>${obterDiaSemana(d)}</td>
-                    <td>
-                        <select class="${cls}"
-                                data-data="${dataStr}"
-                                data-tem-receita="${temReceitaDisponivel}"
-                                onchange="atualizarAplicacao('${dataStr}', this.value, this)">
-                            <option value="">-- Selecione --</option>
-                            <option value="Sim" ${reg.aplicacao==='Sim'?'selected':''} ${simDisabled?'disabled':''}>
-                                Sim${simDisabled?' (sem receita)':''}
-                            </option>
-                            <option value="Não" ${reg.aplicacao==='Não'?'selected':''}>Não</option>
-                        </select>
-                    </td>
-                    <td>${info}</td>`;
+      <td><strong>${i + 1}</strong></td>
+      <td>${dataStr}</td>
+      <td>${obterDiaSemana(d)}</td>
+      <td><select class="${cls}" data-data="${dataStr}" data-tem-receita="${temReceita}"
+            onchange="atualizarAplicacao('${dataStr}',this.value,this)">
+        <option value="">-- Selecione --</option>
+        <option value="Sim" ${reg.aplicacao === 'Sim' ? 'selected' : ''} ${simDisabled ? 'disabled' : ''}>Sim${simDisabled ? ' (sem receita)' : ''}</option>
+        <option value="Não" ${reg.aplicacao === 'Não' ? 'selected' : ''}>Não</option>
+      </select></td>
+      <td>${info}</td>`;
                 tbody.appendChild(tr);
             });
-
             await atualizarEstatisticas();
         };
 
-        // ---------- Atualizar aplicação individual ----------
-        window.atualizarAplicacao = async function(dataStr, valor, el) {
-            const apl        = await carregarAplicacoes();
+        window.atualizarAplicacao = async function (dataStr, valor, el) {
+            const apl = await carregarAplicacoes();
             const temReceita = el.getAttribute('data-tem-receita') === 'true';
-
             if (!valor) {
-                delete apl[dataStr];
-                el.className = '';
+                delete apl[dataStr]; el.className = '';
             } else if (valor === 'Sim') {
                 if (!temReceita) {
                     alert('Não há receitas com doses restantes.');
-                    el.value     = apl[dataStr]?.aplicacao || '';
-                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
-                    return;
+                    el.value = apl[dataStr]?.aplicacao || ''; el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : ''; return;
                 }
-                // Usa a receita correta para essa data pelo plano
                 const rec = await atribuirReceita(dataStr);
                 if (!rec) {
                     alert('Não há receitas com doses restantes.');
-                    el.value     = apl[dataStr]?.aplicacao || '';
-                    el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : '';
-                    return;
+                    el.value = apl[dataStr]?.aplicacao || ''; el.className = apl[dataStr]?.aplicacao === 'Não' ? 'aplicado-nao' : ''; return;
                 }
-                apl[dataStr] = { aplicacao: 'Sim', receita: rec };
-                el.className = 'aplicado-sim';
+                apl[dataStr] = { aplicacao: 'Sim', receita: rec }; el.className = 'aplicado-sim';
             } else {
-                apl[dataStr] = { aplicacao: 'Não', receita: null };
-                el.className = 'aplicado-nao';
+                apl[dataStr] = { aplicacao: 'Não', receita: null }; el.className = 'aplicado-nao';
             }
             await salvarAplicacoesFirebase(apl);
         };
 
-        // ---------- Ações em lote ----------
-        window.marcarTodasSim = async function() {
+        window.marcarTodasSim = async function () {
             if (!confirm('Marcar todas as aplicações como realizadas?')) return;
             const datas = gerarDatasAplicacao();
-            const apl   = await carregarAplicacoes();
-            let ok      = true;
+            const apl = await carregarAplicacoes();
+            let ok = true;
             for (let i = 0; i < datas.length; i++) {
                 const dataStr = formatarData(datas[i]);
                 if (apl[dataStr]?.aplicacao === 'Sim') continue;
                 const rec = await atribuirReceita(dataStr);
-                if (!rec && ok) {
-                    ok = false;
-                    alert(`Receitas insuficientes a partir da aplicação #${i+1}. As anteriores foram mantidas.`);
-                    break;
-                }
+                if (!rec && ok) { ok = false; alert(`Receitas insuficientes a partir da aplicação #${i + 1}.`); break; }
                 if (rec) apl[dataStr] = { aplicacao: 'Sim', receita: rec };
             }
             await salvarAplicacoesFirebase(apl);
         };
 
-        window.limparTodas = async function() {
+        window.limparTodas = async function () {
             if (!confirm('Limpar todos os registros de aplicação?')) return;
             await salvarAplicacoesFirebase({});
         };
 
-        // ---------- Service Worker ----------
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () =>
-                navigator.serviceWorker.register('service-worker.js').catch(() => {}));
+            window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => { }));
         }
 
-        // ---------- Prompt de instalação ----------
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault();
-            deferredPrompt = e;
+            e.preventDefault(); deferredPrompt = e;
             document.getElementById('installPrompt').classList.add('show');
         });
-        window.instalarApp = function() {
+        window.instalarApp = function () {
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
-            deferredPrompt.userChoice.finally(() => {
-                deferredPrompt = null;
-                document.getElementById('installPrompt').classList.remove('show');
-            });
+            deferredPrompt.userChoice.finally(() => { deferredPrompt = null; document.getElementById('installPrompt').classList.remove('show'); });
         };
-        window.fecharPromptInstalacao = function() {
-            document.getElementById('installPrompt').classList.remove('show');
-        };
+        window.fecharPromptInstalacao = function () { document.getElementById('installPrompt').classList.remove('show'); };
 
-        // ---------- Exportar PDF ----------
-        window.exportarPDF = async function() {
+        window.exportarPDF = async function () {
             const { jsPDF } = window.jspdf;
-            const doc       = new jsPDF();
-
-            doc.setFontSize(18);
-            doc.setTextColor(102, 126, 234);
+            const doc = new jsPDF();
+            doc.setFontSize(18); doc.setTextColor(102, 126, 234);
             doc.text('Relatório de Controle de Medicação', 14, 20);
-
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10); doc.setTextColor(0, 0, 0);
             doc.text('Cipionato de Testosterona', 14, 28);
             doc.text('Período: 07/02/2026 a 31/12/2026', 14, 34);
             doc.text('Intervalo: Variável conforme receita', 14, 40);
             doc.text('Gerado em: ' + formatarData(new Date()), 14, 46);
-
-            const apl       = await carregarAplicacoes();
-            const recs      = await carregarReceitas();
-            const datas     = gerarDatasAplicacao();
+            const apl = await carregarAplicacoes();
+            const recs = await carregarReceitas();
+            const datas = gerarDatasAplicacao();
             const aplicadas = Object.values(apl).filter(v => v.aplicacao === 'Sim' && v.receita).length;
-            const nao       = Object.values(apl).filter(v => v.aplicacao === 'Não').length;
-            const taxa      = datas.length ? Math.round(aplicadas / datas.length * 100) : 0;
-
-            doc.setFontSize(11);
-            doc.setTextColor(102, 126, 234);
-            doc.text('Estatísticas', 14, 56);
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Previstas: ${datas.length}`,    14, 62);
-            doc.text(`Realizadas: ${aplicadas}`,      14, 68);
-            doc.text(`Não realizadas: ${nao}`,        14, 74);
-            doc.text(`Taxa de adesão: ${taxa}%`,      14, 80);
-
+            const nao = Object.values(apl).filter(v => v.aplicacao === 'Não').length;
+            const taxa = datas.length ? Math.round(aplicadas / datas.length * 100) : 0;
+            doc.setFontSize(11); doc.setTextColor(102, 126, 234); doc.text('Estatísticas', 14, 56);
+            doc.setFontSize(10); doc.setTextColor(0, 0, 0);
+            doc.text(`Previstas: ${datas.length}`, 14, 62);
+            doc.text(`Realizadas: ${aplicadas}`, 14, 68);
+            doc.text(`Não realizadas: ${nao}`, 14, 74);
+            doc.text(`Taxa de adesão: ${taxa}%`, 14, 80);
             if (recs.length) {
                 const uso = {};
                 recs.forEach(r => uso[r.codigo] = 0);
-                Object.values(apl).forEach(r => {
-                    if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1;
-                });
+                Object.values(apl).forEach(r => { if (r.aplicacao === 'Sim' && r.receita) uso[r.receita] = (uso[r.receita] || 0) + 1; });
                 doc.autoTable({
                     startY: 88,
-                    head:   [['Código','Emissão','Interstício','Doses','Status']],
-                    body:   recs.map(r => {
+                    head: [['Código', 'Emissão', 'Interstício', 'Doses', 'Status']],
+                    body: recs.map(r => {
                         const usadas = uso[r.codigo] || 0;
-                        return [r.codigo, r.dataEmissao,
-                                `${r.intersticioAplicacao||10} dias`,
-                                `${usadas}/${dosesPorCaixa}`,
-                                usadas >= dosesPorCaixa ? 'Esgotada' : '
-
-                                usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa'];
+                        return [r.codigo, r.dataEmissao, `${r.intersticioAplicacao || 10} dias`, `${usadas}/${dosesPorCaixa}`, usadas >= dosesPorCaixa ? 'Esgotada' : 'Ativa'];
                     })
                 });
             }
-
             const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 96;
-
             doc.autoTable({
-                startY:     finalY,
-                head:       [['#','Data','Dia','Aplicação','Receita']],
-                body:       datas.map((d, i) => {
-                    const dataStr = formatarData(d);
-                    const reg     = apl[dataStr] || {};
-                    return [i+1, dataStr, obterDiaSemana(d),
-                            reg.aplicacao || '–', reg.receita || '–'];
+                startY: finalY,
+                head: [['#', 'Data', 'Dia', 'Aplicação', 'Receita']],
+                body: datas.map((d, i) => {
+                    const dataStr = formatarData(d); const reg = apl[dataStr] || {};
+                    return [i + 1, dataStr, obterDiaSemana(d), reg.aplicacao || '–', reg.receita || '–'];
                 }),
-                styles:     { fontSize: 9 },
+                styles: { fontSize: 9 },
                 headStyles: { fillColor: [102, 126, 234] }
             });
-
             doc.save('Controle_Medicacao.pdf');
         };
     </script>
 </body>
+
 </html>
